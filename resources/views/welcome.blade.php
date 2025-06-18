@@ -12,15 +12,7 @@
         :root {
             --burgundy: #5e0f0f;
             --gold: #c8a97e;
-            --cream: #f5f0e6;
-            --dark-text: #2a2a2a;
-            --light-text: #f8f8f8;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            --cream: #f5f0e6;p
         }
         
         body {
