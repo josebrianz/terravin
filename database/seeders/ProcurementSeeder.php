@@ -1,0 +1,95 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use App\Models\Procurement;
+use App\Models\User;
+
+class ProcurementSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        // Create a default user if none exists
+        $user = User::firstOrCreate(
+            ['email' => 'admin@terravin.com'],
+            [
+                'name' => 'Admin User',
+                'password' => bcrypt('password'),
+            ]
+        );
+
+        $suppliers = [
+            'Wine Barrel Co. Ltd.',
+            'Premium Cork Suppliers',
+            'Glass Bottle Manufacturers',
+            'Wine Label Printing Co.',
+            'Vineyard Equipment Supply',
+            'Wine Storage Solutions',
+            'Fermentation Equipment Co.',
+            'Wine Packaging International',
+            'Oak Barrel Traders',
+            'Wine Machinery Corp.',
+        ];
+
+        $items = [
+            'French Oak Barrels (225L)',
+            'Premium Wine Corks',
+            'Wine Bottles (750ml)',
+            'Custom Wine Labels',
+            'Fermentation Tanks',
+            'Wine Storage Racks',
+            'Bottling Equipment',
+            'Wine Capsules',
+            'Wine Filtration Systems',
+            'Temperature Control Units',
+            'Wine Pumps',
+            'Grape Crushers',
+            'Wine Presses',
+            'Wine Testing Equipment',
+            'Wine Bottle Caps',
+            'Wine Racking Equipment',
+            'Wine Transfer Pumps',
+            'Wine Bottle Fillers',
+            'Wine Corking Machines',
+            'Wine Label Applicators',
+        ];
+
+        $statuses = ['pending', 'approved', 'ordered', 'received', 'cancelled'];
+        $statusWeights = [3, 2, 2, 1, 1]; // More pending and approved items
+
+        for ($i = 1; $i <= 30; $i++) {
+            $status = $statuses[array_rand($statusWeights)];
+            $quantity = rand(1, 100);
+            $unitPrice = rand(50, 5000);
+            $totalAmount = $quantity * $unitPrice;
+
+            $procurement = Procurement::create([
+                'po_number' => 'PO-' . date('Y') . '-' . str_pad($i, 4, '0', STR_PAD_LEFT),
+                'item_name' => $items[array_rand($items)],
+                'description' => 'Wine production and packaging supplies for Terravin winery operations.',
+                'supplier_name' => $suppliers[array_rand($suppliers)],
+                'supplier_email' => 'contact@' . strtolower(str_replace([' ', '&', '.', '(', ')', 'Ltd.', 'Co.', 'Corp.', 'International'], ['', 'and', '', '', '', 'ltd', 'co', 'corp', 'int'], $suppliers[array_rand($suppliers)])) . '.com',
+                'supplier_phone' => '+1-' . rand(200, 999) . '-' . rand(200, 999) . '-' . rand(1000, 9999),
+                'quantity' => $quantity,
+                'unit_price' => $unitPrice,
+                'total_amount' => $totalAmount,
+                'status' => $status,
+                'requested_by' => $user->id,
+                'approved_by' => $status !== 'pending' ? $user->id : null,
+                'order_date' => $status === 'ordered' || $status === 'received' ? now()->subDays(rand(1, 30)) : null,
+                'expected_delivery' => now()->addDays(rand(1, 60)),
+                'actual_delivery' => $status === 'received' ? now()->subDays(rand(1, 15)) : null,
+                'notes' => 'Essential supplies for Terravin wine production and bottling operations.',
+                'created_at' => now()->subDays(rand(1, 90)),
+                'updated_at' => now()->subDays(rand(1, 90)),
+            ]);
+        }
+
+        $this->command->info('Wine supply procurement data seeded successfully!');
+    }
+}

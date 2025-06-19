@@ -12,9 +12,7 @@
         :root {
             --burgundy: #5e0f0f;
             --gold: #c8a97e;
-<<<<<<< HEAD
             --cream: #f5f0e6;p
-=======
             --cream: #f5f0e6;
             --dark-text: #2a2a2a;
             --light-text: #f8f8f8;
@@ -24,7 +22,6 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
->>>>>>> 7570d17cc255eb1f3fb96bcd9855869a053e445f
         }
         
         body {
@@ -178,9 +175,7 @@
         <h2>Artisanal Wines of Distinction</h2>
         <p>Since our founding, Terravin has been dedicated to crafting exceptional wines that express the unique character of our vineyards. Each bottle tells a story of the land, the climate, and the passionate hands that nurtured it from grape to glass.</p>
     </section>
-<<<<<<< HEAD
     
-=======
 
 <section class="about-section">
     <div class="section-header">
@@ -494,7 +489,6 @@
         }
     }
 </style>
->>>>>>> 7570d17cc255eb1f3fb96bcd9855869a053e445f
     <section class="wine-showcase" id="wines">
         <div class="wine-card">
             <h3>Reserve Cabernet</h3>
