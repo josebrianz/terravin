@@ -45,7 +45,7 @@
         }
         
         .logo {
-            font-family: 'Mrs Saint Delafield', cursive;
+            font-family:'Playfair Display', serif;
             font-size: 5rem;
             color: var(--gold);
             margin-bottom: 1rem;
@@ -53,12 +53,18 @@
         }
         
         .tagline {
-            font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            font-weight: 300;
+            font-family: 'Georgia ', serif;
+            font-size: 20px;
+            font-weight: 500;
             letter-spacing: 3px;
             margin-bottom: 2rem;
             text-transform: uppercase;
+            text-align: center;
+            max-width: 900px;
+            margin: 30px auto;
+            line-height: 1.6;
+            padding: 0 20px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
         }
         
         .divider {
@@ -80,6 +86,7 @@
             margin-top: 2rem;
             transition: all 0.3s ease;
             text-decoration: none;
+            border-radius:12px;
         }
         
         .cta-button:hover {
@@ -160,13 +167,48 @@
                 font-size: 1.5rem;
             }
         }
+        .nav-button {
+      padding: 10px 20px;
+      margin-left: 15px;
+      border: 2px solid var(--gold);
+      border-radius: 25px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      display: inline-block;
+      background: transparent;
+      color: var(--light-text);
+    }
+    .sign-in {
+      background-color: transparent;
+      color:white;
+      border: 2px solid var(--gold) ;
+    }
+
+    .sign-in:hover {
+      background: var(--gold);
+            color: var(--burgundy);
+    }
+
+    .get-started {
+      background-color:var(--burgundy);
+      color: white;
+    }
+    .get-started:hover {
+      background: var(--gold);
+            color: var(--burgundy);
+    }
     </style>
 </head>
 <body>
     <section class="hero">
-        <h1 class="logo">Terravin</h1>
-        <div class="divider"></div>
-        <p class="tagline">Taste the feeling</p>
+     <div class="navbar">
+    <a href="{{ route('login') }}" class="nav-button sign-in">Sign In</a>
+<a href="{{ route('register') }}" class="nav-button get-started">Get Started</a>
+
+  </div>
+        <h1 class="logo"> Welcome To Terravin Winery</h1>
+        <p class="tagline">Manage your wine supply chain from vineyard to consumer. Track inventory, shipments, and quality control in one system.</p>
         <a href="#wines" class="cta-button">Explore Our Wines</a>
     </section>
     
