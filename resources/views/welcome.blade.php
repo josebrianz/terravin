@@ -12,6 +12,7 @@
         :root {
             --burgundy: #5e0f0f;
             --gold: #c8a97e;
+            --cream: #f5f0e6;p
             --cream: #f5f0e6;
             --dark-text: #2a2a2a;
             --light-text: #f8f8f8;
@@ -216,6 +217,7 @@
         <h2>Artisanal Wines of Distinction</h2>
         <p>Since our founding, Terravin has been dedicated to crafting exceptional wines that express the unique character of our vineyards. Each bottle tells a story of the land, the climate, and the passionate hands that nurtured it from grape to glass.</p>
     </section>
+    
 
 <section class="about-section">
     <div class="section-header">
