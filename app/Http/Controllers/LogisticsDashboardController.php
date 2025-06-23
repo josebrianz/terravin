@@ -6,11 +6,75 @@ use Illuminate\Http\Request;
 use App\Models\Procurement;
 use App\Models\Inventory;
 use App\Models\User;
+use App\Models\Shipment;
+use Illuminate\Support\Facades\DB;
+
 
 class LogisticsDashboardController extends Controller
 {
     public function index()
     {
+    $totalShipments = Shipment::count();
+    $pendingShipments = Shipment::where('status', 'pending')->count();
+    $inTransitShipments = Shipment::where('status', 'in_transit')->count();
+    $deliveredShipments = Shipment::where('status', 'delivered')->count();
+
+    $totalRevenue = Shipment::sum('shipping_cost');
+    $monthlyRevenue = Shipment::whereMonth('created_at', now()->month)->sum('shipping_cost');
+
+    $lowStockItems = Inventory::where('quantity', '<', 10)->get();
+    $lowStockItemsList = $lowStockItems;
+
+    $overdueShipments = Shipment::where('status', '!=', 'delivered')
+        ->where('estimated_delivery_date', '<', now())
+        ->get();
+    $overdueShipmentsCount = $overdueShipments->count();
+
+    $recentShipments = Shipment::with('order.user')->latest()->take(5)->get();
+
+    $upcomingDeliveries = Procurement::where('expected_delivery', '>=', now())->get();
+
+    $topSuppliers = Procurement::selectRaw('supplier_name, COUNT(*) as order_count, SUM(total_amount) as total_value')
+        ->groupBy('supplier_name')
+        ->orderBy('order_count', 'desc')
+        ->take(5)
+        ->get();
+
+    $revenueData = Shipment::selectRaw("DATE_FORMAT(created_at, '%b') as month, SUM(shipping_cost) as total")
+        ->groupBy('month')
+        ->pluck('total', 'month');
+
+    $shipmentStatusData = Shipment::select('status', DB::raw('count(*) as count'))
+        ->groupBy('status')
+        ->pluck('count', 'status');
+
+    return view('logistics.dashboard', compact(
+        'totalShipments',
+        'pendingShipments',
+        'inTransitShipments',
+        'deliveredShipments',
+        'totalRevenue',
+        'monthlyRevenue',
+        'lowStockItems',
+        'lowStockItemsList',
+        'overdueShipments',
+        'overdueShipmentsCount',
+        'recentShipments',
+        'upcomingDeliveries',
+        'topSuppliers',
+        'revenueData',
+        'shipmentStatusData'
+    ));
+}
+
+    public function getShipmentDetails($shipmentId)
+    {
+        $shipment = \App\Models\Shipment::with('order.user')->findOrFail($shipmentId);
+        return response()->json(['shipment' => $shipment]);
+    }
+}
+
+   /* {
         // Fetch procurement-based logistics metrics
         $totalProcurements = Procurement::count();
         $orderedProcurements = Procurement::where('status', 'ordered')->count();
@@ -69,4 +133,4 @@ class LogisticsDashboardController extends Controller
             'totalDeliveries'
         ));
     }
-} 
+} */

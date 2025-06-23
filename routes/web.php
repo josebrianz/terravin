@@ -5,16 +5,13 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ProcurementController;
 use App\Http\Controllers\LogisticsDashboardController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\InventoryController;
-use App\Http\Controllers\ProcurementController;
-use App\Http\Controllers\LogisticsDashboardController;
 
 Route::get('/', function () {
-    return view('admin-dashboard');
+    return view('welcome');
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return view('admin-dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/admin', function () {
