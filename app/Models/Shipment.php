@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+<<<<<<< HEAD
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+=======
+>>>>>>> 0393c2ad2ab67769c65d675f9137fb47ec03d551
 use Illuminate\Database\Eloquent\Model;
 
 class Shipment extends Model
 {
+<<<<<<< HEAD
     use HasFactory;
 
     protected $fillable = [
@@ -65,4 +69,7 @@ class Shipment extends Model
                $this->estimated_delivery_date->isPast() && 
                $this->status !== 'delivered';
     }
+=======
+    //
+>>>>>>> 0393c2ad2ab67769c65d675f9137fb47ec03d551
 }

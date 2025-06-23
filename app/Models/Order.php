@@ -15,14 +15,18 @@ class Order extends Model
         'total_amount',
     ];
 
+<<<<<<< HEAD
     protected $casts = [
         'total_amount' => 'decimal:2'
     ];
 
+=======
+>>>>>>> 0393c2ad2ab67769c65d675f9137fb47ec03d551
     public function user()
     {
         return $this->belongsTo(User::class);
     }
+<<<<<<< HEAD
 
     public function shipment()
     {
@@ -56,4 +60,6 @@ class Order extends Model
     {
         return $this->shipment()->exists();
     }
+=======
+>>>>>>> 0393c2ad2ab67769c65d675f9137fb47ec03d551
 } 
