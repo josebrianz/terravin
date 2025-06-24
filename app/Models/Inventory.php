@@ -13,4 +13,9 @@ class Inventory extends Model
     'price',
     'location',
 ];
+
+    public function isOutOfStock()
+    {
+        return $this->quantity <= 0;
+    }
 }

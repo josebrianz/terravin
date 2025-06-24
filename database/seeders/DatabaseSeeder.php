@@ -22,6 +22,10 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             ProcurementSeeder::class,
+<<<<<<< HEAD
+            LogisticsSeeder::class,
+=======
+>>>>>>> 0393c2ad2ab67769c65d675f9137fb47ec03d551
         ]);
     }
 }
