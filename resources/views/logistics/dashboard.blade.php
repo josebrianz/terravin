@@ -169,6 +169,8 @@
             </div>
         </div>
     </div>
+    <!-- AMap Shipment Routes & Delivery Zones -->
+    <!-- (Map section deleted) -->
 
     <!-- Content Row -->
     <div class="row">
@@ -216,41 +218,7 @@
             </div>
         </div>
         <!-- Low Stock Alerts -->
-        <div class="col-lg-6 mb-4">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Low Stock Wine Alerts</h6>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Wine</th>
-                                    <th>SKU</th>
-                                    <th>Bottles</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($lowStockItemsList as $item)
-                                <tr class="{{ $item->isOutOfStock() ? 'table-danger' : 'table-warning' }}">
-                                    <td>{{ $item->name }}</td>
-                                    <td>{{ $item->sku }}</td>
-                                    <td>{{ $item->quantity }}</td>
-                                    <td>
-                                        <span class="badge {{ $item->stock_status_badge }}">
-                                            {{ ucfirst(str_replace('_', ' ', $item->stock_status)) }}
-                                        </span>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- Removed Low Stock Wine Alerts table as requested -->
     </div>
 
     <!-- Overdue Shipments -->
