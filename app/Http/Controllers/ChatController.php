@@ -2,64 +2,134 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ChatMessage;
+use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use App\Events\MessageSent;
 
 class ChatController extends Controller
 {
-    // List all users you can chat with (suppliers for customers, customers for suppliers)
     public function index()
     {
-        $user = Auth::user();
-        if ($user->role === 'Customer') {
-            $users = User::where('role', 'Supplier')->get();
-        } elseif ($user->role === 'Supplier') {
-            $users = User::where('role', 'Customer')->get();
+        $users = User::where('id', '!=', Auth::id())
+            ->whereNotIn('role', ['logistics', 'procurement'])
+            ->get();
+        // Add a virtual 'Group' user at the top
+        $groupUser = (object)[
+            'id' => 'group',
+            'name' => 'Group',
+            'last_seen' => null,
+            'role' => null
+        ];
+        $users->prepend($groupUser);
+        // Get unread message counts for each user
+        $unreadCounts = [];
+        foreach ($users as $user) {
+            if ($user->id === 'group') {
+                $unreadCounts[$user->id] = \App\Models\Message::where('group', 'Group')
+                    ->where('sender_id', '!=', Auth::id())
+                    ->where('is_read', false)
+                    ->count();
+            } else {
+                $unreadCounts[$user->id] = \App\Models\Message::where('sender_id', $user->id)
+                    ->where('receiver_id', Auth::id())
+                    ->where('is_read', false)
+                    ->count();
+            }
+        }
+        return view('chat.index', compact('users', 'unreadCounts'));
+    }
+
+    public function fetchMessages(Request $request, $userId)
+    {
+        if ($userId === 'group') {
+            $messages = Message::where('group', 'Group')->orderBy('created_at')->get();
+            // Mark all group messages as read for this user
+            Message::where('group', 'Group')
+                ->where('sender_id', '!=', Auth::id())
+                ->where('is_read', false)
+                ->update(['is_read' => true]);
         } else {
-            abort(403, 'Only suppliers and customers can use chat.');
+            $messages = Message::where(function ($q) use ($userId) {
+                $q->where('sender_id', Auth::id())
+                  ->where('receiver_id', $userId);
+            })->orWhere(function ($q) use ($userId) {
+                $q->where('sender_id', $userId)
+                  ->where('receiver_id', Auth::id());
+            })->orderBy('created_at')->get();
+            // Mark messages as read where the current user is the receiver
+            Message::where('sender_id', $userId)
+                ->where('receiver_id', Auth::id())
+                ->where('is_read', false)
+                ->update(['is_read' => true]);
         }
-        return view('chat.index', compact('users'));
+        // Attach reply message data if present
+        $messages->load('replyMessage');
+        return response()->json($messages);
     }
 
-    // Show chat with a specific user
-    public function show($userId)
+    public function sendMessage(Request $request)
     {
-        $user = Auth::user();
-        $other = User::findOrFail($userId);
-        // Only allow supplier-customer chat
-        if (!in_array($user->role, ['Customer', 'Supplier']) ||
-            !in_array($other->role, ['Customer', 'Supplier']) ||
-            $user->role === $other->role) {
-            abort(403, 'Chat only allowed between suppliers and customers.');
+        $request->validate([
+            'receiver_id' => 'nullable|exists:users,id',
+            'message' => 'nullable|string',
+            'file' => 'nullable|file|max:10240',
+            'group' => 'nullable|string',
+            'reply_to' => 'nullable|integer|exists:messages,id',
+        ]);
+
+        $filePath = null;
+        if ($request->hasFile('file')) {
+            $filePath = $request->file('file')->store('chat_files', 'public');
         }
-        $messages = ChatMessage::where(function($q) use ($user, $other) {
-            $q->where('sender_id', $user->id)->where('receiver_id', $other->id);
-        })->orWhere(function($q) use ($user, $other) {
-            $q->where('sender_id', $other->id)->where('receiver_id', $user->id);
-        })->orderBy('created_at')->get();
-        return view('chat.show', compact('other', 'messages'));
+
+        $message = Message::create([
+            'sender_id' => Auth::id(),
+            'receiver_id' => $request->group === 'Group' ? null : $request->receiver_id,
+            'group' => $request->group === 'Group' ? 'Group' : null,
+            'message' => $request->message,
+            'file' => $filePath,
+            'reply_to' => $request->reply_to,
+        ]);
+
+        broadcast(new MessageSent($message))->toOthers();
+
+        return response()->json($message);
     }
 
-    // Send a message
-    public function store(Request $request, $userId)
+    public function editMessage(Request $request, $id)
     {
-        $user = Auth::user();
-        $other = User::findOrFail($userId);
-        if (!in_array($user->role, ['Customer', 'Supplier']) ||
-            !in_array($other->role, ['Customer', 'Supplier']) ||
-            $user->role === $other->role) {
-            abort(403, 'Chat only allowed between suppliers and customers.');
+        $message = Message::findOrFail($id);
+        if ($message->sender_id !== Auth::id()) {
+            abort(403);
         }
         $request->validate([
-            'message' => 'required|string|max:2000',
+            'message' => 'required|string',
         ]);
-        ChatMessage::create([
-            'sender_id' => $user->id,
-            'receiver_id' => $other->id,
-            'message' => $request->message,
-        ]);
-        return redirect()->route('chat.show', $other->id);
+        $message->message = $request->message;
+        $message->edited_at = now();
+        $message->save();
+        return response()->json($message);
     }
-}
+
+    public function deleteMessage($id)
+    {
+        $message = Message::findOrFail($id);
+        if ($message->sender_id !== Auth::id()) {
+            abort(403);
+        }
+        $message->delete();
+        return response()->json(['success' => true]);
+    }
+
+    public function typing(Request $request)
+    {
+        $request->validate([
+            'receiver_id' => 'required|exists:users,id',
+        ]);
+        broadcast(new \App\Events\UserTyping(Auth::id(), $request->receiver_id))->toOthers();
+        return response()->json(['success' => true]);
+    }
+} 
