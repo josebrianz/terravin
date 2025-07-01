@@ -1,17 +1,31 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Create New Wine Supply Request')
 
 @section('content')
 <div class="container-fluid">
-    <div class="row">
+    <!-- Page Header -->
+    <div class="row mb-4">
         <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-plus"></i> Create New Wine Supply Request
-                    </h5>
+            <div class="page-header border-bottom pb-3 mb-4 d-flex align-items-center justify-content-between">
+                <div>
+                    <h1 class="page-title mb-0 fw-bold text-burgundy">
+                        <i class="fas fa-plus me-2 text-gold"></i>
+                        Create New Wine Supply Request
+                    </h1>
+                    <span class="text-muted small">Fill in the details to request a new wine supply item</span>
                 </div>
+                <div class="header-actions">
+                    <a href="{{ route('procurement.dashboard') }}" class="btn btn-burgundy shadow-sm" title="Back to Dashboard">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            <div class="card wine-card shadow-sm border-0">
                 <div class="card-body">
                     <form action="{{ route('procurement.store') }}" method="POST">
                         @csrf
@@ -55,7 +69,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="unit_price" class="form-label">Unit Price ($) *</label>
+                                            <label for="unit_price" class="form-label">Unit Price (UGX) *</label>
                                             <input type="number" class="form-control @error('unit_price') is-invalid @enderror" 
                                                    id="unit_price" name="unit_price" value="{{ old('unit_price') }}" 
                                                    step="0.01" min="0" placeholder="Price per unit" required>
@@ -182,7 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const quantity = parseFloat(quantityInput.value) || 0;
         const unitPrice = parseFloat(unitPriceInput.value) || 0;
         const total = quantity * unitPrice;
-        totalAmountInput.value = '$' + total.toFixed(2);
+        totalAmountInput.value = 'UGX ' + total.toFixed(0);
     }
     
     quantityInput.addEventListener('input', calculateTotal);
@@ -196,28 +210,91 @@ document.addEventListener('DOMContentLoaded', function() {
 
 @push('styles')
 <style>
-.card-header {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
+:root {
+    --burgundy: #5e0f0f;
+    --gold: #c8a97e;
+    --cream: #f5f0e6;
+    --light-burgundy: #8b1a1a;
+    --dark-gold: #b8945f;
 }
 
-.text-primary {
-    color: #0d6efd !important;
+.wine-card {
+    background: var(--cream);
+    border-radius: 16px;
+    border: 1px solid var(--gold);
+    box-shadow: 0 4px 24px rgba(94, 15, 15, 0.07);
+}
+
+.card-body {
+    background: var(--cream);
+    border-radius: 16px;
 }
 
 .form-label {
+    color: var(--burgundy);
     font-weight: 600;
-    margin-bottom: 0.5rem;
 }
 
-.invalid-feedback {
-    display: block;
+input.form-control, textarea.form-control, select.form-control {
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    background: #fff8f3;
+    color: var(--burgundy);
+}
+input.form-control:focus, textarea.form-control:focus, select.form-control:focus {
+    border-color: var(--burgundy);
+    box-shadow: 0 0 0 2px var(--gold);
+    background: #fff8f3;
+    color: var(--burgundy);
+}
+
+.btn-burgundy {
+    background: var(--burgundy);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+.btn-burgundy:hover, .btn-burgundy:focus {
+    background: var(--light-burgundy);
+    color: #fff;
+}
+
+.btn-primary {
+    background: var(--gold);
+    color: var(--burgundy);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+.btn-primary:hover, .btn-primary:focus {
+    background: var(--dark-gold);
+    color: #fff;
+}
+
+.btn-secondary {
+    background: #fff;
+    color: var(--burgundy);
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+.btn-secondary:hover, .btn-secondary:focus {
+    background: var(--gold);
+    color: #fff;
 }
 
 .alert-info {
-    background-color: #d1ecf1;
-    border-color: #bee5eb;
-    color: #0c5460;
+    background: #f8f5f0;
+    border-color: var(--gold);
+    color: var(--burgundy);
+}
+
+.page-header, .card-title, .header-actions {
+    color: var(--burgundy);
 }
 </style>
 @endpush

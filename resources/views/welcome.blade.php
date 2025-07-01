@@ -204,8 +204,8 @@
 <body>
     <section class="hero">
      <div class="navbar">
-    <a href="{{ route('login') }}" class="nav-button sign-in">Sign In</a>
-<a href="{{ route('register') }}" class="nav-button get-started">Get Started</a>
+    <a href="{{ route('login') }}" class="nav-button sign-in">Login</a>
+    <a href="{{ route('register') }}" class="nav-button get-started">Register</a>
 
   </div>
         <h1 class="logo"> Welcome To Terravin Winery</h1>

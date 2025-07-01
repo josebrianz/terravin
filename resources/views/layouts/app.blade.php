@@ -19,54 +19,7 @@
         @stack('styles')
     </head>
     <body class="font-sans antialiased">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-            <div class="container">
-                <a class="navbar-brand" href="{{ route('admin.dashboard') }}">
-                    <i class="fas fa-wine-bottle"></i> Terravin
-                </a>
-                
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('admin.dashboard') }}">
-                                <i class="fas fa-tachometer-alt"></i> Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="procurementDropdown" role="button" 
-                               data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-shopping-cart"></i> Procurement
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="procurementDropdown">
-                                <li><a class="dropdown-item" href="{{ route('procurement.dashboard') }}">
-                                    <i class="fas fa-chart-bar"></i> Dashboard
-                                </a></li>
-                                <li><a class="dropdown-item" href="{{ route('procurement.index') }}">
-                                    <i class="fas fa-list"></i> All Procurements
-                                </a></li>
-                                <li><a class="dropdown-item" href="{{ route('procurement.create') }}">
-                                    <i class="fas fa-plus"></i> New Procurement
-                                </a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('inventory.index') }}">
-                                <i class="fas fa-boxes"></i> Inventory
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('logistics.dashboard') }}">
-                                <i class="fas fa-truck"></i> Logistics
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+        @include('components.role-based-nav')
         <div class="min-h-screen bg-gray-100">
             @include('layouts.navigation')
 

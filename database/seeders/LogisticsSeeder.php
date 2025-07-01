@@ -4,10 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\User;
-use App\Models\Order;
-use App\Models\Shipment;
 use App\Models\Inventory;
-use Illuminate\Support\Str;
 
 class LogisticsSeeder extends Seeder
 {
@@ -34,36 +31,6 @@ class LogisticsSeeder extends Seeder
 
         foreach ($inventoryItems as $item) {
             Inventory::create($item);
-        }
-
-        // Create sample orders
-        $orderStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
-        $shipmentStatuses = ['pending', 'in_transit', 'delivered', 'cancelled'];
-        $carriers = ['FedEx', 'UPS', 'DHL', 'USPS'];
-
-        for ($i = 0; $i < 50; $i++) {
-            $order = Order::create([
-                'user_id' => $users->random()->id,
-                'status' => $orderStatuses[array_rand($orderStatuses)],
-                'total_amount' => rand(50, 2000),
-                'created_at' => now()->subDays(rand(0, 30))
-            ]);
-
-            // Create shipment for most orders
-            if ($order->status !== 'cancelled') {
-                Shipment::create([
-                    'order_id' => $order->id,
-                    'tracking_number' => 'TRK' . strtoupper(Str::random(8)),
-                    'status' => $shipmentStatuses[array_rand($shipmentStatuses)],
-                    'carrier' => $carriers[array_rand($carriers)],
-                    'shipping_address' => fake()->address(),
-                    'estimated_delivery_date' => now()->addDays(rand(1, 14)),
-                    'actual_delivery_date' => $order->status === 'delivered' ? now()->subDays(rand(1, 7)) : null,
-                    'shipping_cost' => rand(10, 50),
-                    'notes' => rand(0, 1) ? fake()->sentence() : null,
-                    'created_at' => $order->created_at
-                ]);
-            }
         }
     }
 } 

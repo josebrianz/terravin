@@ -21,11 +21,9 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
-            ProcurementSeeder::class,
-<<<<<<< HEAD
+            RoleSeeder::class,
             LogisticsSeeder::class,
-=======
->>>>>>> 0393c2ad2ab67769c65d675f9137fb47ec03d551
+            ProcurementSeeder::class,
         ]);
     }
 }

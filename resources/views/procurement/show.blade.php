@@ -60,11 +60,11 @@
                                         </tr>
                                         <tr>
                                             <td class="fw-bold">Unit Price:</td>
-                                            <td>${{ number_format($procurement->unit_price, 2) }}</td>
+                                            <td>UGX {{ number_format($procurement->unit_price, 0) }}</td>
                                         </tr>
                                         <tr>
                                             <td class="fw-bold">Total Amount:</td>
-                                            <td class="h5 text-primary">${{ number_format($procurement->total_amount, 2) }}</td>
+                                            <td class="h5 text-primary">UGX {{ number_format($procurement->total_amount, 0) }}</td>
                                         </tr>
                                     </table>
                                 </div>

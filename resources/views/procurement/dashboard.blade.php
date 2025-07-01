@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Wine Supply Procurement Dashboard')
 
@@ -7,18 +7,22 @@
     <!-- Page Header -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="page-header border-bottom pb-2 mb-4 d-flex align-items-center justify-content-between">
+            <div class="page-header border-bottom pb-3 mb-4 d-flex align-items-center justify-content-between">
                 <div>
-                    <h1 class="page-title mb-0 fw-bold">
-                        <i class="fas fa-wine-bottle me-2"></i>
+                    <h1 class="page-title mb-0 fw-bold text-burgundy">
+                        <i class="fas fa-wine-bottle me-2 text-gold"></i>
                         Wine Supply Procurement Dashboard
                     </h1>
                     <span class="text-muted small">Overview of all procurement activities and supplier performance</span>
                 </div>
-                <div class="page-options">
-                    <a href="{{ route('procurement.create') }}" class="btn btn-primary shadow-sm" title="Create a new supply order">
+                <div class="header-actions">
+                    <a href="{{ route('procurement.create') }}" class="btn btn-burgundy shadow-sm" title="Create a new supply order">
                         <i class="fas fa-plus"></i> New Supply Order
                     </a>
+                    <span class="badge bg-gold text-burgundy px-3 py-2 ms-3">
+                        <i class="fas fa-clock me-1"></i>
+                        {{ now()->format('M d, Y H:i') }}
+                    </span>
                 </div>
             </div>
         </div>
@@ -27,321 +31,375 @@
     <!-- Key Metrics Cards -->
     <div class="row mb-4 g-3">
         <div class="col-lg-2 col-md-4 col-sm-6">
-            <div class="card bg-primary text-white shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h4 class="mb-0 fw-bold" title="Total number of supply orders">{{ $totalProcurements }}</h4>
-                            <span class="small">Total Orders</span>
-                        </div>
-                        <i class="fas fa-wine-bottle fa-2x"></i>
+            <div class="card wine-card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <div class="icon-circle bg-burgundy mb-3">
+                        <i class="fas fa-wine-bottle fa-2x text-gold"></i>
                     </div>
+                    <h4 class="mb-0 fw-bold text-burgundy" title="Total number of supply orders">{{ $totalProcurements }}</h4>
+                    <span class="text-muted small">Total Orders</span>
                 </div>
             </div>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-6">
-            <div class="card bg-warning text-white shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h4 class="mb-0 fw-bold" title="Orders awaiting approval">{{ $pendingProcurements }}</h4>
-                            <span class="small">Pending</span>
-                        </div>
-                        <i class="fas fa-clock fa-2x"></i>
+            <div class="card wine-card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <div class="icon-circle bg-gold mb-3">
+                        <i class="fas fa-clock fa-2x text-burgundy"></i>
                     </div>
+                    <h4 class="mb-0 fw-bold text-burgundy" title="Orders awaiting approval">{{ $pendingProcurements }}</h4>
+                    <span class="text-muted small">Pending</span>
                 </div>
             </div>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-6">
-            <div class="card bg-info text-white shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h4 class="mb-0 fw-bold" title="Approved supply orders">{{ $approvedProcurements }}</h4>
-                            <span class="small">Approved</span>
-                        </div>
-                        <i class="fas fa-check-circle fa-2x"></i>
+            <div class="card wine-card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <div class="icon-circle bg-burgundy mb-3">
+                        <i class="fas fa-check-circle fa-2x text-gold"></i>
                     </div>
+                    <h4 class="mb-0 fw-bold text-burgundy" title="Approved supply orders">{{ $approvedProcurements }}</h4>
+                    <span class="text-muted small">Approved</span>
                 </div>
             </div>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-6">
-            <div class="card bg-primary text-white shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h4 class="mb-0 fw-bold" title="Orders currently being processed">{{ $orderedProcurements }}</h4>
-                            <span class="small">On Order</span>
-                        </div>
-                        <i class="fas fa-truck fa-2x"></i>
+            <div class="card wine-card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <div class="icon-circle bg-gold mb-3">
+                        <i class="fas fa-truck fa-2x text-burgundy"></i>
                     </div>
+                    <h4 class="mb-0 fw-bold text-burgundy" title="Orders currently being processed">{{ $orderedProcurements }}</h4>
+                    <span class="text-muted small">On Order</span>
                 </div>
             </div>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-6">
-            <div class="card bg-success text-white shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h4 class="mb-0 fw-bold" title="Orders received and completed">{{ $receivedProcurements }}</h4>
-                            <span class="small">Received</span>
-                        </div>
-                        <i class="fas fa-box fa-2x"></i>
+            <div class="card wine-card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <div class="icon-circle bg-burgundy mb-3">
+                        <i class="fas fa-box fa-2x text-gold"></i>
                     </div>
+                    <h4 class="mb-0 fw-bold text-burgundy" title="Orders received and completed">{{ $receivedProcurements }}</h4>
+                    <span class="text-muted small">Received</span>
                 </div>
             </div>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-6">
-            <div class="card bg-danger text-white shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h4 class="mb-0 fw-bold" title="Orders that were cancelled">{{ $cancelledProcurements }}</h4>
-                            <span class="small">Cancelled</span>
-                        </div>
-                        <i class="fas fa-times-circle fa-2x"></i>
+            <div class="card wine-card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <div class="icon-circle bg-gold mb-3">
+                        <i class="fas fa-times-circle fa-2x text-burgundy"></i>
                     </div>
+                    <h4 class="mb-0 fw-bold text-burgundy" title="Orders that were cancelled">{{ $cancelledProcurements }}</h4>
+                    <span class="text-muted small">Cancelled</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <hr class="my-4">
+    <hr class="my-4 wine-divider">
 
     <!-- Financial Metrics -->
     <div class="row mb-4 g-3">
         <div class="col-lg-3 col-md-6">
-            <div class="card border-left-primary shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <span class="text-primary text-uppercase small">Total Value</span>
-                            <div class="h5 mb-0 fw-bold">${{ number_format($totalValue, 2) }}</div>
-                        </div>
-                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+            <div class="card wine-card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <div class="icon-circle bg-burgundy mb-3">
+                        <i class="fas fa-coins fa-2x text-gold"></i>
                     </div>
+                    <span class="text-burgundy text-uppercase small fw-bold">Total Value</span>
+                    <div class="h4 mb-0 fw-bold text-burgundy">UGX {{ number_format($totalValue, 0) }}</div>
                 </div>
             </div>
         </div>
         <div class="col-lg-3 col-md-6">
-            <div class="card border-left-warning shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <span class="text-warning text-uppercase small">Pending Value</span>
-                            <div class="h5 mb-0 fw-bold">${{ number_format($pendingValue, 2) }}</div>
-                        </div>
-                        <i class="fas fa-clock fa-2x text-gray-300"></i>
+            <div class="card wine-card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <div class="icon-circle bg-gold mb-3">
+                        <i class="fas fa-clock fa-2x text-burgundy"></i>
                     </div>
+                    <span class="text-burgundy text-uppercase small fw-bold">Pending Value</span>
+                    <div class="h4 mb-0 fw-bold text-burgundy">UGX {{ number_format($pendingValue, 0) }}</div>
                 </div>
             </div>
         </div>
         <div class="col-lg-3 col-md-6">
-            <div class="card border-left-info shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <span class="text-info text-uppercase small">Approved Value</span>
-                            <div class="h5 mb-0 fw-bold">${{ number_format($approvedValue, 2) }}</div>
-                        </div>
-                        <i class="fas fa-check fa-2x text-gray-300"></i>
+            <div class="card wine-card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <div class="icon-circle bg-burgundy mb-3">
+                        <i class="fas fa-check fa-2x text-gold"></i>
                     </div>
+                    <span class="text-burgundy text-uppercase small fw-bold">Approved Value</span>
+                    <div class="h4 mb-0 fw-bold text-burgundy">UGX {{ number_format($approvedValue, 0) }}</div>
                 </div>
             </div>
         </div>
         <div class="col-lg-3 col-md-6">
-            <div class="card border-left-success shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <span class="text-success text-uppercase small">On Order Value</span>
-                            <div class="h5 mb-0 fw-bold">${{ number_format($orderedValue, 2) }}</div>
-                        </div>
-                        <i class="fas fa-shipping-fast fa-2x text-gray-300"></i>
+            <div class="card wine-card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <div class="icon-circle bg-gold mb-3">
+                        <i class="fas fa-shipping-fast fa-2x text-burgundy"></i>
                     </div>
+                    <span class="text-burgundy text-uppercase small fw-bold">On Order Value</span>
+                    <div class="h4 mb-0 fw-bold text-burgundy">UGX {{ number_format($orderedValue, 0) }}</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <hr class="my-4">
+    <hr class="my-4 wine-divider">
 
     <div class="row g-4">
         <!-- Recent Supply Orders -->
         <div class="col-lg-8">
-            <div class="card shadow-sm">
-                <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between">
-                    <h6 class="mb-0 fw-bold text-primary">Recent Supply Orders</h6>
-                    <a href="{{ route('procurement.index') }}" class="btn btn-sm btn-outline-primary" title="View all supply orders">View All</a>
+            <div class="card wine-card shadow-sm border-0">
+                <div class="card-header bg-white border-bottom-0">
+                    <h5 class="card-title mb-0 fw-bold text-burgundy">
+                        <i class="fas fa-history text-gold me-2"></i> Recent Supply Orders
+                    </h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered align-middle mb-0">
+                        <table class="table table-hover align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
-                                    <th>PO Number</th>
-                                    <th>Supply Item</th>
-                                    <th>Supplier</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
-                                    <th>Requested By</th>
-                                    <th>Date</th>
+                                    <th class="text-burgundy fw-bold">PO Number</th>
+                                    <th class="text-burgundy fw-bold">Supply Item</th>
+                                    <th class="text-burgundy fw-bold">Supplier</th>
+                                    <th class="text-burgundy fw-bold">Amount</th>
+                                    <th class="text-burgundy fw-bold">Status</th>
+                                    <th class="text-burgundy fw-bold">Requested By</th>
+                                    <th class="text-burgundy fw-bold">Date</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($recentProcurements as $procurement)
                                 <tr>
                                     <td>
-                                        <a href="{{ route('procurement.show', $procurement) }}" class="text-primary fw-bold" title="View order details">
+                                        <a href="{{ route('procurement.show', $procurement) }}" class="text-burgundy fw-bold" title="View order details">
                                             {{ $procurement->po_number }}
                                         </a>
                                     </td>
                                     <td>{{ $procurement->item_name }}</td>
                                     <td>{{ $procurement->supplier_name }}</td>
-                                    <td>${{ number_format($procurement->total_amount, 2) }}</td>
+                                    <td class="fw-bold">UGX {{ number_format($procurement->amount, 0) }}</td>
                                     <td>
-                                        <span class="badge {{ $procurement->status_badge_class }}">
-                                            {{ ucfirst($procurement->status) }}
-                                        </span>
+                                        @switch($procurement->status)
+                                            @case('pending')
+                                                <span class="badge bg-warning text-dark">Pending</span>
+                                                @break
+                                            @case('approved')
+                                                <span class="badge bg-success">Approved</span>
+                                                @break
+                                            @case('ordered')
+                                                <span class="badge bg-info">On Order</span>
+                                                @break
+                                            @case('received')
+                                                <span class="badge bg-primary">Received</span>
+                                                @break
+                                            @case('cancelled')
+                                                <span class="badge bg-danger">Cancelled</span>
+                                                @break
+                                            @default
+                                                <span class="badge bg-secondary">{{ ucfirst($procurement->status) }}</span>
+                                        @endswitch
                                     </td>
-                                    <td>{{ $procurement->requester->name ?? 'N/A' }}</td>
+                                    <td>{{ $procurement->requested_by }}</td>
                                     <td>{{ $procurement->created_at->format('M d, Y') }}</td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="7" class="text-center text-muted">No supply orders found</td>
+                                    <td colspan="7" class="text-center text-muted py-4">
+                                        <i class="fas fa-inbox fa-3x mb-3 text-muted"></i>
+                                        <p class="mb-0">No supply orders found</p>
+                                    </td>
                                 </tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
+                    <div class="text-center mt-3">
+                        <a href="{{ route('procurement.index') }}" class="btn btn-outline-burgundy" title="View all supply orders">
+                            <i class="fas fa-list"></i> View All Orders
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Sidebar -->
+        <!-- Quick Actions -->
         <div class="col-lg-4">
-            <!-- Top Suppliers -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-white border-bottom">
-                    <h6 class="mb-0 fw-bold text-primary">Top Suppliers</h6>
+            <div class="card wine-card shadow-sm border-0">
+                <div class="card-header bg-white border-bottom-0">
+                    <h5 class="card-title mb-0 fw-bold text-burgundy">
+                        <i class="fas fa-bolt text-gold me-2"></i> Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-3">
+                        <a href="{{ route('procurement.create') }}" class="btn btn-burgundy shadow-sm">
+                            <i class="fas fa-plus me-2"></i> New Supply Order
+                        </a>
+                        <a href="{{ route('procurement.index') }}" class="btn btn-outline-burgundy">
+                            <i class="fas fa-list me-2"></i> All Orders
+                        </a>
+                        <a href="{{ route('procurement.index', ['status' => 'pending']) }}" class="btn btn-outline-gold">
+                            <i class="fas fa-clock me-2"></i> Pending Orders
+                        </a>
+                        <a href="{{ route('procurement.index', ['status' => 'approved']) }}" class="btn btn-outline-burgundy">
+                            <i class="fas fa-check me-2"></i> Approved Orders
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Supplier Performance -->
+            <div class="card wine-card shadow-sm border-0 mt-4">
+                <div class="card-header bg-white border-bottom-0">
+                    <h5 class="card-title mb-0 fw-bold text-burgundy">
+                        <i class="fas fa-chart-line text-gold me-2"></i> Top Suppliers
+                    </h5>
                 </div>
                 <div class="card-body">
                     @forelse($topSuppliers as $supplier)
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div>
-                            <h6 class="mb-0 fw-semibold">{{ $supplier->supplier_name }}</h6>
-                            <span class="text-muted small">{{ $supplier->count }} orders</span>
+                            <h6 class="mb-0 fw-bold text-burgundy">{{ $supplier->supplier_name }}</h6>
+                            <small class="text-muted">{{ $supplier->orders_count }} orders</small>
                         </div>
-                        <div class="text-end">
-                            <strong>${{ number_format($supplier->total_value, 2) }}</strong>
-                        </div>
+                        <span class="badge bg-gold text-burgundy">UGX {{ number_format($supplier->total_amount, 0) }}</span>
                     </div>
                     @empty
-                    <p class="text-muted">No supplier data available</p>
-                    @endforelse
-                </div>
-            </div>
-
-            <!-- Overdue Procurements -->
-            <div class="card shadow-sm">
-                <div class="card-header bg-white border-bottom">
-                    <h6 class="mb-0 fw-bold text-danger">Overdue Deliveries</h6>
-                </div>
-                <div class="card-body">
-                    @forelse($overdueProcurements as $procurement)
-                    <div class="mb-3 p-2 border-start border-3 border-danger bg-light rounded">
-                        <h6 class="mb-1 fw-semibold">{{ $procurement->item_name }}</h6>
-                        <span class="text-muted small">
-                            Expected: {{ $procurement->expected_delivery->format('M d, Y') }}<br>
-                            Supplier: {{ $procurement->supplier_name }}<br>
-                            PO: {{ $procurement->po_number }}
-                        </span>
+                    <div class="text-center text-muted py-3">
+                        <i class="fas fa-chart-bar fa-2x mb-2"></i>
+                        <p class="mb-0">No supplier data available</p>
                     </div>
-                    @empty
-                    <p class="text-muted">No overdue deliveries</p>
                     @endforelse
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <hr class="my-4">
-
-    <!-- Monthly Trend Chart -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-white border-bottom">
-                    <h6 class="mb-0 fw-bold text-primary">Monthly Procurement Trend (Last 6 Months)</h6>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Month</th>
-                                    <th>Number of Orders</th>
-                                    <th>Total Value</th>
-                                    <th>Average Order Value</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($monthlyTrend as $trend)
-                                <tr>
-                                    <td>{{ date('F', mktime(0, 0, 0, $trend->month, 1)) }}</td>
-                                    <td>{{ $trend->count }}</td>
-                                    <td>${{ number_format($trend->total_value, 2) }}</td>
-                                    <td>${{ $trend->count > 0 ? number_format($trend->total_value / $trend->count, 2) : '0.00' }}</td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="4" class="text-center text-muted">No trend data available</td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-@push('styles')
 <style>
-.page-header {
+:root {
+    --burgundy: #5e0f0f;
+    --gold: #c8a97e;
+    --cream: #f5f0e6;
+    --light-burgundy: #8b1a1a;
+    --dark-gold: #b8945f;
+}
+
+.text-burgundy {
+    color: var(--burgundy) !important;
+}
+
+.text-gold {
+    color: var(--gold) !important;
+}
+
+.bg-burgundy {
+    background-color: var(--burgundy) !important;
+}
+
+.bg-gold {
+    background-color: var(--gold) !important;
+}
+
+.btn-burgundy {
+    background-color: var(--burgundy);
+    border-color: var(--burgundy);
+    color: white;
+}
+
+.btn-burgundy:hover {
+    background-color: var(--light-burgundy);
+    border-color: var(--light-burgundy);
+    color: white;
+}
+
+.btn-outline-burgundy {
+    color: var(--burgundy);
+    border-color: var(--burgundy);
+}
+
+.btn-outline-burgundy:hover {
+    background-color: var(--burgundy);
+    border-color: var(--burgundy);
+    color: white;
+}
+
+.btn-outline-gold {
+    color: var(--gold);
+    border-color: var(--gold);
+}
+
+.btn-outline-gold:hover {
+    background-color: var(--gold);
+    border-color: var(--gold);
+    color: var(--burgundy);
+}
+
+.wine-card {
+    background: white;
+    border-radius: 15px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wine-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(94, 15, 15, 0.15) !important;
+}
+
+.icon-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    justify-content: center;
+    margin: 0 auto;
 }
+
+.wine-divider {
+    border-color: var(--gold);
+    opacity: 0.3;
+}
+
 .page-title {
-    margin: 0;
-    font-size: 1.7rem;
-    font-weight: 700;
+    color: var(--burgundy);
 }
-.table th, .table td {
-    vertical-align: middle;
+
+.table th {
+    border-color: var(--gold);
+    opacity: 0.3;
 }
-hr {
-    border-top: 2px solid #e9ecef;
+
+.table td {
+    border-color: var(--gold);
+    opacity: 0.1;
 }
-.border-left-primary {
-    border-left: 4px solid #007bff !important;
+
+.badge.bg-warning {
+    background-color: var(--gold) !important;
+    color: var(--burgundy) !important;
 }
-.border-left-warning {
-    border-left: 4px solid #ffc107 !important;
+
+.badge.bg-success {
+    background-color: #28a745 !important;
 }
-.border-left-info {
-    border-left: 4px solid #17a2b8 !important;
+
+.badge.bg-info {
+    background-color: #17a2b8 !important;
 }
-.border-left-success {
-    border-left: 4px solid #28a745 !important;
+
+.badge.bg-primary {
+    background-color: var(--burgundy) !important;
 }
-.text-gray-300 {
-    color: #dee2e6 !important;
+
+.badge.bg-danger {
+    background-color: #dc3545 !important;
 }
 </style>
-@endpush
 @endsection 

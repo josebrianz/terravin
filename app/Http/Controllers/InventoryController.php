@@ -10,7 +10,7 @@ class InventoryController extends Controller
     //  List of all inventory items
     public function index()
     {
-        $items = Inventory::all();
+        $items = Inventory::paginate(15);
         return view('inventory.index', compact('items'));
     }
 
