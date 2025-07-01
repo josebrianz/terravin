@@ -157,6 +157,8 @@
             </div>
         </div>
     </div>
+    <!-- AMap Shipment Routes & Delivery Zones -->
+    <!-- (Map section deleted) -->
 
     <!-- Content Row -->
     <div class="row g-4">
@@ -210,32 +212,28 @@
             </div>
         </div>
         <!-- Low Stock Alerts -->
-        <div class="col-lg-6">
-            <div class="card wine-card shadow-sm border-0">
-                <div class="card-header bg-white border-bottom-0">
-                    <h5 class="card-title mb-0 fw-bold text-burgundy">
-                        <i class="fas fa-exclamation-triangle text-gold me-2"></i> Low Stock Wine Alerts
-                    </h5>
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Low Stock Wine Alerts</h6>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
+                        <table class="table table-bordered">
+                            <thead>
                                 <tr>
-                                    <th class="text-burgundy fw-bold">Wine</th>
-                                    <th class="text-burgundy fw-bold">SKU</th>
-                                    <th class="text-burgundy fw-bold">Bottles</th>
-                                    <th class="text-burgundy fw-bold">Status</th>
+                                    <th>Wine</th>
+                                    <th>SKU</th>
+                                    <th>Bottles</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($lowStockItemsList as $item)
                                 <tr class="{{ $item->isOutOfStock() ? 'table-danger' : 'table-warning' }}">
-                                    <td class="fw-semibold text-burgundy">{{ $item->name }}</td>
+                                    <td>{{ $item->name }}</td>
                                     <td>{{ $item->sku }}</td>
-                                    <td>
-                                        <span class="badge bg-danger">{{ $item->quantity }}</span>
-                                    </td>
+                                    <td>{{ $item->quantity }}</td>
                                     <td>
                                         <span class="badge {{ $item->stock_status_badge }}">
                                             {{ ucfirst(str_replace('_', ' ', $item->stock_status)) }}

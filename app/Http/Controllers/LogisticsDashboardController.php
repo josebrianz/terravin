@@ -48,6 +48,30 @@ class LogisticsDashboardController extends Controller
         ->groupBy('status')
         ->pluck('count', 'status');
 
+    $warehouseCoords = [121.4737, 31.2304]; // Example: Shanghai
+
+    $shipmentRoutes = Shipment::whereIn('status', ['pending', 'in_transit'])
+        ->get()
+        ->map(function($shipment) use ($warehouseCoords) {
+            $destinationCoords = [121.5, 31.25]; // Example only
+            return [
+                'from' => $warehouseCoords,
+                'to' => $destinationCoords,
+                'status' => $shipment->status
+            ];
+        })
+        ->values()
+        ->all();
+
+    $deliveryZones = [
+        [
+            [121.45, 31.22],
+            [121.47, 31.22],
+            [121.47, 31.24],
+            [121.45, 31.24]
+        ]
+    ];
+
     return view('logistics.dashboard', compact(
         'totalShipments',
         'pendingShipments',
@@ -63,7 +87,9 @@ class LogisticsDashboardController extends Controller
         'upcomingDeliveries',
         'topSuppliers',
         'revenueData',
-        'shipmentStatusData'
+        'shipmentStatusData',
+        'shipmentRoutes',
+        'deliveryZones'
     ));
 }
 
@@ -71,6 +97,19 @@ class LogisticsDashboardController extends Controller
     {
         $shipment = \App\Models\Shipment::with('order.user')->findOrFail($shipmentId);
         return response()->json(['shipment' => $shipment]);
+    }
+
+    public function updateShipmentStatus(Request $request, $shipmentId)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,in_transit,delivered,cancelled'
+        ]);
+
+        $shipment = \App\Models\Shipment::findOrFail($shipmentId);
+        $shipment->status = $request->status;
+        $shipment->save();
+
+        return response()->json(['success' => true]);
     }
 }
 
