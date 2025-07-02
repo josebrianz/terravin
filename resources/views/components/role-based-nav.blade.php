@@ -16,41 +16,41 @@
                     </a>
                 </li>
 
-                <!-- Inventory - Admin, Vendor, Retailer -->
-                @permission('manage_inventory')
+                <!-- Inventory - Admin only -->
+                @role('Admin')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('inventory.index') }}">
                         <i class="fas fa-boxes"></i> Inventory
                     </a>
                 </li>
-                @endpermission
+                @endrole
 
-                <!-- Orders - Admin, Vendor, Customer -->
-                @permission('view_orders')
+                <!-- Orders - Admin only -->
+                @role('Admin')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('orders.index') }}">
                         <i class="fas fa-shopping-cart"></i> Orders
                     </a>
                 </li>
-                @endpermission
+                @endrole
 
-                <!-- Procurement - Admin, Retailer -->
-                @permission('manage_procurement')
+                <!-- Procurement - Admin only -->
+                @role('Admin')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('procurement.dashboard') }}">
                         <i class="fas fa-truck"></i> Procurement
                     </a>
                 </li>
-                @endpermission
+                @endrole
 
-                <!-- Logistics - Admin -->
-                @permission('manage_logistics')
+                <!-- Logistics - Admin only -->
+                @role('Admin')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('logistics.dashboard') }}">
                         <i class="fas fa-route"></i> Logistics
                     </a>
                 </li>
-                @endpermission
+                @endrole
 
                 <!-- Chat - Suppliers and Customers only -->
                 @if(Auth::user()->role === 'Supplier' || Auth::user()->role === 'Customer')

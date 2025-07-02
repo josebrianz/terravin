@@ -3,6 +3,9 @@
 @section('title', 'Wine Inventory Management - Terravin Wine')
 
 @section('content')
+@if(Auth::user()->role !== 'Admin')
+    @php abort(403, 'Access denied.'); @endphp
+@endif
 <div class="container-fluid">
     <!-- Page Header -->
     <div class="row mb-4">

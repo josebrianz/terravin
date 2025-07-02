@@ -1,6 +1,9 @@
 @extends('layouts.admin')
 @section('title', 'Chat with ' . $other->name)
 @section('content')
+@if(Auth::user()->role !== 'Supplier')
+    @php abort(403, 'Access denied.'); @endphp
+@endif
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-8 mx-auto">

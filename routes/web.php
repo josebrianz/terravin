@@ -26,20 +26,24 @@ Route::get('/admin', function () {
     return view('admin-dashboard');
 })->name('admin.dashboard');
 
-// Logistics Routes - Accessible by Admin and Logistics roles
-Route::middleware(['auth', 'permission:manage_logistics,view_reports'])->group(function () {
+Route::get('/supplier-dashboard', function () {
+    return view('supplier-dashboard');
+})->name('supplier.dashboard');
+
+// Logistics Routes - Accessible only by Admin
+Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/logistics/dashboard', [LogisticsDashboardController::class, 'index'])->name('logistics.dashboard');
     Route::put('/logistics/shipments/{shipment}/status', [LogisticsDashboardController::class, 'updateShipmentStatus'])->name('logistics.shipments.update-status');
     Route::get('/logistics/shipments/{shipment}', [LogisticsDashboardController::class, 'getShipmentDetails'])->name('logistics.shipments.show');
 });
 
-// Inventory Routes - Accessible by Admin, Vendor, Retailer
-Route::middleware(['auth', 'permission:manage_inventory,view_inventory'])->group(function () {
+// Inventory Routes - Accessible only by Admin
+Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::resource('inventory', InventoryController::class);
 });
 
-// Procurement Routes - Accessible by Admin, Retailer
-Route::middleware(['auth', 'permission:manage_procurement,view_procurement'])->group(function () {
+// Procurement Routes - Accessible only by Admin
+Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/procurement/dashboard', [ProcurementController::class, 'dashboard'])->name('procurement.dashboard');
     Route::resource('procurement', ProcurementController::class);
     
@@ -49,8 +53,8 @@ Route::middleware(['auth', 'permission:manage_procurement,view_procurement'])->g
     Route::post('/procurement/{procurement}/mark-as-received', [ProcurementController::class, 'markAsReceived'])->name('procurement.markAsReceived');
 });
 
-// Order Management Routes - Accessible by Admin, Vendor, Customer
-Route::middleware(['auth', 'permission:manage_orders,view_orders,create_orders'])->group(function () {
+// Order Management Routes - Accessible only by Admin
+Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::resource('orders', OrderController::class);
     Route::get('/orders/pending', [OrderController::class, 'pending'])->name('orders.pending');
     Route::get('/catalog', [OrderController::class, 'catalog'])->name('orders.catalog');
@@ -79,11 +83,11 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::post('/admin/create-user', [RegisteredUserController::class, 'storeAdmin'])->name('admin.store-user');
 });
 
-// Chat routes (only for suppliers and customers)
+// Chat routes (only for suppliers)
 Route::middleware(['auth'])->group(function () {
-    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index')->middleware('role:Supplier,Customer');
-    Route::get('/chat/{user}', [ChatController::class, 'show'])->name('chat.show')->middleware('role:Supplier,Customer');
-    Route::post('/chat/{user}', [ChatController::class, 'store'])->name('chat.store')->middleware('role:Supplier,Customer');
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index')->middleware('role:Supplier');
+    Route::get('/chat/{user}', [ChatController::class, 'show'])->name('chat.show')->middleware('role:Supplier');
+    Route::post('/chat/{user}', [ChatController::class, 'store'])->name('chat.store')->middleware('role:Supplier');
 });
 
 require __DIR__.'/auth.php';

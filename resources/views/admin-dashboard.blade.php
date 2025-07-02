@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-e
+
 @section('title', 'Terravin Wine Management Dashboard')
 
 @section('content')

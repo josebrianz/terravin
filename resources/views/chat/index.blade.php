@@ -2,6 +2,10 @@
 
 @section('title', 'Chat Dashboard')
 
+@if(Auth::user()->role !== 'Supplier')
+    @php abort(403, 'Access denied.'); @endphp
+@endif
+
 @section('content')
 <link rel="stylesheet" href="/css/style.css">
 <style>

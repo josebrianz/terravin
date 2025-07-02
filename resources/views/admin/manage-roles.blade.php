@@ -342,6 +342,7 @@ $(document).ready(function() {
         const newRole = roleSelect.val();
         const currentRole = roleSelect.data('current-role');
         const userName = roleSelect.closest('tr').find('td:eq(1)').text(); // Get user name from second column
+        const badge = roleSelect.closest('td').find('.badge');
         
         // Check if user is trying to change their own role
         const currentUserId = {{ auth()->id() }};
@@ -387,17 +388,19 @@ $(document).ready(function() {
                     $(`.cancel-role-btn[data-user-id="${userId}"]`).hide();
                     
                     // Update the badge
-                    const badge = roleSelect.siblings('.badge');
                     badge.removeClass().addClass(`badge bg-${getRoleColor(newRole)} me-2`);
                     badge.text(newRole);
                     
                     // Show success message
                     showAlert('success', response.message);
                     
-                    // Refresh role statistics
-                    setTimeout(function() {
-                        location.reload();
-                    }, 2000);
+                    // Update role statistics in place
+                    const statBox = $(`.info-box-text:contains('${newRole}')`).closest('.info-box-content').find('.info-box-number');
+                    const oldStatBox = $(`.info-box-text:contains('${currentRole}')`).closest('.info-box-content').find('.info-box-number');
+                    if (statBox.length && oldStatBox.length) {
+                        statBox.text(parseInt(statBox.text()) + 1);
+                        oldStatBox.text(Math.max(0, parseInt(oldStatBox.text()) - 1));
+                    }
                 } else {
                     // Show error message
                     showAlert('danger', response.message || 'Failed to update user role.');
@@ -468,10 +471,11 @@ $(document).ready(function() {
 
     // Helper function to get role color
     function getRoleColor(role) {
-        switch(role) {
+        switch (role) {
             case 'Admin': return 'danger';
             case 'Vendor': return 'info';
             case 'Retailer': return 'success';
+            case 'Supplier': return 'warning';
             case 'Customer': return 'secondary';
             default: return 'secondary';
         }
@@ -479,23 +483,12 @@ $(document).ready(function() {
 
     // Helper function to show alerts
     function showAlert(type, message) {
-        const alertHtml = `
-            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        `;
-        
-        // Remove existing alerts
-        $('.alert').remove();
-        
-        // Add new alert at the top of the card body
-        $('.card-body').prepend(alertHtml);
-        
-        // Auto-dismiss after 5 seconds
-        setTimeout(function() {
-            $('.alert').fadeOut();
-        }, 5000);
+        $('.alert').remove(); // Remove existing alerts
+        const alertHtml = `<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>`;
+        $('.card-body').first().prepend(alertHtml);
     }
 });
 </script>
