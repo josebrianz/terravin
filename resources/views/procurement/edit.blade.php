@@ -56,7 +56,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="unit_price" class="form-label">Unit Price ($) *</label>
+                                            <label for="unit_price" class="form-label">Unit Price (UGX) *</label>
                                             <input type="number" class="form-control @error('unit_price') is-invalid @enderror" 
                                                    id="unit_price" name="unit_price" value="{{ old('unit_price', $procurement->unit_price) }}" 
                                                    step="0.01" min="0" placeholder="Price per unit" required>
@@ -70,7 +70,7 @@
                                 <div class="mb-3">
                                     <label for="total_amount" class="form-label">Total Amount</label>
                                     <input type="text" class="form-control" id="total_amount" readonly 
-                                           value="${{ number_format($procurement->total_amount, 2) }}">
+                                           value="UGX {{ number_format($procurement->total_amount, 0) }}">
                                 </div>
                             </div>
                             
@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const quantity = parseFloat(quantityInput.value) || 0;
         const unitPrice = parseFloat(unitPriceInput.value) || 0;
         const total = quantity * unitPrice;
-        totalAmountInput.value = '$' + total.toFixed(2);
+        totalAmountInput.value = 'UGX ' + total.toFixed(0);
     }
     
     quantityInput.addEventListener('input', calculateTotal);

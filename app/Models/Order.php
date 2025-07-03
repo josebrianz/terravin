@@ -11,12 +11,19 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
-        'status',
+        'customer_name',
+        'customer_email',
+        'customer_phone',
+        'items',
         'total_amount',
+        'shipping_address',
+        'notes',
+        'status',
     ];
 
     protected $casts = [
-        'total_amount' => 'decimal:2'
+        'total_amount' => 'decimal:2',
+        'items' => 'array'
     ];
 
     public function user()

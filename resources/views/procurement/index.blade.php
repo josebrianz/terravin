@@ -1,22 +1,25 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
-@section('title', 'Wine Supply Management')
+@section('title', 'Wine Supply Orders')
 
 @section('content')
 <div class="container-fluid">
     <!-- Page Header -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="page-header">
-                <h1 class="page-title">
-                    <i class="fas fa-wine-bottle"></i>
-                    Wine Supply Management
-                </h1>
-                <div class="page-options">
-                    <a href="{{ route('procurement.create') }}" class="btn btn-primary">
+            <div class="page-header border-bottom pb-3 mb-4 d-flex align-items-center justify-content-between">
+                <div>
+                    <h1 class="page-title mb-0 fw-bold text-burgundy">
+                        <i class="fas fa-wine-bottle me-2 text-gold"></i>
+                        Wine Supply Orders
+                    </h1>
+                    <span class="text-muted small">All wine supply procurement requests and their statuses</span>
+                </div>
+                <div class="header-actions">
+                    <a href="{{ route('procurement.create') }}" class="btn btn-burgundy shadow-sm" title="New Supply Request">
                         <i class="fas fa-plus"></i> New Supply Request
                     </a>
-                    <a href="{{ route('procurement.dashboard') }}" class="btn btn-info">
+                    <a href="{{ route('procurement.dashboard') }}" class="btn btn-gold ms-2 shadow-sm" title="Dashboard">
                         <i class="fas fa-chart-bar"></i> Dashboard
                     </a>
                 </div>
@@ -27,7 +30,7 @@
     <!-- Filters -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card">
+            <div class="card wine-card shadow-sm border-0">
                 <div class="card-body">
                     <form method="GET" action="{{ route('procurement.index') }}" class="row">
                         <div class="col-md-3">
@@ -73,9 +76,11 @@
     <!-- Supply Orders Table -->
     <div class="row">
         <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">Wine Supply Orders</h5>
+            <div class="card wine-card shadow-sm border-0">
+                <div class="card-header bg-white border-bottom-0">
+                    <h5 class="card-title mb-0 fw-bold text-burgundy">
+                        <i class="fas fa-list text-gold me-2"></i> Wine Supply Orders
+                    </h5>
                 </div>
                 <div class="card-body">
                     @if(session('success'))
@@ -93,8 +98,8 @@
                                     <th>Supply Item</th>
                                     <th>Supplier</th>
                                     <th>Quantity</th>
-                                    <th>Unit Price</th>
-                                    <th>Total Amount</th>
+                                    <th>Unit Price (UGX)</th>
+                                    <th>Total Amount (UGX)</th>
                                     <th>Status</th>
                                     <th>Requested By</th>
                                     <th>Created Date</th>
@@ -112,8 +117,8 @@
                                     <td>{{ $procurement->item_name }}</td>
                                     <td>{{ $procurement->supplier_name }}</td>
                                     <td>{{ $procurement->quantity }}</td>
-                                    <td>${{ number_format($procurement->unit_price, 2) }}</td>
-                                    <td>${{ number_format($procurement->total_amount, 2) }}</td>
+                                    <td>UGX {{ number_format($procurement->unit_price, 0) }}</td>
+                                    <td>UGX {{ number_format($procurement->total_amount, 0) }}</td>
                                     <td>
                                         <span class="badge {{ $procurement->status_badge_class }}">
                                             {{ ucfirst($procurement->status) }}
@@ -208,36 +213,106 @@
 
 @push('styles')
 <style>
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
+:root {
+    --burgundy: #5e0f0f;
+    --gold: #c8a97e;
+    --cream: #f5f0e6;
+    --light-burgundy: #8b1a1a;
+    --dark-gold: #b8945f;
 }
-
-.page-title {
-    margin: 0;
-    font-size: 1.5rem;
+.wine-card {
+    background: var(--cream);
+    border-radius: 16px;
+    border: 1px solid var(--gold);
+    box-shadow: 0 4px 24px rgba(94, 15, 15, 0.07);
+}
+.card-body {
+    background: var(--cream);
+    border-radius: 16px;
+}
+.form-label {
+    color: var(--burgundy);
     font-weight: 600;
 }
-
-.page-options {
-    display: flex;
-    gap: 0.5rem;
+input.form-control, textarea.form-control, select.form-control {
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    background: #fff8f3;
+    color: var(--burgundy);
 }
-
-.btn-group .btn {
-    margin-right: 0.25rem;
+input.form-control:focus, textarea.form-control:focus, select.form-control:focus {
+    border-color: var(--burgundy);
+    box-shadow: 0 0 0 2px var(--gold);
+    background: #fff8f3;
+    color: var(--burgundy);
 }
-
-.table th {
-    background-color: #f8f9fa;
-    border-top: none;
+.btn-burgundy {
+    background: var(--burgundy);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
     font-weight: 600;
+    transition: background 0.2s;
 }
-
-.badge {
-    font-size: 0.75rem;
+.btn-burgundy:hover, .btn-burgundy:focus {
+    background: var(--light-burgundy);
+    color: #fff;
+}
+.btn-gold {
+    background: var(--gold);
+    color: var(--burgundy);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+.btn-gold:hover, .btn-gold:focus {
+    background: var(--dark-gold);
+    color: #fff;
+}
+.btn-primary {
+    background: var(--gold);
+    color: var(--burgundy);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+.btn-primary:hover, .btn-primary:focus {
+    background: var(--dark-gold);
+    color: #fff;
+}
+.btn-secondary {
+    background: #fff;
+    color: var(--burgundy);
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+.btn-secondary:hover, .btn-secondary:focus {
+    background: var(--gold);
+    color: #fff;
+}
+.alert-info {
+    background: #f8f5f0;
+    border-color: var(--gold);
+    color: var(--burgundy);
+}
+.page-header, .card-title, .header-actions {
+    color: var(--burgundy);
+}
+.table thead th {
+    color: var(--burgundy);
+    font-weight: 700;
+    background: #f8f5f0;
+    border-bottom: 2px solid var(--gold);
+}
+.table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: #f5f0e6;
+}
+.table-hover > tbody > tr:hover {
+    background-color: #f9e9e0;
 }
 </style>
 @endpush
