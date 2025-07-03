@@ -30,6 +30,10 @@ Route::get('/supplier-dashboard', function () {
     return view('supplier-dashboard');
 })->name('supplier.dashboard');
 
+Route::get('/vendor-dashboard', function () {
+    return view('vendor-dashboard');
+})->name('vendor.dashboard');
+
 // Logistics Routes - Accessible only by Admin
 Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/logistics/dashboard', [LogisticsDashboardController::class, 'index'])->name('logistics.dashboard');
@@ -85,9 +89,9 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
 
 // Chat routes (only for suppliers)
 Route::middleware(['auth'])->group(function () {
-    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index')->middleware('role:Supplier');
-    Route::get('/chat/{user}', [ChatController::class, 'show'])->name('chat.show')->middleware('role:Supplier');
-    Route::post('/chat/{user}', [ChatController::class, 'store'])->name('chat.store')->middleware('role:Supplier');
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index')->middleware('role:Supplier,Vendor');
+    Route::get('/chat/{user}', [ChatController::class, 'show'])->name('chat.show')->middleware('role:Supplier,Vendor');
+    Route::post('/chat/{user}', [ChatController::class, 'store'])->name('chat.store')->middleware('role:Supplier,Vendor');
 });
 
 require __DIR__.'/auth.php';
