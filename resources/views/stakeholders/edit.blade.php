@@ -1,0 +1,1 @@
+@include('stakeholders.create', ['stakeholder' => $stakeholder]) 

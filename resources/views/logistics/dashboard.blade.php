@@ -14,7 +14,7 @@
         </button>
     </div>
 
-    <!-- Statistics Cards -->
+
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
             <div class="card border-left-primary shadow h-100 py-2">
@@ -78,7 +78,7 @@
         </div>
     </div>
 
-    <!-- Revenue and Inventory Row -->
+    <!-- Revenue & Inventory Section -->
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
             <div class="card border-left-secondary shadow h-100 py-2">
@@ -142,7 +142,7 @@
         </div>
     </div>
 
-    <!-- Charts Row -->
+    <!-- Analytics Section -->
     <div class="row mb-4">
         <div class="col-xl-8 col-lg-7">
             <div class="card shadow mb-4">
@@ -169,12 +169,9 @@
             </div>
         </div>
     </div>
-    <!-- AMap Shipment Routes & Delivery Zones -->
-    <!-- (Map section deleted) -->
 
-    <!-- Content Row -->
+    <!-- Recent Shipments Section -->
     <div class="row">
-        <!-- Recent Shipments -->
         <div class="col-lg-6 mb-4">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
@@ -203,22 +200,23 @@
                                     <td>{{ $shipment->order->user->name ?? 'N/A' }}</td>
                                     <td>
                                         <button class="btn btn-sm btn-info" onclick="viewShipment({{ $shipment->id }})">
-                                            <i class="fas fa-eye"></i>
+                                            <i class="fas fa-eye"></i> View
                                         </button>
-                                        <button class="btn btn-sm btn-warning" onclick="updateStatus({{ $shipment->id }})">
-                                            <i class="fas fa-edit"></i>
+                                        <button class="btn btn-sm btn-primary" onclick="updateStatus({{ $shipment->id }})">
+                                            <i class="fas fa-edit"></i> Update Status
                                         </button>
                                     </td>
                                 </tr>
                                 @endforeach
                             </tbody>
                         </table>
+                        @if($recentShipments->isEmpty())
+                            <div class="text-center text-muted">No recent shipments found.</div>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Low Stock Alerts -->
-        <!-- Removed Low Stock Wine Alerts table as requested -->
     </div>
 
     <!-- Overdue Shipments -->
@@ -341,8 +339,6 @@
     </div>
 </div>
 </div>
-
-<hr class="my-4">
 
 <!-- Low Stock Alerts -->
 <div class="row mt-4">
@@ -598,3 +594,4 @@ function getStatusColor(status) {
 }
 </script>
 @endpush
+ 

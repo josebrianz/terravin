@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Inventory Management</title>
+    <title>@yield('title', 'Dashboard')</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
 <body>
     <div class="container">
-        <h2>Inventory Management</h2>
         @yield('content')
     </div>
 </body>
