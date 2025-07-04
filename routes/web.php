@@ -8,7 +8,9 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\VendorFormController;
 use Illuminate\Support\Facades\Route;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -34,7 +36,7 @@ Route::middleware(['auth', 'permission:manage_logistics,view_reports'])->group(f
 });
 
 // Inventory Routes - Accessible by Admin, Vendor, Retailer
-Route::middleware(['auth', 'permission:manage_inventory,view_inventory'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::resource('inventory', InventoryController::class);
 });
 
@@ -85,5 +87,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/chat/{user}', [ChatController::class, 'show'])->name('chat.show')->middleware('role:Supplier,Customer');
     Route::post('/chat/{user}', [ChatController::class, 'store'])->name('chat.store')->middleware('role:Supplier,Customer');
 });
+Route::view('/vendor/apply', 'vendor.apply');
+Route::post('/vendor/submit', [VendorFormController::class, 'submit']);
 
 require __DIR__.'/auth.php';
