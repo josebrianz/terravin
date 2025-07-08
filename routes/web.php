@@ -1,9 +1,9 @@
 <?php
-
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ProcurementController;
 use App\Http\Controllers\LogisticsDashboardController;
+use App\Http\Controllers\AnalyticsDashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -91,3 +91,28 @@ Route::view('/vendor/apply', 'vendor.apply');
 Route::post('/vendor/submit', [VendorFormController::class, 'submit']);
 
 require __DIR__.'/auth.php';
+
+Route::get('/admin', function () {
+    return view('admin-dashboard');
+})->name('admin.dashboard');
+
+Route::get('/logistics/dashboard', [LogisticsDashboardController::class, 'index'])->name('logistics.dashboard');
+
+Route::resource('inventory', InventoryController::class);
+
+// Procurement Routes
+Route::get('/procurement/dashboard', [ProcurementController::class, 'dashboard'])->name('procurement.dashboard');
+Route::resource('procurement', ProcurementController::class);
+
+// Procurement Status Management Routes
+Route::post('/procurement/{procurement}/approve', [ProcurementController::class, 'approve'])->name('procurement.approve');
+Route::post('/procurement/{procurement}/mark-as-ordered', [ProcurementController::class, 'markAsOrdered'])->name('procurement.markAsOrdered');
+Route::post('/procurement/{procurement}/mark-as-received', [ProcurementController::class, 'markAsReceived'])->name('procurement.markAsReceived');
+
+// AJAX routes for dashboard functionality
+Route::put('/logistics/shipments/{shipment}/status', [LogisticsDashboardController::class, 'updateShipmentStatus'])->name('logistics.shipments.update-status');
+Route::get('/logistics/shipments/{shipment}', [LogisticsDashboardController::class, 'getShipmentDetails'])->name('logistics.shipments.show');
+
+Route::get('/analytics/dashboard', [AnalyticsDashboardController::class, 'index'])->name('analytics.dashboard');
+Route::post('/predict-sales', [AnalyticsDashboardController::class, 'predictSales'])->name('predict.sales');
+
