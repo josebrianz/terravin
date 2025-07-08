@@ -34,6 +34,14 @@ Route::get('/vendor-dashboard', function () {
     return view('vendor-dashboard');
 })->name('vendor.dashboard');
 
+Route::get('/customer-dashboard', function () {
+    return view('customer-dashboard');
+})->middleware(['auth', 'role:Customer'])->name('customer.dashboard');
+
+Route::get('/retailer-dashboard', function () {
+    return view('retailer-dashboard');
+})->middleware(['auth', 'role:Retailer'])->name('retailer.dashboard');
+
 // Logistics Routes - Accessible only by Admin
 Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/logistics/dashboard', [LogisticsDashboardController::class, 'index'])->name('logistics.dashboard');

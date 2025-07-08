@@ -29,7 +29,8 @@ class AuthenticatedSessionController extends Controller
     
         $user = Auth::user();
     
-        if ($user->hasRole('Supplier')) {
+        if (
+            $user->hasRole('Supplier')) {
             return redirect()->route('supplier.dashboard');
         } elseif ($user->hasRole('Vendor')) {
             return redirect()->route('vendor.dashboard');
@@ -37,6 +38,8 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('admin.dashboard');
         } elseif ($user->hasRole('Customer')) {
             return redirect()->route('customer.dashboard');
+        } elseif ($user->hasRole('Retailer')) {
+            return redirect()->route('retailer.dashboard');
         }
         // Add more roles as needed
     
