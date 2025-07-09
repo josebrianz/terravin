@@ -9,8 +9,64 @@ class AnalyticsDashboardController extends Controller
 {
     public function index()
     {
-        // For now, just return the analytics dashboard view
-        return view('analytics.dashboard');
+        // KPI values
+        $totalSales = \App\Models\Order::count();
+        $totalCustomers = \App\Models\User::where('role', 'Customer')->count();
+        $totalRevenue = \App\Models\Order::sum('total_amount');
+        $topProduct = \App\Models\OrderItem::select('item_name')
+            ->groupBy('item_name')
+            ->orderByRaw('SUM(quantity) DESC')
+            ->limit(1)
+            ->value('item_name');
+
+        // Sample chart data (replace with real queries as needed)
+        $salesRevenueData = [
+            'labels' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+            'sales' => [120, 150, 170, 140, 180, 200, 220],
+            'revenue' => [2400, 3000, 3400, 2800, 3600, 4000, 4400],
+        ];
+        $customerSegmentsData = [
+            'labels' => ['Retail', 'Wholesale', 'Online'],
+            'data' => [60, 25, 15],
+        ];
+
+        // Top 5 Products Sold (Bar Chart)
+        $topProducts = \App\Models\OrderItem::select('item_name')
+            ->selectRaw('SUM(quantity) as total_sold')
+            ->groupBy('item_name')
+            ->orderByDesc('total_sold')
+            ->limit(5)
+            ->get();
+        $topProductsData = [
+            'labels' => $topProducts->pluck('item_name'),
+            'data' => $topProducts->pluck('total_sold'),
+        ];
+
+        // Monthly Orders (Bar Chart)
+        $monthlyOrders = \App\Models\Order::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+            ->whereYear('created_at', now()->year)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+        $months = [1=>'Jan',2=>'Feb',3=>'Mar',4=>'Apr',5=>'May',6=>'Jun',7=>'Jul',8=>'Aug',9=>'Sep',10=>'Oct',11=>'Nov',12=>'Dec'];
+        $monthlyOrdersData = [
+            'labels' => array_values($months),
+            'data' => array_map(function($i) use ($monthlyOrders) {
+                $found = $monthlyOrders->firstWhere('month', $i+1);
+                return $found ? $found->count : 0;
+            }, array_keys($months)),
+        ];
+
+        return view('analytics.dashboard', [
+            'totalSales' => $totalSales,
+            'totalCustomers' => $totalCustomers,
+            'totalRevenue' => $totalRevenue,
+            'topProduct' => $topProduct,
+            'salesRevenueData' => $salesRevenueData,
+            'customerSegmentsData' => $customerSegmentsData,
+            'topProductsData' => $topProductsData,
+            'monthlyOrdersData' => $monthlyOrdersData,
+        ]);
     }
 
      public function predictSales(Request $request)

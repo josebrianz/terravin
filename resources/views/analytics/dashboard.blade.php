@@ -77,6 +77,24 @@
     .prediction-result-box strong {
         color: var(--burgundy);
     }
+    footer {
+        background-color: var(--dark-text);
+        color: var(--light-text);
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+    .social-links {
+        margin: 1.5rem 0;
+    }
+    .social-links a {
+        color: var(--light-text);
+        margin: 0 10px;
+        font-size: 1.5rem;
+        transition: color 0.3s ease;
+    }
+    .social-links a:hover {
+        color: var(--gold);
+    }
 </style>
 <div class="container-fluid">
     <div class="row mb-4">
@@ -93,6 +111,21 @@
         </div>
     </div>
 
+    <!-- Year Filter Dropdown -->
+    <div class="row mb-3">
+        <div class="col-auto ms-auto">
+            <form method="GET" action="" class="d-flex align-items-center">
+                <label for="year" class="me-2 fw-bold">Year:</label>
+                <select name="year" id="year" class="form-select" style="width:auto;" onchange="this.form.submit()">
+                    @php $currentYear = request('year', now()->year); @endphp
+                    @for($y = now()->year; $y >= now()->year - 5; $y--)
+                        <option value="{{ $y }}" @if($currentYear == $y) selected @endif>{{ $y }}</option>
+                    @endfor
+                </select>
+            </form>
+        </div>
+    </div>
+
     <!-- Analytics Cards -->
     <div class="row g-4">
         <div class="col-lg-3 col-md-6">
@@ -101,8 +134,9 @@
                     <div class="mb-3">
                         <i class="fas fa-chart-line fa-3x text-primary"></i>
                     </div>
-                    <h5 class="card-title fw-bold">Sales Trends</h5>
-                    <p class="card-text text-muted small">Track sales performance over time.</p>
+                    <h5 class="card-title fw-bold">Total Sales</h5>
+                    <p class="display-6 fw-bold">{{ number_format($totalSales) }}</p>
+                    <p class="card-text text-muted small">Orders placed</p>
                 </div>
             </div>
         </div>
@@ -112,19 +146,9 @@
                     <div class="mb-3">
                         <i class="fas fa-users fa-3x text-success"></i>
                     </div>
-                    <h5 class="card-title fw-bold">Customer Insights</h5>
-                    <p class="card-text text-muted small">Analyze customer demographics and behavior.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body text-center">
-                    <div class="mb-3">
-                        <i class="fas fa-wine-bottle fa-3x text-warning"></i>
-                    </div>
-                    <h5 class="card-title fw-bold">Product Performance</h5>
-                    <p class="card-text text-muted small">See which wines are top sellers.</p>
+                    <h5 class="card-title fw-bold">Customers</h5>
+                    <p class="display-6 fw-bold">{{ number_format($totalCustomers) }}</p>
+                    <p class="card-text text-muted small">Registered customers</p>
                 </div>
             </div>
         </div>
@@ -134,8 +158,21 @@
                     <div class="mb-3">
                         <i class="fas fa-dollar-sign fa-3x text-info"></i>
                     </div>
-                    <h5 class="card-title fw-bold">Revenue Analysis</h5>
-                    <p class="card-text text-muted small">Monitor revenue and profitability.</p>
+                    <h5 class="card-title fw-bold">Revenue</h5>
+                    <p class="display-6 fw-bold">${{ number_format($totalRevenue, 2) }}</p>
+                    <p class="card-text text-muted small">Total revenue</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-wine-bottle fa-3x text-warning"></i>
+                    </div>
+                    <h5 class="card-title fw-bold">Top Product</h5>
+                    <p class="display-6 fw-bold">{{ $topProduct ?? 'N/A' }}</p>
+                    <p class="card-text text-muted small">Best seller</p>
                 </div>
             </div>
         </div>
@@ -229,32 +266,60 @@
 
     <hr class="my-4">
 
-    <!-- Placeholder for Analytics Charts -->
-    <div class="row g-4">
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm mb-4">
+    <!-- Organised Analytics Charts Grid -->
+    <div class="row row-cols-1 row-cols-lg-2 g-4">
+        <div class="col">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white border-bottom-0">
                     <h5 class="card-title mb-0 fw-bold">
                         <i class="fas fa-chart-area"></i> Sales & Revenue Chart
                     </h5>
                 </div>
-                <div class="card-body">
-                    <div class="chart-container" style="height: 300px;">
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <div class="chart-container w-100" style="min-height: 320px;">
                         <canvas id="salesRevenueChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm mb-4">
+        <div class="col">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white border-bottom-0">
                     <h5 class="card-title mb-0 fw-bold">
                         <i class="fas fa-user-friends"></i> Customer Segments
                     </h5>
                 </div>
-                <div class="card-body">
-                    <div class="chart-container" style="height: 300px;">
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <div class="chart-container w-100" style="min-height: 320px;">
                         <canvas id="customerSegmentsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-bottom-0">
+                    <h5 class="card-title mb-0 fw-bold">
+                        <i class="fas fa-wine-bottle"></i> Top 5 Products Sold
+                    </h5>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <div class="chart-container w-100" style="min-height: 320px;">
+                        <canvas id="topProductsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-bottom-0">
+                    <h5 class="card-title mb-0 fw-bold">
+                        <i class="fas fa-calendar-alt"></i> Monthly Orders
+                    </h5>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <div class="chart-container w-100" style="min-height: 320px;">
+                        <canvas id="monthlyOrdersChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -263,4 +328,194 @@
 
     <!-- Add more analytics widgets/charts as needed -->
 </div>
+<footer>
+    <h3>Terravin Wine Estate</h3>
+    <p>Plot 42 Lakeside Drive • Entebbe, Uganda</p>
+    <div class="social-links">
+        <a href="#">⌚</a>
+        <a href="#">📸</a>
+        <a href="#">👍</a>
+        <a href="#">📌</a>
+    </div>
+    <p>&copy; 2025 Terravin Wines. All rights reserved.</p>
+</footer>
+@endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Add interactivity: click events and custom tooltips
+    function showDetailAlert(label, value, extra) {
+        alert(label + ': ' + value + (extra ? ('\n' + extra) : ''));
+    }
+
+    // Sales & Revenue Chart
+    const salesRevenueCtx = document.getElementById('salesRevenueChart').getContext('2d');
+    const salesRevenueChart = new Chart(salesRevenueCtx, {
+        type: 'line',
+        data: {
+            labels: @json($salesRevenueData['labels']),
+            datasets: [
+                {
+                    label: 'Sales',
+                    data: @json($salesRevenueData['sales']),
+                    borderColor: '#5e0f0f',
+                    backgroundColor: 'rgba(94, 15, 15, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                },
+                {
+                    label: 'Revenue',
+                    data: @json($salesRevenueData['revenue']),
+                    borderColor: '#c8a97e',
+                    backgroundColor: 'rgba(200, 169, 126, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: true },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            if(context.dataset.label === 'Revenue') {
+                                return context.dataset.label + ': $' + context.parsed.y.toLocaleString();
+                            }
+                            return context.dataset.label + ': ' + context.parsed.y;
+                        }
+                    }
+                }
+            },
+            onClick: function(evt, elements) {
+                if(elements.length > 0) {
+                    const idx = elements[0].index;
+                    const label = this.data.labels[idx];
+                    const sales = this.data.datasets[0].data[idx];
+                    const revenue = this.data.datasets[1].data[idx];
+                    showDetailAlert('Month: ' + label, 'Sales: ' + sales + '\nRevenue: $' + revenue);
+                }
+            }
+        }
+    });
+
+    // Customer Segments Chart
+    const customerSegmentsCtx = document.getElementById('customerSegmentsChart').getContext('2d');
+    const customerSegmentsChart = new Chart(customerSegmentsCtx, {
+        type: 'doughnut',
+        data: {
+            labels: @json($customerSegmentsData['labels']),
+            datasets: [{
+                data: @json($customerSegmentsData['data']),
+                backgroundColor: ['#5e0f0f', '#c8a97e', '#f5f0e6'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: true },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percent = ((context.parsed / total) * 100).toFixed(1);
+                            return context.label + ': ' + context.parsed + ' (' + percent + '%)';
+                        }
+                    }
+                }
+            },
+            onClick: function(evt, elements) {
+                if(elements.length > 0) {
+                    const idx = elements[0].index;
+                    const label = this.data.labels[idx];
+                    const value = this.data.datasets[0].data[idx];
+                    showDetailAlert('Segment: ' + label, value);
+                }
+            }
+        }
+    });
+
+    // Top 5 Products Sold Chart
+    const topProductsCtx = document.getElementById('topProductsChart').getContext('2d');
+    const topProductsChart = new Chart(topProductsCtx, {
+        type: 'bar',
+        data: {
+            labels: @json($topProductsData['labels']),
+            datasets: [{
+                label: 'Units Sold',
+                data: @json($topProductsData['data']),
+                backgroundColor: '#c8a97e',
+                borderColor: '#5e0f0f',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.parsed.y + ' units';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            },
+            onClick: function(evt, elements) {
+                if(elements.length > 0) {
+                    const idx = elements[0].index;
+                    const label = this.data.labels[idx];
+                    const value = this.data.datasets[0].data[idx];
+                    showDetailAlert('Product: ' + label, value + ' units sold');
+                }
+            }
+        }
+    });
+
+    // Monthly Orders Chart
+    const monthlyOrdersCtx = document.getElementById('monthlyOrdersChart').getContext('2d');
+    const monthlyOrdersChart = new Chart(monthlyOrdersCtx, {
+        type: 'bar',
+        data: {
+            labels: @json($monthlyOrdersData['labels']),
+            datasets: [{
+                label: 'Orders',
+                data: @json($monthlyOrdersData['data']),
+                backgroundColor: '#5e0f0f',
+                borderColor: '#c8a97e',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.parsed.y + ' orders';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            },
+            onClick: function(evt, elements) {
+                if(elements.length > 0) {
+                    const idx = elements[0].index;
+                    const label = this.data.labels[idx];
+                    const value = this.data.datasets[0].data[idx];
+                    showDetailAlert('Month: ' + label, value + ' orders');
+                }
+            }
+        }
+    });
+</script>
 @endsection
