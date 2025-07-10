@@ -33,10 +33,10 @@ class DatabaseSeeder extends Seeder
         );
 
         $this->call([
-            RoleSeeder::class,
             LogisticsSeeder::class,
+            RoleSeeder::class,
             ProcurementSeeder::class,
-            WineSeeder::class,
+            // Add other seeders here as needed, but do not duplicate
         ]);
     }
 }

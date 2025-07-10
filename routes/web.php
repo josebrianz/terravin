@@ -1,9 +1,9 @@
 <?php
-
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ProcurementController;
 use App\Http\Controllers\LogisticsDashboardController;
+use App\Http\Controllers\AnalyticsDashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoleApprovalController;
@@ -130,25 +130,9 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
-// Wholesaler Dashboard Route
-Route::middleware(['auth', 'role:Wholesaler'])->group(function () {
-    Route::get('/wholesaler/dashboard', [\App\Http\Controllers\WholesalerDashboardController::class, 'index'])->name('wholesaler.dashboard');
-    Route::resource('batches', \App\Http\Controllers\BatchController::class);
-    Route::resource('compliance-documents', \App\Http\Controllers\ComplianceDocumentController::class);
-    Route::resource('inventory', \App\Http\Controllers\InventoryController::class); // Added for wholesaler access
-    Route::get('/pricing', [\App\Http\Controllers\PricingController::class, 'index'])->name('pricing.index');
-    Route::get('/financial-reports', [\App\Http\Controllers\FinancialReportController::class, 'index'])->name('financial-reports.index');
+// Analytics Dashboard Routes - Accessible by Admin (add more roles/permissions as needed)
+Route::middleware(['auth', 'role:Admin'])->group(function () {
+    Route::get('/analytics/dashboard', [AnalyticsDashboardController::class, 'index'])->name('analytics.dashboard');
+    Route::post('/predict-sales', [AnalyticsDashboardController::class, 'predictSales'])->name('predict.sales');
 });
 
-Route::middleware(['auth', 'role:Vendor'])->group(function () {
-    Route::get('/vendor/dashboard', [\App\Http\Controllers\VendorDashboardController::class, 'index'])->name('vendor.dashboard');
-    Route::resource('vendor.orders', \App\Http\Controllers\OrderController::class);
-    Route::resource('vendor/inventory', \App\Http\Controllers\InventoryController::class);
-    Route::resource('vendor/shipments', \App\Http\Controllers\ShipmentController::class);
-    Route::resource('vendor/compliance-documents', \App\Http\Controllers\ComplianceDocumentController::class);
-    Route::get('/vendor/finance', [\App\Http\Controllers\FinancialReportController::class, 'index'])->name('vendor.finance');
-    Route::get('/vendor/reports', [\App\Http\Controllers\ReportController::class, 'index'])->name('vendor.reports');
-    // Placeholders for messages and contracts
-    Route::view('/vendor/messages', 'vendor.messages')->name('vendor.messages');
-    Route::view('/vendor/contracts', 'vendor.contracts')->name('vendor.contracts');
-});
