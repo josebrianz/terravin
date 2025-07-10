@@ -38,9 +38,17 @@ Route::get('/customer-dashboard', function () {
     return view('customer-dashboard');
 })->middleware(['auth', 'role:Customer'])->name('customer.dashboard');
 
-Route::get('/retailer-dashboard', function () {
-    return view('retailer-dashboard');
-})->middleware(['auth', 'role:Retailer'])->name('retailer.dashboard');
+Route::get('/retailer-dashboard', [\App\Http\Controllers\RetailerDashboardController::class, 'index'])
+    ->middleware(['auth', 'role:Retailer'])
+    ->name('retailer.dashboard');
+
+Route::get('/retailer/orders', [\App\Http\Controllers\RetailerDashboardController::class, 'orders'])
+    ->middleware(['auth', 'role:Retailer'])
+    ->name('retailer.orders');
+
+Route::get('/retailer/orders/{id}', [\App\Http\Controllers\RetailerDashboardController::class, 'showOrder'])
+    ->middleware(['auth', 'role:Retailer'])
+    ->name('retailer.orders.show');
 
 // Logistics Routes - Accessible only by Admin
 Route::middleware(['auth', 'role:Admin'])->group(function () {
@@ -69,7 +77,6 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
 Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::resource('orders', OrderController::class);
     Route::get('/orders/pending', [OrderController::class, 'pending'])->name('orders.pending');
-    Route::get('/catalog', [OrderController::class, 'catalog'])->name('orders.catalog');
 });
 
 // Profile Routes - Accessible by all authenticated users
@@ -77,6 +84,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/catalog', [OrderController::class, 'catalog'])->name('orders.catalog');
 });
 
 // Admin Routes - Accessible only by Admin role
@@ -100,6 +108,20 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index')->middleware('role:Supplier,Vendor');
     Route::get('/chat/{user}', [ChatController::class, 'show'])->name('chat.show')->middleware('role:Supplier,Vendor');
     Route::post('/chat/{user}', [ChatController::class, 'store'])->name('chat.store')->middleware('role:Supplier,Vendor');
+});
+
+Route::middleware(['auth', 'role:Retailer'])->group(function () {
+    Route::get('/cart', [\App\Http\Controllers\OrderController::class, 'cart'])->name('cart.view');
+    Route::post('/cart/add/{id}', [\App\Http\Controllers\OrderController::class, 'addToCart'])->name('cart.add');
+    Route::post('/cart/remove/{id}', [\App\Http\Controllers\OrderController::class, 'removeFromCart'])->name('cart.remove');
+    Route::post('/cart/increase/{id}', [\App\Http\Controllers\OrderController::class, 'increaseCartItem'])->name('cart.increase');
+    Route::post('/cart/decrease/{id}', [\App\Http\Controllers\OrderController::class, 'decreaseCartItem'])->name('cart.decrease');
+    Route::post('/cart/clear', [\App\Http\Controllers\OrderController::class, 'clearCart'])->name('cart.clear');
+    Route::get('/cart/checkout', [\App\Http\Controllers\OrderController::class, 'checkout'])->name('cart.checkout');
+    Route::post('/cart/checkout', [\App\Http\Controllers\OrderController::class, 'processCheckout'])->name('cart.processCheckout');
+    Route::get('/retailer/invoices', [App\Http\Controllers\RetailerDashboardController::class, 'invoices'])->name('retailer.invoices');
+    Route::get('/retailer/notifications', [App\Http\Controllers\RetailerDashboardController::class, 'allNotifications'])->name('retailer.notifications');
+    Route::post('/retailer/notifications/{id}/read', [App\Http\Controllers\RetailerDashboardController::class, 'markNotificationRead'])->name('retailer.notifications.read');
 });
 
 require __DIR__.'/auth.php';

@@ -132,4 +132,9 @@ class User extends Authenticatable
     {
         return self::where('role', $role)->get();
     }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 }

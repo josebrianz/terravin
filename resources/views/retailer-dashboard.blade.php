@@ -594,37 +594,34 @@
                     <i class="fas fa-comments me-1"></i> Chat
                 </a>
                 <div class="dropdown">
-                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="color: var(--gold);">
+                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle position-relative" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="color: var(--gold);">
                         <i class="fas fa-bell me-1"></i>
+                        @php $unreadCount = $notifications->whereNull('read_at')->count(); @endphp
+                        @if($unreadCount > 0)
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
-                            3
+                            {{ $unreadCount }}
                         </span>
+                        @endif
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown" style="min-width: 300px;">
-                        <li><h6 class="dropdown-header">New Notifications (3)</h6></li>
-                        <li><a class="dropdown-item d-flex" href="#">
-                            <div class="me-3 text-success"><i class="fas fa-check-circle"></i></div>
-                            <div>
-                                <div class="small text-muted">Order #1001 Confirmed</div>
-                                <span class="small">Your order has been confirmed</span>
-                            </div>
-                        </a></li>
-                        <li><a class="dropdown-item d-flex" href="#">
-                            <div class="me-3 text-warning"><i class="fas fa-exclamation-triangle"></i></div>
-                            <div>
-                                <div class="small text-muted">Low Stock Alert</div>
-                                <span class="small">3 products running low</span>
-                            </div>
-                        </a></li>
-                        <li><a class="dropdown-item d-flex" href="#">
-                            <div class="me-3 text-info"><i class="fas fa-bullhorn"></i></div>
-                            <div>
-                                <div class="small text-muted">New Promotion</div>
-                                <span class="small">10% discount this week</span>
-                            </div>
-                        </a></li>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown" style="min-width: 320px;">
+                        <li><h6 class="dropdown-header">Notifications</h6></li>
+                        @forelse($notifications as $note)
+                        <li>
+                            <a class="dropdown-item d-flex align-items-start" href="{{ route('retailer.notifications') }}">
+                                <div class="me-3 text-{{ $note->icon === 'check-circle' ? 'success' : ($note->icon === 'exclamation-triangle' ? 'warning' : ($note->icon === 'bullhorn' ? 'info' : 'secondary')) }}">
+                                    <i class="fas fa-{{ $note->icon ?? 'bell' }}"></i>
+                                </div>
+                                <div>
+                                    <div class="small text-muted">{{ $note->title }}</div>
+                                    <span class="small">{{ $note->created_at->diffForHumans() }}</span>
+                                </div>
+                            </a>
+                        </li>
+                        @empty
+                        <li><span class="dropdown-item text-muted">No notifications</span></li>
+                        @endforelse
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-center" href="#">View all notifications</a></li>
+                        <li><a class="dropdown-item text-center" href="{{ route('retailer.notifications') }}">View all notifications</a></li>
                     </ul>
                 </div>
                 <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name ?? 'Retailer') }}&background=5e0f0f&color=c8a97e&size=128" 
@@ -654,20 +651,20 @@
             <p class="welcome-text">Thank you for being a valued retailer. Here's an overview of your recent activity and quick access to important tools.</p>
             <div class="stats-container">
                 <div class="stat-item">
-                    <div class="stat-number">3</div>
+                    <div class="stat-number">{{ $pendingOrders }}</div>
                     <div class="stat-label">Pending Orders</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number">5</div>
+                    <div class="stat-number">{{ $shippedOrders }}</div>
                     <div class="stat-label">Shipped</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number">12</div>
+                    <div class="stat-number">{{ $deliveredOrders }}</div>
                     <div class="stat-label">Delivered</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number">UGX 8,450,000</div>
-                    <div class="stat-label">Monthly Revenue</div>
+                    <div class="stat-number">{{ $totalOrders }}</div>
+                    <div class="stat-label">Total Orders</div>
                 </div>
             </div>
         </div>
@@ -682,32 +679,32 @@
                     <i class="fas fa-shopping-cart"></i>
                 </div>
                 <h3>My Orders</h3>
-                <p>View and manage your orders, track status, and reorder products. Create new purchase orders and check delivery schedules.</p>
-                <a href="#" class="action-btn">View Orders</a>
+                <p>View and manage your orders, track status, and reorder products.</p>
+                <a href="{{ route('retailer.orders') }}" class="action-btn">View Orders</a>
             </div>
             <div class="action-card">
                 <div class="action-icon">
                     <i class="fas fa-box-open"></i>
                 </div>
                 <h3>Browse Products</h3>
-                <p>Explore our premium wine selection, check availability, and add products to your inventory with special trade pricing.</p>
-                <a href="#" class="action-btn">Browse</a>
+                <p>Explore our wine selection and add products to your inventory.</p>
+                <a href="{{ route('orders.catalog') }}" class="action-btn">Browse</a>
             </div>
             <div class="action-card">
                 <div class="action-icon">
                     <i class="fas fa-file-invoice"></i>
                 </div>
                 <h3>Invoices</h3>
-                <p>Access your invoices, payment history, download receipts, and manage your account statements in one place.</p>
-                <a href="#" class="action-btn">View Invoices</a>
+                <p>Access your invoices, payment history, and download receipts.</p>
+                <a href="{{ route('retailer.invoices') }}" class="action-btn">View Invoices</a>
             </div>
             <div class="action-card">
                 <div class="action-icon">
-                    <i class="fas fa-chart-line"></i>
+                    <i class="fas fa-headset"></i>
                 </div>
-                <h3>Sales Reports</h3>
-                <p>Generate detailed sales reports, analyze performance metrics, and download data for your business planning.</p>
-                <a href="#" class="action-btn">View Reports</a>
+                <h3>Contact Support</h3>
+                <p>Need help? Reach out to our support team for assistance.</p>
+                <a href="mailto:support@terravin.ug" class="action-btn">Contact</a>
             </div>
         </div>
     </section>
@@ -727,7 +724,7 @@
             <div class="chart-card">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h2 class="section-title" style="text-align: left; margin: 0;">Recent Orders</h2>
-                    <a href="#" class="view-all">View All Orders</a>
+                    <a href="{{ route('retailer.orders') }}" class="view-all">View All Orders</a>
                 </div>
                 <div class="table-responsive">
                     <table class="orders-table">
@@ -742,38 +739,16 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @foreach($recentOrders as $order)
                             <tr>
-                                <td>#1005</td>
-                                <td>Jul 5, 2025</td>
-                                <td>3</td>
-                                <td>UGX 1,250,000</td>
-                                <td><span class="status-badge status-pending">Pending</span></td>
-                                <td><a href="#" class="text-primary">View</a></td>
+                                <td>#{{ $order->id }}</td>
+                                <td>{{ $order->created_at->format('M d, Y') }}</td>
+                                <td>{{ $order->orderItems->count() }}</td>
+                                <td>UGX {{ number_format($order->total_amount, 0, '.', ',') }}</td>
+                                <td><span class="status-badge status-{{ $order->status }}">{{ $order->status }}</span></td>
+                                <td><a href="{{ route('retailer.orders.show', $order->id) }}" class="text-primary">View</a></td>
                             </tr>
-                            <tr>
-                                <td>#1004</td>
-                                <td>Jul 3, 2025</td>
-                                <td>5</td>
-                                <td>UGX 2,100,000</td>
-                                <td><span class="status-badge status-processing">Processing</span></td>
-                                <td><a href="#" class="text-primary">View</a></td>
-                            </tr>
-                            <tr>
-                                <td>#1003</td>
-                                <td>Jun 28, 2025</td>
-                                <td>8</td>
-                                <td>UGX 3,450,000</td>
-                                <td><span class="status-badge status-shipped">Shipped</span></td>
-                                <td><a href="#" class="text-primary">Track</a></td>
-                            </tr>
-                            <tr>
-                                <td>#1002</td>
-                                <td>Jun 22, 2025</td>
-                                <td>4</td>
-                                <td>UGX 1,750,000</td>
-                                <td><span class="status-badge status-delivered">Delivered</span></td>
-                                <td><a href="#" class="text-primary">Invoice</a></td>
-                            </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -787,46 +762,33 @@
                 <div class="notification-header">
                     <h2 class="section-title" style="text-align: left; margin: 0; font-size: 1.5rem;">Notifications</h2>
                     <div class="view-all">
-                        <a href="#">View All</a>
+                        <a href="{{ route('retailer.notifications') }}">View All</a>
                     </div>
                 </div>
+                @foreach($notifications as $note)
                 <div class="notification-item">
                     <div class="notification-icon">
-                        <i class="fas fa-check-circle"></i>
+                        <i class="fas fa-{{ $note->icon ?? 'bell' }}"></i>
                     </div>
                     <div class="notification-content">
-                        <div class="notification-title">Order #1001 Confirmed</div>
-                        <p>Your order has been confirmed and is being processed.</p>
-                        <div class="notification-time">2 hours ago</div>
+                        <div class="notification-title">{{ $note->title }}</div>
+                        <p>{{ $note->message }}</p>
+                        <div class="notification-time">{{ $note->created_at->diffForHumans() }}</div>
                     </div>
                 </div>
-                <div class="notification-item">
-                    <div class="notification-icon">
-                        <i class="fas fa-truck"></i>
-                    </div>
-                    <div class="notification-content">
-                        <div class="notification-title">Order #1000 Shipped</div>
-                        <p>Your order #1000 has been shipped and is on its way.</p>
-                        <div class="notification-time">1 day ago</div>
-                    </div>
-                </div>
-                <div class="notification-item">
-                    <div class="notification-icon">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <div class="notification-content">
-                        <div class="notification-title">Low Stock Alert</div>
-                        <p>3 of your products are running low on inventory.</p>
-                        <div class="notification-time">3 days ago</div>
-                    </div>
-                </div>
+                @endforeach
             </div>
             
             <!-- Current Promotion -->
             <div class="promo-card">
-                <h3 class="promo-title">Summer Special!</h3>
-                <p class="promo-text">Enjoy 10% discount on all orders placed this week. Limited time offer for our valued retailers.</p>
-                <a href="#" class="promo-btn">Shop Now</a>
+                @if($promotion)
+                    <h3 class="promo-title">{{ $promotion->title }}</h3>
+                    <p class="promo-text">{{ $promotion->message }}</p>
+                    <a href="{{ route('orders.catalog') }}" class="promo-btn">Shop Now</a>
+                @else
+                    <h3 class="promo-title">No Active Promotion</h3>
+                    <p class="promo-text">Check back soon for new offers and discounts!</p>
+                @endif
             </div>
             
             <!-- Quick Links -->
@@ -837,7 +799,7 @@
                         <i class="fas fa-book"></i>
                     </div>
                     <div class="quick-link-text">
-                        <a href="#">Product Catalog</a>
+                        <a href="{{ route('orders.catalog') }}">Product Catalog</a>
                     </div>
                     <div class="quick-link-arrow">
                         <i class="fas fa-chevron-right"></i>
@@ -848,7 +810,7 @@
                         <i class="fas fa-percentage"></i>
                     </div>
                     <div class="quick-link-text">
-                        <a href="#">Current Promotions</a>
+                        <a href="{{ route('retailer.notifications') }}">Current Promotions</a>
                     </div>
                     <div class="quick-link-arrow">
                         <i class="fas fa-chevron-right"></i>
@@ -859,7 +821,7 @@
                         <i class="fas fa-file-alt"></i>
                     </div>
                     <div class="quick-link-text">
-                        <a href="#">Order History</a>
+                        <a href="{{ route('retailer.orders') }}">Order History</a>
                     </div>
                     <div class="quick-link-arrow">
                         <i class="fas fa-chevron-right"></i>
@@ -870,7 +832,7 @@
                         <i class="fas fa-question-circle"></i>
                     </div>
                     <div class="quick-link-text">
-                        <a href="#">Help Center</a>
+                        <a href="/help">Help Center</a>
                     </div>
                     <div class="quick-link-arrow">
                         <i class="fas fa-chevron-right"></i>
@@ -904,14 +866,16 @@
     
     <script>
         // Sales Chart
+        const salesLabels = @json($salesLabels);
+        const salesData = @json($salesData);
         const salesCtx = document.getElementById('salesChart').getContext('2d');
         const salesChart = new Chart(salesCtx, {
             type: 'bar',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                labels: salesLabels,
                 datasets: [{
                     label: 'Monthly Sales (UGX)',
-                    data: [4500000, 5200000, 6100000, 5800000, 7200000, 8450000, 6200000],
+                    data: salesData,
                     backgroundColor: 'rgba(94, 15, 15, 0.7)',
                     borderColor: 'rgba(94, 15, 15, 1)',
                     borderWidth: 1

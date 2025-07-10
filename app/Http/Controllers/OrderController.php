@@ -169,4 +169,144 @@ class OrderController extends Controller
             ->paginate(10);
         return view('orders.pending', compact('orders'));
     }
+
+    // Retailer Cart: View Cart
+    public function cart()
+    {
+        $cart = session('cart', []);
+        $products = [];
+        $total = 0;
+        foreach ($cart as $id => $item) {
+            $product = \App\Models\Inventory::find($id);
+            if ($product) {
+                $product->cart_quantity = $item['quantity'];
+                $product->cart_subtotal = $product->price * $item['quantity'];
+                $products[] = $product;
+                $total += $product->cart_subtotal;
+            }
+        }
+        return view('orders.cart', compact('products', 'total'));
+    }
+
+    // Retailer Cart: Add to Cart
+    public function addToCart(Request $request, $id)
+    {
+        $request->validate(['quantity' => 'required|integer|min:1']);
+        $cart = session('cart', []);
+        if (isset($cart[$id])) {
+            $cart[$id]['quantity'] += $request->quantity;
+        } else {
+            $cart[$id] = ['quantity' => $request->quantity];
+        }
+        session(['cart' => $cart]);
+        return back()->with('success', 'Product added to cart!');
+    }
+
+    // Retailer Cart: Remove from Cart
+    public function removeFromCart($id)
+    {
+        $cart = session('cart', []);
+        unset($cart[$id]);
+        session(['cart' => $cart]);
+        return back()->with('success', 'Product removed from cart.');
+    }
+
+    // Retailer Cart: Checkout Page
+    public function checkout()
+    {
+        $cart = session('cart', []);
+        $products = [];
+        $total = 0;
+        foreach ($cart as $id => $item) {
+            $product = \App\Models\Inventory::find($id);
+            if ($product) {
+                $product->cart_quantity = $item['quantity'];
+                $product->cart_subtotal = $product->price * $item['quantity'];
+                $products[] = $product;
+                $total += $product->cart_subtotal;
+            }
+        }
+        return view('orders.checkout', compact('products', 'total'));
+    }
+
+    // Retailer Cart: Process Checkout
+    public function processCheckout(Request $request)
+    {
+        $cart = session('cart', []);
+        if (empty($cart)) {
+            return redirect()->route('cart.view')->with('error', 'Your cart is empty.');
+        }
+        $user = auth()->user();
+        $items = [];
+        $total = 0;
+        foreach ($cart as $id => $item) {
+            $product = \App\Models\Inventory::find($id);
+            if ($product && $product->quantity >= $item['quantity']) {
+                $items[] = [
+                    'wine_id' => $product->id,
+                    'wine_name' => $product->name,
+                    'wine_category' => $product->category,
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $product->price,
+                ];
+                $total += $product->price * $item['quantity'];
+                $product->decrement('quantity', $item['quantity']);
+            } else {
+                return redirect()->route('cart.view')->with('error', 'Insufficient stock for ' . ($product->name ?? 'product') . '.');
+            }
+        }
+        $order = \App\Models\Order::create([
+            'user_id' => $user->id,
+            'customer_name' => $user->name,
+            'customer_email' => $user->email,
+            'customer_phone' => '',
+            'items' => $items,
+            'total_amount' => $total,
+            'shipping_address' => '',
+            'notes' => '',
+            'status' => 'pending',
+        ]);
+        session()->forget('cart');
+        return redirect()->route('retailer.orders.show', $order->id)->with('success', 'Order placed successfully!');
+    }
+
+    // Increase cart item quantity
+    public function increaseCartItem($id)
+    {
+        $cart = session('cart', []);
+        if (isset($cart[$id])) {
+            $product = \App\Models\Inventory::find($id);
+            if ($product && $cart[$id]['quantity'] < $product->quantity) {
+                $cart[$id]['quantity'] += 1;
+                session(['cart' => $cart]);
+                return back()->with('success', 'Quantity increased.');
+            } else {
+                return back()->with('error', 'Cannot add more than available stock.');
+            }
+        }
+        return back()->with('error', 'Product not found in cart.');
+    }
+
+    // Decrease cart item quantity
+    public function decreaseCartItem($id)
+    {
+        $cart = session('cart', []);
+        if (isset($cart[$id])) {
+            if ($cart[$id]['quantity'] > 1) {
+                $cart[$id]['quantity'] -= 1;
+                session(['cart' => $cart]);
+                return back()->with('success', 'Quantity decreased.');
+            } else {
+                return back()->with('error', 'Quantity cannot be less than 1.');
+            }
+        }
+        return back()->with('error', 'Product not found in cart.');
+    }
+
+    // Clear the entire cart
+    public function clearCart()
+    {
+        session()->forget('cart');
+        return back()->with('success', 'Cart cleared.');
+    }
 } 
