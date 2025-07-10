@@ -15,20 +15,28 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        \App\Models\User::updateOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'name' => 'Test User',
+                'password' => bcrypt('password'),
+            ]
+        );
+
+        \App\Models\User::updateOrCreate(
+            ['email' => 'jmurungi2004@gmail.com'],
+            [
+                'name' => 'Admin User',
+                'password' => bcrypt('Jerry@2004'),
+                'role' => 'Admin',
+            ]
+        );
 
         $this->call([
-<<<<<<< HEAD
-            ProcurementSeeder::class,
-            LogisticsSeeder::class,
-=======
             RoleSeeder::class,
             LogisticsSeeder::class,
             ProcurementSeeder::class,
->>>>>>> 8a6b044cd805dbf3a9cac9ff39fc956a4293c0b9
+            WineSeeder::class,
         ]);
     }
 }

@@ -24,7 +24,7 @@ class StakeholderController extends Controller
         $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:stakeholders,email',
-            'role' => 'required|in:supplier,company manager,wholesaler,sales manager',
+            'role' => 'required|in:wholesaler,company manager,wholesaler,sales manager',
         ]);
         $stakeholder = Stakeholder::create($request->only('name', 'email', 'role'));
         return redirect()->route('stakeholders.index')->with('success', 'Stakeholder created!');
@@ -40,9 +40,9 @@ class StakeholderController extends Controller
     {
         $stakeholder = Stakeholder::findOrFail($id);
         $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:stakeholders,email,'.$stakeholder->id,
-            'role' => 'required|in:supplier,company manager,wholesaler,sales manager',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:stakeholders,email,' . $stakeholder->id,
+            'role' => 'required|in:wholesaler,company manager,wholesaler,sales manager',
         ]);
         $stakeholder->update($request->only('name', 'email', 'role'));
         return redirect()->route('stakeholders.index')->with('success', 'Stakeholder updated!');

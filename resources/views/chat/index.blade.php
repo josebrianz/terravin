@@ -9,7 +9,7 @@
                     <i class="fas fa-wine-bottle fa-lg me-2"></i>
                     <h4 class="mb-0 flex-grow-1">Start a Chat</h4>
                     <small class="text-gold ms-2">
-                        {{ auth()->user()->role === 'Customer' ? 'Available Suppliers' : 'Available Customers' }}
+                        {{ auth()->user()->role === 'Customer' ? 'Available Wholesalers' : 'Available Customers' }}
                     </small>
                 </div>
                 <div class="card-body bg-cream" style="border-radius: 0 0 1rem 1rem;">
@@ -26,7 +26,7 @@
                     @empty
                         <div class="text-center py-4">
                             <i class="fas fa-users fa-3x text-burgundy mb-3"></i>
-                            <p class="text-muted">No {{ auth()->user()->role === 'Customer' ? 'suppliers' : 'customers' }} available to chat with.</p>
+                            <p class="text-muted">No {{ auth()->user()->role === 'Customer' ? 'wholesalers' : 'customers' }} available to chat with.</p>
                         </div>
                     @endforelse
                 </div>

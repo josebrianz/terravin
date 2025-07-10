@@ -26,8 +26,16 @@ class RoleController extends Controller
      */
     public function updateUserRole(Request $request, $userId)
     {
+        // Check if user has permission to manage roles
+        if (!auth()->user()->hasPermission('manage_roles')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You do not have permission to manage roles.'
+            ], 403);
+        }
+
         $request->validate([
-            'role' => 'required|string|in:Admin,Vendor,Retailer,Supplier,Customer'
+            'role' => 'required|string|in:Admin,Vendor,Retailer,Wholesaler,Customer'
         ]);
 
         $user = User::findOrFail($userId);
@@ -55,16 +63,8 @@ class RoleController extends Controller
         
         $user->update(['role' => $newRole]);
         
-        // Log the role change (you can implement a proper audit log here)
-        \Log::info("User role changed", [
-            'user_id' => $user->id,
-            'user_name' => $user->name,
-            'old_role' => $oldRole,
-            'new_role' => $newRole,
-            'changed_by' => auth()->id(),
-            'changed_by_name' => auth()->user()->name,
-            'timestamp' => now()
-        ]);
+        // Log the role change using the new audit system
+        \App\Models\AuditLog::logRoleChange($user, $oldRole, $newRole, auth()->user());
 
         return response()->json([
             'success' => true,
@@ -81,7 +81,7 @@ class RoleController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|string|in:Admin,Vendor,Retailer,Supplier,Customer'
+            'role' => 'required|string|in:Admin,Vendor,Retailer,Wholesaler,Customer'
         ]);
 
         User::create([
@@ -115,7 +115,7 @@ class RoleController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $userId,
-            'role' => 'required|string|in:Admin,Vendor,Retailer,Supplier,Customer'
+            'role' => 'required|string|in:Admin,Vendor,Retailer,Wholesaler,Customer'
         ]);
 
         $user->update([

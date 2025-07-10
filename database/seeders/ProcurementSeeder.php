@@ -23,17 +23,16 @@ class ProcurementSeeder extends Seeder
             ]
         );
 
-        $suppliers = [
-            'Wine Barrel Co. Ltd.',
-            'Premium Cork Suppliers',
-            'Glass Bottle Manufacturers',
-            'Wine Label Printing Co.',
-            'Vineyard Equipment Supply',
-            'Wine Storage Solutions',
-            'Fermentation Equipment Co.',
-            'Wine Packaging International',
-            'Oak Barrel Traders',
-            'Wine Machinery Corp.',
+        $wholesalers = [
+            'Premium Cork Wholesalers',
+            'Glass Bottle Wholesalers',
+            'Wine Label Printing Wholesalers',
+            'Vineyard Equipment Wholesalers',
+            'Wine Storage Solutions Wholesalers',
+            'Fermentation Equipment Wholesalers',
+            'Wine Packaging International Wholesalers',
+            'Oak Barrel Traders Wholesalers',
+            'Wine Machinery Corp. Wholesalers',
         ];
 
         $items = [
@@ -72,9 +71,9 @@ class ProcurementSeeder extends Seeder
                 'po_number' => 'PO-' . date('Y') . '-' . str_pad($i, 4, '0', STR_PAD_LEFT),
                 'item_name' => $items[array_rand($items)],
                 'description' => 'Wine production and packaging supplies for Terravin winery operations.',
-                'supplier_name' => $suppliers[array_rand($suppliers)],
-                'supplier_email' => 'contact@' . strtolower(str_replace([' ', '&', '.', '(', ')', 'Ltd.', 'Co.', 'Corp.', 'International'], ['', 'and', '', '', '', 'ltd', 'co', 'corp', 'int'], $suppliers[array_rand($suppliers)])) . '.com',
-                'supplier_phone' => '+1-' . rand(200, 999) . '-' . rand(200, 999) . '-' . rand(1000, 9999),
+                'wholesaler_name' => $wholesalers[array_rand($wholesalers)],
+                'wholesaler_email' => 'contact@' . strtolower(str_replace([' ', '&', '.', '(', ')', 'Ltd.', 'Co.', 'Corp.', 'International'], ['', 'and', '', '', '', 'ltd', 'co', 'corp', 'int'], $wholesalers[array_rand($wholesalers)])) . '.com',
+                'wholesaler_phone' => '+1-' . rand(200, 999) . '-' . rand(200, 999) . '-' . rand(1000, 9999),
                 'quantity' => $quantity,
                 'unit_price' => $unitPrice,
                 'total_amount' => $totalAmount,

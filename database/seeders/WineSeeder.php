@@ -21,7 +21,7 @@ class WineSeeder extends Seeder
                 'sku' => 'RED-001',
                 'quantity' => 25,
                 'min_quantity' => 5,
-                'unit_price' => 850.00,
+                'unit_price' => 850000,
                 'category' => 'Red Wine',
                 'location' => 'Cellar A',
                 'is_active' => true
@@ -32,7 +32,7 @@ class WineSeeder extends Seeder
                 'sku' => 'RED-002',
                 'quantity' => 30,
                 'min_quantity' => 8,
-                'unit_price' => 120.00,
+                'unit_price' => 120000,
                 'category' => 'Red Wine',
                 'location' => 'Cellar A',
                 'is_active' => true
@@ -43,7 +43,7 @@ class WineSeeder extends Seeder
                 'sku' => 'RED-003',
                 'quantity' => 45,
                 'min_quantity' => 10,
-                'unit_price' => 75.00,
+                'unit_price' => 75000,
                 'category' => 'Red Wine',
                 'location' => 'Cellar B',
                 'is_active' => true
@@ -54,7 +54,7 @@ class WineSeeder extends Seeder
                 'sku' => 'RED-004',
                 'quantity' => 35,
                 'min_quantity' => 8,
-                'unit_price' => 65.00,
+                'unit_price' => 65000,
                 'category' => 'Red Wine',
                 'location' => 'Cellar A',
                 'is_active' => true
@@ -65,7 +65,7 @@ class WineSeeder extends Seeder
                 'sku' => 'RED-005',
                 'quantity' => 40,
                 'min_quantity' => 10,
-                'unit_price' => 55.00,
+                'unit_price' => 55000,
                 'category' => 'Red Wine',
                 'location' => 'Cellar B',
                 'is_active' => true
@@ -78,7 +78,7 @@ class WineSeeder extends Seeder
                 'sku' => 'WHITE-001',
                 'quantity' => 30,
                 'min_quantity' => 8,
-                'unit_price' => 95.00,
+                'unit_price' => 95000,
                 'category' => 'White Wine',
                 'location' => 'Cellar C',
                 'is_active' => true
@@ -89,7 +89,7 @@ class WineSeeder extends Seeder
                 'sku' => 'WHITE-002',
                 'quantity' => 50,
                 'min_quantity' => 12,
-                'unit_price' => 35.00,
+                'unit_price' => 35000,
                 'category' => 'White Wine',
                 'location' => 'Cellar C',
                 'is_active' => true
@@ -100,7 +100,7 @@ class WineSeeder extends Seeder
                 'sku' => 'WHITE-003',
                 'quantity' => 25,
                 'min_quantity' => 6,
-                'unit_price' => 45.00,
+                'unit_price' => 45000,
                 'category' => 'White Wine',
                 'location' => 'Cellar C',
                 'is_active' => true
@@ -111,7 +111,7 @@ class WineSeeder extends Seeder
                 'sku' => 'WHITE-004',
                 'quantity' => 60,
                 'min_quantity' => 15,
-                'unit_price' => 28.00,
+                'unit_price' => 28000,
                 'category' => 'White Wine',
                 'location' => 'Cellar C',
                 'is_active' => true
@@ -124,7 +124,7 @@ class WineSeeder extends Seeder
                 'sku' => 'SPARK-001',
                 'quantity' => 20,
                 'min_quantity' => 5,
-                'unit_price' => 180.00,
+                'unit_price' => 180000,
                 'category' => 'Sparkling Wine',
                 'location' => 'Cellar D',
                 'is_active' => true
@@ -135,7 +135,7 @@ class WineSeeder extends Seeder
                 'sku' => 'SPARK-002',
                 'quantity' => 40,
                 'min_quantity' => 10,
-                'unit_price' => 42.00,
+                'unit_price' => 42000,
                 'category' => 'Sparkling Wine',
                 'location' => 'Cellar D',
                 'is_active' => true
@@ -146,7 +146,7 @@ class WineSeeder extends Seeder
                 'sku' => 'SPARK-003',
                 'quantity' => 30,
                 'min_quantity' => 8,
-                'unit_price' => 38.00,
+                'unit_price' => 38000,
                 'category' => 'Sparkling Wine',
                 'location' => 'Cellar D',
                 'is_active' => true
@@ -159,7 +159,7 @@ class WineSeeder extends Seeder
                 'sku' => 'ROSE-001',
                 'quantity' => 35,
                 'min_quantity' => 10,
-                'unit_price' => 32.00,
+                'unit_price' => 32000,
                 'category' => 'Rosé Wine',
                 'location' => 'Cellar A',
                 'is_active' => true
@@ -170,7 +170,7 @@ class WineSeeder extends Seeder
                 'sku' => 'ROSE-002',
                 'quantity' => 30,
                 'min_quantity' => 8,
-                'unit_price' => 28.00,
+                'unit_price' => 28000,
                 'category' => 'Rosé Wine',
                 'location' => 'Cellar A',
                 'is_active' => true
@@ -183,7 +183,7 @@ class WineSeeder extends Seeder
                 'sku' => 'DESSERT-001',
                 'quantity' => 15,
                 'min_quantity' => 3,
-                'unit_price' => 120.00,
+                'unit_price' => 120000,
                 'category' => 'Dessert Wine',
                 'location' => 'Cellar E',
                 'is_active' => true
@@ -194,7 +194,7 @@ class WineSeeder extends Seeder
                 'sku' => 'DESSERT-002',
                 'quantity' => 20,
                 'min_quantity' => 5,
-                'unit_price' => 85.00,
+                'unit_price' => 85000,
                 'category' => 'Dessert Wine',
                 'location' => 'Cellar E',
                 'is_active' => true

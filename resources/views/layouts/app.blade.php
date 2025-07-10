@@ -21,6 +21,17 @@
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     </head>
     <body class="font-sans antialiased">
+        @if (!Auth::check())
+            <script>
+                window.location = "{{ route('login') }}";
+            </script>
+        @endif
+        <script>
+            if (window.performance && window.performance.navigation.type === 2) {
+                // Type 2 means the user navigated with the back/forward button
+                window.location.reload();
+            }
+        </script>
         @include('components.role-based-nav')
         <div class="min-h-screen bg-gray-100">
             @include('layouts.navigation')

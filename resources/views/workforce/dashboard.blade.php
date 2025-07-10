@@ -20,6 +20,13 @@
         </div>
         <h1 class="display-4 fw-bold">Workforce Distribution Dashboard</h1>
         <hr class="w-25 mx-auto"/>
+        
+        <!-- Help Link -->
+        <div class="mt-3">
+            <a href="{{ route('help.index') }}" class="btn btn-outline-primary" title="Get help and support">
+                <i class="fas fa-question-circle me-2"></i>Help & Support
+            </a>
+        </div>
     </div>
     @if(session('success'))
         <div class="alert alert-success w-75 mx-auto">{{ session('success') }}</div>

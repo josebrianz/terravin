@@ -12,11 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Add Supplier role to roles table if it doesn't exist
-        if (!Role::where('name', 'Supplier')->exists()) {
+        // Add Wholesaler role to roles table if it doesn't exist
+        if (!Role::where('name', 'Wholesaler')->exists()) {
             Role::create([
-                'name' => 'Supplier',
-                'description' => 'Supplier access for order fulfillment',
+                'name' => 'Wholesaler',
+                'description' => 'Wholesaler access for order fulfillment',
                 'permissions' => [
                     'view_orders',
                     'update_order_status',
@@ -33,6 +33,6 @@ return new class extends Migration
     public function down(): void
     {
         // Remove Supplier role
-        Role::where('name', 'Supplier')->delete();
+        Role::where('name', 'Wholesaler')->delete();
     }
 };

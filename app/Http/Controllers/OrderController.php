@@ -23,6 +23,9 @@ class OrderController extends Controller
      */
     public function create(): View
     {
+        if (auth()->user() && auth()->user()->isAdmin()) {
+            abort(403, 'Admins are not allowed to place orders.');
+        }
         $wines = \App\Models\Inventory::where('is_active', true)
             ->where('quantity', '>', 0)
             ->orderBy('category')
@@ -52,6 +55,9 @@ class OrderController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        if (auth()->user() && auth()->user()->isAdmin()) {
+            abort(403, 'Admins are not allowed to place orders.');
+        }
         $request->validate([
             'customer_name' => 'required|string|max:255',
             'customer_email' => 'required|email',

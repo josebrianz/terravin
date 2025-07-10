@@ -35,7 +35,7 @@
                                                 $roleName === 'Admin' ? 'danger' :
                                                 ($roleName === 'Vendor' ? 'info' :
                                                 ($roleName === 'Retailer' ? 'success' :
-                                                ($roleName === 'Supplier' ? 'warning' : 'secondary')))
+                                                ($roleName === 'Wholesaler' ? 'warning' : 'secondary')))
                                             }}">
                                                 <i class="fas fa-users"></i>
                                             </span>
@@ -237,7 +237,7 @@
                                                                 $roleName === 'Admin' ? 'danger' :
                                                                 ($roleName === 'Vendor' ? 'info' :
                                                                 ($roleName === 'Retailer' ? 'success' :
-                                                                ($roleName === 'Supplier' ? 'warning' : 'secondary')))
+                                                                ($roleName === 'Wholesaler' ? 'warning' : 'secondary')))
                                                             }}">
                                                                 {{ $roleName }}
                                                             </span>
