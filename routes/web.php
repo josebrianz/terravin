@@ -9,6 +9,10 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ChatController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use App\Models\Workforce;
+use App\Models\SupplyCentre;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -85,5 +89,112 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/chat/{user}', [ChatController::class, 'show'])->name('chat.show')->middleware('role:Supplier,Customer');
     Route::post('/chat/{user}', [ChatController::class, 'store'])->name('chat.store')->middleware('role:Supplier,Customer');
 });
+
+// Workforce Dashboard Route
+Route::get('/workforce/dashboard', function () {
+    $workforces = \App\Models\Workforce::with('supplyCentres')->get();
+    $supplyCentres = \App\Models\SupplyCentre::with('workforces')->get();
+    $total = $workforces->count();
+    $assigned = $workforces->where('status', 'assigned')->count();
+    $available = $workforces->where('status', 'available')->count();
+    return view('workforce.dashboard', compact('workforces', 'supplyCentres', 'total', 'assigned', 'available'));
+})->name('workforce.dashboard');
+
+// Add Workforce
+Route::post('/workforce', function(Request $request) {
+    Workforce::create($request->only('name', 'role', 'status', 'contact'));
+    return redirect()->back()->with('success', 'Workforce added!');
+})->name('workforce.store');
+
+// Add Supply Centre
+Route::post('/supplycentre', function(Request $request) {
+    SupplyCentre::create($request->only('name', 'location'));
+    return redirect()->back()->with('success', 'Supply centre added!');
+})->name('supplycentre.store');
+
+// Assign Workforce to Supply Centre
+Route::post('/workforce/assign', function(Request $request) {
+    $workforce = Workforce::findOrFail($request->workforce_id);
+    $workforce->supplyCentres()->attach($request->supply_centre_id);
+    $workforce->status = 'assigned';
+    $workforce->save();
+    return redirect()->back()->with('success', 'Workforce assigned!');
+})->name('workforce.assign');
+
+// Unassign Workforce from Supply Centre
+Route::post('/workforce/unassign', function(Request $request) {
+    $workforce = Workforce::findOrFail($request->workforce_id);
+    $workforce->supplyCentres()->detach($request->supply_centre_id);
+    // Optionally update status if no more assignments
+    if ($workforce->supplyCentres()->count() == 0) {
+        $workforce->status = 'available';
+        $workforce->save();
+    }
+    return redirect()->back()->with('success', 'Workforce unassigned!');
+})->name('workforce.unassign');
+
+// Delete Workforce
+Route::delete('/workforce/{id}', function($id) {
+    Workforce::destroy($id);
+    return redirect()->back()->with('success', 'Workforce deleted!');
+})->name('workforce.delete');
+
+// Delete Supply Centre
+Route::delete('/supplycentre/{id}', function($id) {
+    SupplyCentre::destroy($id);
+    return redirect()->back()->with('success', 'Supply centre deleted!');
+})->name('supplycentre.delete');
+
+
+
+Route::get('/stakeholders', function (Request $request) {
+    $view = $request->query('view', 'index');
+    $id = $request->query('id');
+
+    switch ($view) {
+        case 'create':
+            return view('stakeholders.create');
+        case 'edit':
+            if ($id) {
+                $stakeholder = \App\Models\Stakeholder::findOrFail($id);
+                return view('stakeholders.edit', compact('stakeholder'));
+            }
+            abort(404);
+        case 'index':
+        default:
+            $stakeholders = \App\Models\Stakeholder::all();
+            return view('stakeholders.index', compact('stakeholders'));
+    }
+})->name('stakeholders.unified');
+
+// Store new stakeholder
+Route::post('/stakeholders', function(Illuminate\Http\Request $request) {
+    \App\Models\Stakeholder::create($request->only('name', 'email', 'role'));
+    return redirect()->back()->with('success', 'Stakeholder added!');
+})->name('stakeholders.store');
+
+// Update stakeholder
+Route::put('/stakeholders/{id}', function(Illuminate\Http\Request $request, $id) {
+    $stakeholder = \App\Models\Stakeholder::findOrFail($id);
+    $stakeholder->update($request->only('name', 'email', 'role'));
+    return redirect()->back()->with('success', 'Stakeholder updated!');
+})->name('stakeholders.update');
+
+// Delete stakeholder
+Route::delete('/stakeholders/{id}', function($id) {
+    \App\Models\Stakeholder::destroy($id);
+    return redirect()->back()->with('success', 'Stakeholder deleted!');
+})->name('stakeholders.destroy');
+
+// Save preferences
+Route::post('/stakeholders/preferences', function(Illuminate\Http\Request $request) {
+    // Save preferences logic here (customize as needed)
+    // Example: \App\Models\Preference::updateOrCreate([...], [...]);
+    return redirect()->back()->with('success', 'Preferences saved!');
+})->name('stakeholders.preferences');
+
+Route::post('/stakeholders/{id}/preferences', [App\Http\Controllers\StakeholderController::class, 'updatePreferences'])->name('stakeholders.preferences.update');
+
+Route::get('/stakeholders/dashboard', [App\Http\Controllers\StakeholderController::class, 'dashboard'])->name('stakeholders.dashboard');
 
 require __DIR__.'/auth.php';

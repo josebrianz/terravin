@@ -81,6 +81,12 @@ class StakeholderController extends Controller
                 'report_types' => $data['report_types'],
             ]
         );
-        return redirect()->route('stakeholders.preferences', $stakeholder->id)->with('success', 'Preferences updated!');
+        return redirect()->route('stakeholders.dashboard')->with('success', 'Preferences updated!');
+    }
+
+    public function dashboard()
+    {
+        $stakeholders = Stakeholder::with('reportPreference')->get();
+        return view('stakeholders.dashboard', compact('stakeholders'));
     }
 }
