@@ -34,7 +34,7 @@
         <div class="mb-3">
             <label>Report Types</label>
             <div>
-                @foreach(['inventory','orders','sales & demand','supplier & vendor','financial & profitability'] as $type)
+                @foreach(['inventory','orders','sales & demand','wholesaler & vendor','financial & profitability'] as $type)
                     <label class="me-3">
                         <input type="checkbox" name="report_types[]" value="{{ $type }}"
                         {{ (is_array(old('report_types', $preference->report_types ?? [])) && in_array($type, old('report_types', $preference->report_types ?? []))) ? 'checked' : '' }}>

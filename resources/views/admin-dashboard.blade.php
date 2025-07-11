@@ -16,7 +16,7 @@ e
                     <span class="text-muted small">Centralized overview of all wine business operations</span>
                 </div>
                 <div class="header-actions">
-                    @if(auth()->user()->role === 'Supplier' || auth()->user()->role === 'Customer')
+                    @if(auth()->user()->role === 'Wholesaler' || auth()->user()->role === 'Customer')
                         <a href="{{ route('chat.index') }}" class="btn btn-burgundy me-2">
                             <i class="fas fa-comments me-1"></i>
                             Chat
@@ -120,11 +120,33 @@ e
                         <a href="{{ route('orders.index') }}" class="btn btn-gold shadow-sm" title="View all orders">
                             <i class="fas fa-list"></i> All Orders
                         </a>
-                        <a href="{{ route('orders.create') }}" class="btn btn-outline-gold" title="Create a new order">
-                            <i class="fas fa-plus"></i> New Order
-                        </a>
                         <a href="{{ route('orders.pending') }}" class="btn btn-outline-burgundy" title="View pending orders">
                             <i class="fas fa-clock"></i> Pending Orders
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Order Analytics/Reports Module -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm border-0 wine-card">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <div class="icon-circle bg-gold">
+                            <i class="fas fa-chart-line fa-2x text-burgundy"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title fw-bold text-burgundy">Order Analytics & Reports</h5>
+                    <p class="card-text text-muted small">View sales reports, order trends, and export analytics for business insights.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ route('reports.index') }}" class="btn btn-burgundy shadow-sm" title="View sales reports">
+                            <i class="fas fa-chart-bar"></i> Sales Report
+                        </a>
+                        <a href="{{ route('orders.index') }}?status=delivered" class="btn btn-outline-gold" title="View delivered orders">
+                            <i class="fas fa-truck"></i> Delivered Orders
+                        </a>
+                        <a href="{{ route('admin.orders.export') }}?format=csv" class="btn btn-outline-secondary" title="Export Order Analytics">
+                            <i class="fas fa-file-csv"></i> Export Analytics (CSV)
                         </a>
                     </div>
                 </div>
@@ -156,7 +178,7 @@ e
         @endif
         
         <!-- Chat Module (Only for Suppliers and Customers) -->
-        @if(auth()->user()->role === 'Supplier' || auth()->user()->role === 'Customer')
+        @if(auth()->user()->role === 'Wholesaler' || auth()->user()->role === 'Customer')
         <div class="col-lg-4 col-md-6">
             <div class="card h-100 shadow-sm border-0 wine-card">
                 <div class="card-body text-center">
@@ -166,7 +188,7 @@ e
                         </div>
                     </div>
                     <h5 class="card-title fw-bold text-burgundy">Chat System</h5>
-                    <p class="card-text text-muted small">Communicate directly with {{ auth()->user()->role === 'Supplier' ? 'customers' : 'suppliers' }} for orders and inquiries.</p>
+                    <p class="card-text text-muted small">Communicate directly with {{ auth()->user()->role === 'Wholesaler' ? 'customers' : 'wholesalers' }} for orders and inquiries.</p>
                     <div class="d-grid gap-2">
                         <a href="{{ route('chat.index') }}" class="btn btn-burgundy shadow-sm" title="Start chatting">
                             <i class="fas fa-comments"></i> Start Chat
@@ -233,6 +255,15 @@ e
                                 <span class="text-muted small">System Users</span>
                             </div>
                         </div>
+                        <div class="col-md-3 text-center">
+                            <div class="stat-item">
+                                <div class="stat-icon bg-warning">
+                                    <i class="fas fa-user-check fa-2x text-white"></i>
+                                </div>
+                                <h4 class="text-burgundy fw-bold mt-2">{{ \App\Models\RoleApprovalRequest::pending()->count() }}</h4>
+                                <span class="text-muted small">Role Requests</span>
+                            </div>
+                        </div>
                         @endif
                         <div class="col-md-3 text-center">
                             <div class="stat-item">
@@ -273,6 +304,38 @@ e
 
     <!-- Recent Activity -->
     <div class="row g-4">
+        @if(auth()->user()->role === 'Admin')
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm wine-card">
+                <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0 fw-bold text-burgundy">
+                        <i class="fas fa-user-check text-gold me-2"></i> Pending Role Requests
+                    </h5>
+                    <a href="{{ route('admin.role-approvals') }}" class="btn btn-sm btn-outline-burgundy">
+                        View All
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        @foreach(\App\Models\RoleApprovalRequest::with('user')->pending()->latest()->take(5)->get() as $request)
+                        <div class="list-group-item d-flex justify-content-between align-items-center border-0 wine-list-item">
+                            <div>
+                                <h6 class="mb-1 fw-semibold text-burgundy">{{ $request->user->name }}</h6>
+                                <span class="text-muted small">{{ $request->user->email }} - Requesting {{ $request->requested_role }}</span>
+                            </div>
+                            <span class="badge bg-warning">Pending</span>
+                        </div>
+                        @endforeach
+                        @if(\App\Models\RoleApprovalRequest::pending()->count() == 0)
+                        <div class="list-group-item text-center text-muted border-0 wine-list-item">
+                            <i class="fas fa-check-circle text-success"></i> No pending role requests
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
         @if(auth()->user()->role !== 'Customer')
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm wine-card">
@@ -349,7 +412,7 @@ e
                         @endforeach
                         @if(\App\Models\Order::where('customer_email', auth()->user()->email)->count() == 0)
                         <div class="list-group-item text-center text-muted border-0 wine-list-item">
-                            <i class="fas fa-shopping-cart text-gold"></i> No orders yet. <a href="{{ route('orders.create') }}" class="text-burgundy">Place your first order!</a>
+                            <i class="fas fa-shopping-cart text-gold"></i> No orders yet.
                         </div>
                         @endif
                     </div>

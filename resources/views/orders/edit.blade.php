@@ -69,7 +69,7 @@
                                     </div>
                                     <div class="col-md-2 mb-2">
                                         <label class="form-label">Subtotal</label>
-                                        <input type="text" class="form-control subtotal-input" value="$ {{ number_format($item['quantity'] * $item['unit_price'], 2) }}" readonly>
+                                        <input type="text" class="form-control subtotal-input" value="UGX {{ number_format($item['quantity'] * $item['unit_price'], 0) }}" readonly>
                                     </div>
                                     <div class="col-md-2 mb-2">
                                         <label class="form-label">&nbsp;</label>
@@ -86,7 +86,7 @@
                                 <h5 class="text-end">Total:</h5>
                             </div>
                             <div class="col-6">
-                                <h5 class="text-primary" id="totalAmount">$0.00</h5>
+                                <h5 class="text-primary" id="totalAmount">UGX 0</h5>
                                 <input type="hidden" name="total_amount" id="totalAmountInput" value="{{ $order->total_amount }}">
                             </div>
                         </div>
@@ -160,10 +160,10 @@ function calculateTotal() {
         const quantity = parseFloat(quantityInputs[i].value) || 0;
         const price = parseFloat(priceInputs[i].value) || 0;
         const subtotal = quantity * price;
-        subtotalInputs[i].value = `$${subtotal.toFixed(2)}`;
+        subtotalInputs[i].value = `UGX ${subtotal.toFixed(0)}`;
         total += subtotal;
     }
-    document.getElementById('totalAmount').textContent = `$${total.toFixed(2)}`;
+    document.getElementById('totalAmount').textContent = `UGX ${total.toFixed(0)}`;
     document.getElementById('totalAmountInput').value = total.toFixed(2);
 }
 document.addEventListener('DOMContentLoaded', function() {

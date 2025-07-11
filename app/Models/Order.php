@@ -18,7 +18,9 @@ class Order extends Model
         'total_amount',
         'shipping_address',
         'notes',
+        'admin_notes',
         'status',
+        'assigned_to',
     ];
 
     protected $casts = [
@@ -34,6 +36,11 @@ class Order extends Model
     public function shipment()
     {
         return $this->hasOne(Shipment::class);
+    }
+
+    public function assignedTo()
+    {
+        return $this->belongsTo(User::class, 'assigned_to');
     }
 
     public function scopeRecent($query, $days = 30)

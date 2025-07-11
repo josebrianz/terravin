@@ -45,9 +45,9 @@
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label for="supplier" class="form-label">Supplier</label>
-                            <input type="text" name="supplier" id="supplier" class="form-control" 
-                                   value="{{ request('supplier') }}" placeholder="Search supplier...">
+                            <label for="wholesaler" class="form-label">Wholesaler</label>
+                            <input type="text" name="wholesaler" id="wholesaler" class="form-control" 
+                                   value="{{ request('wholesaler') }}" placeholder="Search wholesaler...">
                         </div>
                         <div class="col-md-3">
                             <label for="date_from" class="form-label">Date From</label>
@@ -96,7 +96,7 @@
                                 <tr>
                                     <th>PO Number</th>
                                     <th>Supply Item</th>
-                                    <th>Supplier</th>
+                                    <th>Wholesaler</th>
                                     <th>Quantity</th>
                                     <th>Unit Price (UGX)</th>
                                     <th>Total Amount (UGX)</th>
@@ -115,7 +115,7 @@
                                         </a>
                                     </td>
                                     <td>{{ $procurement->item_name }}</td>
-                                    <td>{{ $procurement->supplier_name }}</td>
+                                    <td>{{ $procurement->wholesaler_name }}</td>
                                     <td>{{ $procurement->quantity }}</td>
                                     <td>UGX {{ number_format($procurement->unit_price, 0) }}</td>
                                     <td>UGX {{ number_format($procurement->total_amount, 0) }}</td>

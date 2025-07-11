@@ -4,7 +4,12 @@
 
 @section('content')
 <div class="container py-4">
-    <h1 class="mb-4">Stakeholders</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Stakeholders</h1>
+        <a href="{{ route('help.index') }}" class="btn btn-outline-primary" title="Get help and support">
+            <i class="fas fa-question-circle me-2"></i>Help
+        </a>
+    </div>
     <a href="{{ route('stakeholders.create') }}" class="btn btn-primary mb-3">Add Stakeholder</a>
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>

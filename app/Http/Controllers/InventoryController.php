@@ -24,14 +24,15 @@ class InventoryController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'item_name'  => 'required|string|max:255',
-            'item_code'  => 'required|string|max:255|unique:inventories',
+            'name'  => 'required|string|max:255',
+            'sku'  => 'required|string|max:255|unique:inventories',
             'quantity'   => 'required|integer|min:0',
             'price'      => 'required|numeric|min:0',
             'location'   => 'nullable|string|max:255',
         ]);
 
         Inventory::create($validated);
+        
 
         return redirect()->route('inventory.index')->with('success', 'Item added successfully!');
     }
@@ -46,8 +47,8 @@ class InventoryController extends Controller
     public function update(Request $request, Inventory $inventory)
     {
         $validated = $request->validate([
-            'item_name'  => 'required|string|max:255',
-            'item_code'  => 'required|string|max:255|unique:inventories,item_code,' . $inventory->id,
+            'name'  => 'required|string|max:255',
+            'sku'  => 'required|string|max:255|unique:inventories,item_code,' . $inventory->id,
             'quantity'   => 'required|integer|min:0',
             'price'      => 'required|numeric|min:0',
             'location'   => 'nullable|string|max:255',

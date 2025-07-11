@@ -54,14 +54,25 @@
                                     <i class="fas fa-truck"></i> Logistics
                                 </a></li>
                                 @endpermission
-                                @if(Auth::user()->role === 'Supplier' || Auth::user()->role === 'Customer')
+                                @if(Auth::user()->role === 'Wholesaler' || Auth::user()->role === 'Customer')
                                 <li><a href="{{ route('chat.index') }}" class="nav-link">
                                     <i class="fas fa-comments"></i> Chat
+                                </a></li>
+                                @endif
+                                @if(Auth::user()->role !== 'Admin')
+                                <li><a href="{{ route('help.index') }}" class="nav-link">
+                                    <i class="fas fa-question-circle"></i> Help
                                 </a></li>
                                 @endif
                                 @role('Admin')
                                 <li><a href="{{ route('admin.manage-roles') }}" class="nav-link">
                                     <i class="fas fa-users-cog"></i> Users
+                                </a></li>
+                                <li><a href="{{ route('admin.role-approvals') }}" class="nav-link">
+                                    <i class="fas fa-user-check"></i> Role Requests
+                                    @if(\App\Models\RoleApprovalRequest::pending()->count() > 0)
+                                        <span class="badge bg-warning text-dark ms-1">{{ \App\Models\RoleApprovalRequest::pending()->count() }}</span>
+                                    @endif
                                 </a></li>
                                 @endrole
                             </ul>
@@ -70,12 +81,34 @@
                     <div class="col-md-3 text-end">
                         <div class="user-info">
                             @auth
-                                <span class="user-name">{{ Auth::user()->name }}</span>
-                                <span class="user-role">({{ ucfirst(strtolower(Auth::user()->role)) }})</span>
-                                <a href="{{ route('logout') }}" class="logout-btn" 
-                                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                    <i class="fas fa-sign-out-alt"></i> Logout
-                                </a>
+                                <div class="dropdown">
+                                    <a class="dropdown-toggle d-flex align-items-center text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
+                                        @if(Auth::user()->profile_photo)
+                                            <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}?v={{ time() }}" 
+                                                 alt="{{ Auth::user()->name }}" 
+                                                 class="rounded-circle me-2" style="width: 60px; height: 60px; object-fit: cover; border: 4px solid var(--gold);">
+                                        @else
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center me-2" 
+                                                 style="width: 60px; height: 60px; border: 4px solid var(--gold); background: linear-gradient(135deg, var(--burgundy) 0%, #8b1a1a 100%);">
+                                                <span class="text-white fw-bold" style="font-size: 24px;">
+                                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                                </span>
+                                            </div>
+                                        @endif
+                                        <span class="user-name">{{ Auth::user()->name }}</span>
+                                        <span class="user-role ms-1">({{ ucfirst(strtolower(Auth::user()->role)) }})</span>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" href="{{ route('profile.edit') }}">
+                                            <i class="fas fa-user-edit me-2"></i> Profile
+                                        </a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-danger" href="{{ route('logout') }}" 
+                                              onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                            <i class="fas fa-sign-out-alt me-2"></i> Logout
+                                        </a></li>
+                                    </ul>
+                                </div>
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                     @csrf
                                 </form>
@@ -93,6 +126,25 @@
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        
+        <script>
+        // Ensure dropdown menus work properly
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Bootstrap dropdowns
+            var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+            var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+                return new bootstrap.Dropdown(dropdownToggleEl);
+            });
+            
+            // Prevent dropdown from closing when clicking inside
+            document.querySelectorAll('.dropdown-menu').forEach(function(dropdown) {
+                dropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            });
+        });
+        </script>
+        
         @stack('scripts')
 
         <style>
@@ -211,6 +263,73 @@
         .main-content {
             padding: 2rem 0;
             min-height: calc(100vh - 70px);
+        }
+
+        /* Dropdown menu styling */
+        .dropdown-menu {
+            background: white !important;
+            border: 1px solid rgba(200, 169, 126, 0.3) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 15px rgba(94, 15, 15, 0.15) !important;
+            padding: 0.5rem 0 !important;
+            z-index: 1050 !important;
+            position: absolute !important;
+            display: none;
+            min-width: 200px;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown-menu.show {
+            display: block !important;
+        }
+
+        /* Ensure dropdown container has proper positioning */
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-item {
+            color: var(--burgundy) !important;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            background-color: transparent;
+            border: none;
+            width: 100%;
+            text-align: left;
+            display: block;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(200, 169, 126, 0.1) !important;
+            color: var(--burgundy) !important;
+            text-decoration: none;
+        }
+
+        .dropdown-item:focus {
+            background-color: rgba(200, 169, 126, 0.1) !important;
+            color: var(--burgundy) !important;
+            outline: none;
+        }
+
+        .dropdown-item.text-danger {
+            color: #dc3545 !important;
+        }
+
+        .dropdown-item.text-danger:hover {
+            background-color: rgba(220, 53, 69, 0.1) !important;
+            color: #dc3545 !important;
+        }
+
+        .dropdown-item.text-danger:focus {
+            background-color: rgba(220, 53, 69, 0.1) !important;
+            color: #dc3545 !important;
+        }
+
+        .dropdown-divider {
+            border-color: rgba(200, 169, 126, 0.2);
+            margin: 0.5rem 0;
         }
 
         @media (max-width: 1200px) {

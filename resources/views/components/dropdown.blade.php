@@ -1,4 +1,4 @@
-@props(['align' => 'right', 'width' => '48', 'contentClasses' => 'py-1 bg-white'])
+@props(['align' => 'right', 'width' => '48', 'contentClasses' => 'py-1 wine-dropdown-bg'])
 
 @php
 $alignmentClasses = match ($align) {
@@ -13,6 +13,21 @@ $width = match ($width) {
 };
 @endphp
 
+<style>
+    .wine-dropdown-bg {
+        background: rgba(255,255,255,0.97) !important;
+        color: #7b2230 !important;
+        box-shadow: 0 8px 32px 0 rgba(123,34,48,0.10);
+        border: 1px solid #f8e7d1;
+    }
+    .wine-dropdown-bg a, .wine-dropdown-bg button, .wine-dropdown-bg span, .wine-dropdown-bg div {
+        color: #7b2230 !important;
+    }
+    .wine-dropdown-bg a:hover, .wine-dropdown-bg button:hover {
+        background: #f8e7d1 !important;
+        color: #b85c38 !important;
+    }
+</style>
 <div class="relative" x-data="{ open: false }" @click.outside="open = false" @close.stop="open = false">
     <div @click="open = ! open">
         {{ $trigger }}

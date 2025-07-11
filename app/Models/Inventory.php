@@ -46,6 +46,11 @@ class Inventory extends Model
 
     public function getFormattedPrice()
     {
-        return '$' . number_format($this->unit_price, 2);
+        return 'UGX ' . number_format($this->unit_price, 0);
+    }
+
+    public function batches()
+    {
+        return $this->hasMany(\App\Models\Batch::class, 'product_id');
     }
 }

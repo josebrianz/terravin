@@ -26,13 +26,66 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        
+        // Only update fields that are provided and not empty
+        $validated = $request->validated();
+        $updateData = [];
+        
+        if (!empty($validated['name'])) {
+            $updateData['name'] = $validated['name'];
+        }
+        
+        if (!empty($validated['email'])) {
+            $updateData['email'] = $validated['email'];
+        }
+        
+        $user->fill($updateData);
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        // Debug logging
+        \Log::info('Profile update request', [
+            'has_file' => $request->hasFile('profile_photo'),
+            'remove_photo' => $request->has('remove_photo'),
+            'file_size' => $request->hasFile('profile_photo') ? $request->file('profile_photo')->getSize() : null,
+            'file_name' => $request->hasFile('profile_photo') ? $request->file('profile_photo')->getClientOriginalName() : null,
+        ]);
+
+        if ($request->hasFile('profile_photo')) {
+            try {
+                // Delete old photo if exists
+                if ($user->profile_photo) {
+                    \Storage::disk('public')->delete($user->profile_photo);
+                }
+                
+                // Store new photo
+                $path = $request->file('profile_photo')->store('profile-photos', 'public');
+                $user->profile_photo = $path;
+                
+                \Log::info('Profile photo uploaded successfully', ['path' => $path]);
+            } catch (\Exception $e) {
+                \Log::error('Profile photo upload failed', ['error' => $e->getMessage()]);
+                return Redirect::route('profile.edit')->withErrors(['profile_photo' => 'Failed to upload photo: ' . $e->getMessage()]);
+            }
+        } elseif ($request->has('remove_photo') && $request->remove_photo == '1') {
+            // Remove profile photo
+            if ($user->profile_photo) {
+                \Storage::disk('public')->delete($user->profile_photo);
+                $user->profile_photo = null;
+                \Log::info('Profile photo removed');
+            }
         }
 
-        $request->user()->save();
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        try {
+            $user->save();
+            \Log::info('User profile saved successfully', ['user_id' => $user->id]);
+        } catch (\Exception $e) {
+            \Log::error('User profile save failed', ['error' => $e->getMessage()]);
+            return Redirect::route('profile.edit')->withErrors(['general' => 'Failed to save profile: ' . $e->getMessage()]);
+        }
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }

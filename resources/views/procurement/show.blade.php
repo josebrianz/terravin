@@ -116,26 +116,26 @@
                         </div>
                     </div>
 
-                    <!-- Supplier Information -->
+                    <!-- Wholesaler Information -->
                     <div class="card mt-4">
                         <div class="card-header">
                             <h5 class="card-title mb-0">
-                                <i class="fas fa-building"></i> Wine Supply Supplier Information
+                                <i class="fas fa-building"></i> Wine Supply Wholesaler Information
                             </h5>
                         </div>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-4">
-                                    <strong>Supplier Name:</strong><br>
-                                    {{ $procurement->supplier_name }}
+                                    <strong>Wholesaler Name:</strong><br>
+                                    {{ $procurement->wholesaler_name }}
                                 </div>
                                 <div class="col-md-4">
                                     <strong>Email:</strong><br>
-                                    {{ $procurement->supplier_email ?: 'N/A' }}
+                                    {{ $procurement->wholesaler_email ?: 'N/A' }}
                                 </div>
                                 <div class="col-md-4">
                                     <strong>Phone:</strong><br>
-                                    {{ $procurement->supplier_phone ?: 'N/A' }}
+                                    {{ $procurement->wholesaler_phone ?: 'N/A' }}
                                 </div>
                             </div>
                         </div>
@@ -244,7 +244,7 @@
                                     <div class="timeline-marker bg-primary"></div>
                                     <div class="timeline-content">
                                         <h6 class="timeline-title">Ordered</h6>
-                                        <p class="timeline-text">Order placed with supplier</p>
+                                        <p class="timeline-text">Order placed with wholesaler</p>
                                         @if($procurement->order_date)
                                             <small class="text-muted">{{ $procurement->order_date->format('M d, Y') }}</small>
                                         @endif

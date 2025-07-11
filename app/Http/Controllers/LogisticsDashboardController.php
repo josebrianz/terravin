@@ -34,8 +34,8 @@ class LogisticsDashboardController extends Controller
 
     $upcomingDeliveries = Procurement::where('expected_delivery', '>=', now())->get();
 
-    $topSuppliers = Procurement::selectRaw('supplier_name, COUNT(*) as order_count, SUM(total_amount) as total_value')
-        ->groupBy('supplier_name')
+    $topWholesalers = Procurement::selectRaw('wholesaler_name, COUNT(*) as order_count, SUM(total_amount) as total_value')
+        ->groupBy('wholesaler_name')
         ->orderBy('order_count', 'desc')
         ->take(5)
         ->get();
@@ -72,6 +72,8 @@ class LogisticsDashboardController extends Controller
         ]
     ];
 
+    $orders = \App\Models\Order::whereDoesntHave('shipment')->get();
+
     return view('logistics.dashboard', compact(
         'totalShipments',
         'pendingShipments',
@@ -85,13 +87,33 @@ class LogisticsDashboardController extends Controller
         'overdueShipmentsCount',
         'recentShipments',
         'upcomingDeliveries',
-        'topSuppliers',
+        'topWholesalers',
         'revenueData',
         'shipmentStatusData',
         'shipmentRoutes',
-        'deliveryZones'
+        'deliveryZones',
+        'orders'
     ));
 }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'order_id' => 'required|exists:orders,id',
+            'status' => 'required|in:pending,in_transit,delivered',
+            'shipping_cost' => 'required|numeric|min:0',
+            'estimated_delivery_date' => 'nullable|date',
+        ]);
+
+        $shipment = new \App\Models\Shipment();
+        $shipment->order_id = $validated['order_id'];
+        $shipment->status = $validated['status'];
+        $shipment->shipping_cost = $validated['shipping_cost'];
+        $shipment->estimated_delivery_date = $validated['estimated_delivery_date'] ?? null;
+        $shipment->save();
+
+        return response()->json(['success' => true, 'shipment' => $shipment]);
+    }
 
     public function getShipmentDetails($shipmentId)
     {

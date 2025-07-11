@@ -18,8 +18,19 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        if (!$request->user()) {
+        $user = auth()->user();
+        if (!$user) {
             return redirect()->route('login');
+        }
+
+        // If user is Customer and has a pending role approval request, redirect to application status
+        if ($user->role === 'Customer' && \App\Models\RoleApprovalRequest::where('user_id', $user->id)->where('status', 'pending')->exists()) {
+            return redirect()->route('application.status');
+        }
+
+        // If no roles are specified, just continue
+        if (empty($roles)) {
+            return $next($request);
         }
 
         // Check if user has any of the required roles
