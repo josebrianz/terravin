@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\VendorFormController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SalesController;
 
 
 Route::get('/', function () {
@@ -87,8 +88,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/chat/{user}', [ChatController::class, 'show'])->name('chat.show')->middleware('role:Supplier,Customer');
     Route::post('/chat/{user}', [ChatController::class, 'store'])->name('chat.store')->middleware('role:Supplier,Customer');
 });
-Route::view('/vendor/apply', 'vendor.apply');
-Route::post('/vendor/submit', [VendorFormController::class, 'submit']);
+// Vendor routes (commented out due to missing controller)
+// Route::view('/vendor/apply', 'vendor.apply');
+// Route::post('/vendor/submit', [VendorFormController::class, 'submit']);
 
 require __DIR__.'/auth.php';
 
@@ -116,3 +118,6 @@ Route::get('/logistics/shipments/{shipment}', [LogisticsDashboardController::cla
 Route::get('/analytics/dashboard', [AnalyticsDashboardController::class, 'index'])->name('analytics.dashboard');
 Route::post('/predict-sales', [AnalyticsDashboardController::class, 'predictSales'])->name('predict.sales');
 
+// Forecast Routes
+Route::get('/forecast', [SalesController::class, 'dashboard'])->name('forecast.dashboard');
+Route::post('/forecast/predict', [SalesController::class, 'predictCategory'])->name('forecast.predict');
