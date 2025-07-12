@@ -12,10 +12,12 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\VendorFormController;
 use App\Http\Controllers\HelpController;
 use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\SalesController;
+
 use Illuminate\Http\Request;
 use App\Models\Workforce;
 use App\Models\SupplyCentre;
-
 
 
 Route::get('/', function () {
@@ -114,8 +116,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/chat/{user}', [ChatController::class, 'show'])->name('chat.show')->middleware('role:Wholesaler,Customer');
     Route::post('/chat/{user}', [ChatController::class, 'store'])->name('chat.store')->middleware('role:Wholesaler,Customer');
 });
-Route::view('/vendor/apply', 'vendor.apply');
-Route::post('/vendor/submit', [VendorFormController::class, 'submit']);
+// Vendor routes (commented out due to missing controller)
+// Route::view('/vendor/apply', 'vendor.apply');
+// Route::post('/vendor/submit', [VendorFormController::class, 'submit']);
 
 // Retailer Dashboard Route
 Route::middleware(['auth', 'role:Retailer'])->group(function () {
@@ -270,3 +273,6 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
 
 Route::get('/workforce/assignments', [App\Http\Controllers\WorkforceDashboardController::class, 'assignments'])->name('workforce.assignments');
 
+// Forecast Routes
+Route::get('/forecast', [SalesController::class, 'dashboard'])->name('forecast.dashboard');
+Route::post('/forecast/predict', [SalesController::class, 'predictCategory'])->name('forecast.predict');
