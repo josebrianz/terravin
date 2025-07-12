@@ -8,7 +8,7 @@ The Manager role has been completely removed from the TERRAVIN system. All refer
 
 ### 1. **Role Model** (`app/Models/Role.php`)
 - ✅ Removed Manager role from `getAvailableRoles()` method
-- ✅ Updated available roles to: Admin, Vendor, Supplier, Customer
+- ✅ Updated available roles to: Admin, Vendor, Wholesaler, Customer
 
 ### 2. **Role Controller** (`app/Http/Controllers/RoleController.php`)
 - ✅ Updated validation rules in `updateUserRole()` method
@@ -59,7 +59,7 @@ The Manager role has been completely removed from the TERRAVIN system. All refer
 - Can view and update orders
 - Can view inventory
 
-### 3. **Supplier**
+### 3. **Wholesaler**
 - Procurement access
 - Can view and update procurement requests
 - Can view inventory
@@ -76,12 +76,12 @@ The Manager role has been completely removed from the TERRAVIN system. All refer
 - **After**: Admin and Logistics roles
 
 ### Inventory Routes
-- **Before**: Admin, Manager, Vendor, Supplier
-- **After**: Admin, Vendor, Supplier
+- **Before**: Admin, Manager, Vendor, Wholesaler
+- **After**: Admin, Vendor, Wholesaler
 
 ### Procurement Routes
-- **Before**: Admin, Manager, Supplier
-- **After**: Admin, Supplier
+- **Before**: Admin, Manager, Wholesaler
+- **After**: Admin, Wholesaler
 
 ### Order Management Routes
 - **Before**: Admin, Manager, Vendor, Customer

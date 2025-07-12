@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Role;
+use App\Models\RoleApprovalRequest;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -34,20 +35,30 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'role' => ['required', 'string', 'in:Vendor,Wholesaler,Retailer'],
         ]);
 
+        // Create user with Customer role initially
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'Customer', // Default role for new registrations
+            'role' => 'Customer', // Default to Customer role
+        ]);
+
+        // Create role approval request
+        RoleApprovalRequest::create([
+            'user_id' => $user->id,
+            'requested_role' => $request->role,
+            'status' => 'pending',
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect()->route('application.status')
+            ->with('success', 'Account created successfully! Your role upgrade request has been submitted and is pending admin approval.');
     }
 
     /**
@@ -68,7 +79,7 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'string', 'in:Admin,Vendor,Retailer,Supplier,Customer'],
+            'role' => ['required', 'string', 'in:Admin,Vendor,Retailer,Wholesaler,Customer'],
         ]);
 
         $user = User::create([

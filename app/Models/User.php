@@ -23,6 +23,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'profile_photo',
     ];
 
     /**
@@ -91,6 +92,52 @@ class User extends Authenticatable
         return true;
     }
 
+    /**
+     * Check if user can perform action on resource
+     */
+    public function canPerform(string $action, string $resource): bool
+    {
+        $permission = "{$action}_{$resource}";
+        return $this->hasPermission($permission);
+    }
+
+    /**
+     * Check if user can view their own data only
+     */
+    public function canViewOwn(string $resource): bool
+    {
+        return $this->hasPermission("view_own_{$resource}");
+    }
+
+    /**
+     * Check if user can view all data
+     */
+    public function canViewAll(string $resource): bool
+    {
+        return $this->hasPermission("view_all_{$resource}") || $this->hasPermission("view_{$resource}");
+    }
+
+    /**
+     * Get user's permissions as array
+     */
+    public function getPermissions(): array
+    {
+        $roleModel = $this->roleModel();
+        return $roleModel ? $roleModel->permissions : [];
+    }
+
+    /**
+     * Check if user has any admin permissions
+     */
+    public function hasAdminPermissions(): bool
+    {
+        return $this->hasAnyPermission([
+            'manage_roles',
+            'system_settings',
+            'view_audit_logs'
+        ]);
+    }
+
     // Role helper methods
     public function isAdmin(): bool
     {
@@ -107,9 +154,9 @@ class User extends Authenticatable
         return $this->role === 'Retailer';
     }
 
-    public function isSupplier(): bool
+    public function isWholesaler(): bool
     {
-        return $this->role === 'Supplier';
+        return $this->role === 'Wholesaler';
     }
 
     public function isCustomer(): bool
@@ -131,5 +178,29 @@ class User extends Authenticatable
     public static function getUsersByRole(string $role)
     {
         return self::where('role', $role)->get();
+    }
+
+    /**
+     * Get role approval requests for this user
+     */
+    public function roleApprovalRequests()
+    {
+        return $this->hasMany(RoleApprovalRequest::class);
+    }
+
+    /**
+     * Get pending role approval request for this user
+     */
+    public function getPendingRoleRequest()
+    {
+        return $this->roleApprovalRequests()->pending()->latest()->first();
+    }
+
+    /**
+     * Check if user has a pending role approval request
+     */
+    public function hasPendingRoleRequest(): bool
+    {
+        return $this->roleApprovalRequests()->pending()->exists();
     }
 }

@@ -1,3 +1,8 @@
+{{-- DEPRECATED: This page is no longer in use. All preferences are managed in the dashboard. --}}
+@if (request())
+    <script>window.location.href = '{{ route('stakeholders.dashboard') }}';</script>
+    <div class="alert alert-warning">This page is deprecated. Redirecting to dashboard...</div>
+@endif
 @extends('layout')
 
 @section('title', 'Report Preferences')
@@ -29,7 +34,7 @@
         <div class="mb-3">
             <label>Report Types</label>
             <div>
-                @foreach(['inventory','orders','sales & demand','supplier & vendor','financial & profitability'] as $type)
+                @foreach(['inventory','orders','sales & demand','wholesaler & vendor','financial & profitability'] as $type)
                     <label class="me-3">
                         <input type="checkbox" name="report_types[]" value="{{ $type }}"
                         {{ (is_array(old('report_types', $preference->report_types ?? [])) && in_array($type, old('report_types', $preference->report_types ?? []))) ? 'checked' : '' }}>

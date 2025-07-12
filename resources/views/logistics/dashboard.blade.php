@@ -1,1013 +1,61 @@
 @extends('layouts.app')
 
-@section('title', 'Wine Supply Logistics Dashboard')
+@section('title', 'Logistics Dashboard')
 
-@section('content')
-<div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="mb-1">Terravin Wine Company</h1>
-            <h4 class="text-muted">Logistics Dashboard</h4>
-        </div>
-        <button class="btn btn-primary" onclick="refreshDashboard()">
-            <i class="fas fa-sync-alt"></i> Refresh
-        </button>
-    </div>
-
-
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Shipments</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($totalShipments) }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-wine-bottle fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($pendingShipments) }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-clock fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">In Transit</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($inTransitShipments) }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-truck fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Delivered</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($deliveredShipments) }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Revenue & Inventory Section -->
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3">
-            <div class="card border-left-secondary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">Total Revenue</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ number_format($totalRevenue, 2) }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Monthly Revenue</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ number_format($monthlyRevenue, 2) }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Low Stock Wines</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($lowStockItems->count()) }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card border-left-danger shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Overdue</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($overdueShipmentsCount) }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-exclamation-circle fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Analytics Section -->
-    <div class="row mb-4">
-        <div class="col-xl-8 col-lg-7">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Wine Sales Revenue</h6>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="revenueChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-4 col-lg-5">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Shipment Status</h6>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="shipmentStatusChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Recent Shipments Section -->
-    <div class="row">
-        <div class="col-lg-6 mb-4">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Recent Wine Shipments</h6>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Tracking #</th>
-                                    <th>Status</th>
-                                    <th>Customer</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($recentShipments as $shipment)
-                                <tr>
-                                    <td>{{ $shipment->tracking_number }}</td>
-                                    <td>
-                                        <span class="badge {{ $shipment->status_badge }}">
-                                            {{ ucfirst(str_replace('_', ' ', $shipment->status)) }}
-                                        </span>
-                                    </td>
-                                    <td>{{ $shipment->order->user->name ?? 'N/A' }}</td>
-                                    <td>
-                                        <button class="btn btn-sm btn-info" onclick="viewShipment({{ $shipment->id }})">
-                                            <i class="fas fa-eye"></i> View
-                                        </button>
-                                        <button class="btn btn-sm btn-primary" onclick="updateStatus({{ $shipment->id }})">
-                                            <i class="fas fa-edit"></i> Update Status
-                                        </button>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                        @if($recentShipments->isEmpty())
-                            <div class="text-center text-muted">No recent shipments found.</div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Overdue Shipments -->
-    @if($overdueShipments->count() > 0)
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow mb-4 border-left-danger">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-danger">Overdue Wine Shipments</h6>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Tracking #</th>
-                                    <th>Customer</th>
-                                    <th>Estimated Delivery</th>
-                                    <th>Days Overdue</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($overdueShipments as $shipment)
-                                <tr class="table-danger">
-                                    <td>{{ $shipment->tracking_number }}</td>
-                                    <td>{{ $shipment->order->user->name ?? 'N/A' }}</td>
-                                    <td>{{ $shipment->estimated_delivery_date->format('M d, Y') }}</td>
-                                    <td>{{ $shipment->estimated_delivery_date->diffInDays(now()) }}</td>
-                                    <td>
-                                        <button class="btn btn-sm btn-success" onclick="markAsDelivered({{ $shipment->id }})">
-                                            <i class="fas fa-check"></i> Mark Delivered
-                                        </button>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    @endif
-</div>
-
-<!-- Modals -->
-<div class="modal fade" id="statusUpdateModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Update Wine Shipment Status</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="statusUpdateForm">
-                    <input type="hidden" id="shipmentId">
-                    <div class="mb-3">
-                        <label for="status" class="form-label">Status</label>
-                        <select class="form-select" id="status" required>
-                            <option value="pending">Pending</option>
-                            <option value="in_transit">In Transit</option>
-                            <option value="delivered">Delivered</option>
-                            <option value="cancelled">Cancelled</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="saveStatusUpdate()">Update Status</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Sidebar -->
-<div class="col-lg-4">
-    <!-- Upcoming Deliveries -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-white border-bottom">
-            <h6 class="mb-0 fw-bold text-primary">Upcoming Deliveries</h6>
-        </div>
-        <div class="card-body">
-            @forelse($upcomingDeliveries as $procurement)
-            <div class="mb-3 p-2 border-start border-3 border-primary bg-light rounded">
-                <h6 class="mb-1 fw-semibold">{{ $procurement->item_name }}</h6>
-                <span class="text-muted small">
-                    Expected: {{ $procurement->expected_delivery->format('M d, Y') }}<br>
-                    Supplier: {{ $procurement->supplier_name }}<br>
-                    PO: {{ $procurement->po_number }}
-                </span>
-            </div>
-            @empty
-            <p class="text-muted">No upcoming deliveries</p>
-            @endforelse
-        </div>
-    </div>
-
-    <!-- Top Suppliers -->
-    <div class="card shadow-sm">
-        <div class="card-header bg-white border-bottom">
-            <h6 class="mb-0 fw-bold text-primary">Top Suppliers</h6>
-        </div>
-        <div class="card-body">
-            @forelse($topSuppliers as $supplier)
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div>
-                    <h6 class="mb-0 fw-semibold">{{ $supplier->supplier_name }}</h6>
-                    <span class="text-muted small">{{ $supplier->order_count }} orders</span>
-                </div>
-                <div class="text-end">
-                    <strong>${{ number_format($supplier->total_value, 2) }}</strong>
-                </div>
-            </div>
-            @empty
-            <p class="text-muted">No supplier data available</p>
-            @endforelse
-        </div>
-    </div>
-</div>
-</div>
-
-<!-- Low Stock Alerts -->
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white border-bottom">
-                <h6 class="mb-0 fw-bold text-danger">Low Stock Alerts</h6>
-            </div>
-            <div class="card-body">
-                @if($lowStockItems->count() > 0)
-                <div class="table-responsive">
-                    <table class="table table-bordered align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Item Name</th>
-                                <th>Current Stock</th>
-                                <th>Description</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($lowStockItems as $item)
-                            <tr>
-                                <td class="fw-semibold">{{ $item->item_name }}</td>
-                                <td>
-                                    <span class="badge bg-danger">{{ $item->quantity }}</span>
-                                </td>
-                                <td>{{ $item->description ?? 'No description' }}</td>
-                                <td>
-                                    <a href="{{ route('inventory.edit', $item) }}" class="btn btn-sm btn-outline-primary" title="Update stock">
-                                        <i class="fas fa-edit"></i> Update
-                                    </a>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                @else
-                <div class="text-center text-success py-4">
-                    <i class="fas fa-check-circle fa-3x mb-3"></i>
-                    <h5>All items are well stocked!</h5>
-                    <p class="text-muted">No low stock alerts at this time.</p>
-                </div>
-                @endif
-            </div>
-        </div>
-    </div>
-</div>
-</div>
-<div class="modal fade" id="shipmentDetailsModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Wine Shipment Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="shipmentDetailsContent">
-                <!-- Content will be loaded here -->
-            </div>
-        </div>
-    </div>
-</div>
+@section('navigation')
+<!-- Hide the default navigation bar for this page -->
+<style>
+    nav.wine-navbar.border-b, nav.border-b {
+        display: none !important;
+    }
+</style>
 @endsection
 
-@push('styles')
-<style>
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-.page-title {
-    margin: 0;
-    font-size: 1.7rem;
-    font-weight: 700;
-}
-.table th, .table td {
-    vertical-align: middle;
-}
-hr {
-    border-top: 2px solid #e9ecef;
-}
-</style>
-@endpush
-
-@push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    initializeCharts();
-    setupAutoRefresh();
-});
-
-function initializeCharts() {
-    try {
-        // Revenue Chart
-        const revenueCtx = document.getElementById('revenueChart');
-        if (!revenueCtx) return;
-        const revenueData = {!! json_encode($revenueData) !!};
-        const revenueLabels = Object.keys(revenueData);
-        const revenueValues = Object.values(revenueData);
-        new Chart(revenueCtx.getContext('2d'), {
-            type: 'line',
-            data: {
-                labels: revenueLabels,
-                datasets: [{
-                    label: 'Wine Sales Revenue',
-                    data: revenueValues,
-                    borderColor: 'rgb(75, 192, 192)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    tension: 0.1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: { y: { beginAtZero: true } }
-            }
-        });
-        // Shipment Status Chart
-        const statusCtx = document.getElementById('shipmentStatusChart');
-        if (!statusCtx) return;
-        const statusData = {!! json_encode($shipmentStatusData) !!};
-        const statusLabels = Object.keys(statusData);
-        const statusValues = Object.values(statusData);
-        new Chart(statusCtx.getContext('2d'), {
-            type: 'doughnut',
-            data: {
-                labels: statusLabels,
-                datasets: [{
-                    data: statusValues,
-                    backgroundColor: [
-                        '#f6c23e',
-                        '#36b9cc',
-                        '#1cc88a',
-                        '#e74a3b'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
-    } catch (error) {
-        console.error('Error initializing charts:', error);
-    }
-}
-
-function setupAutoRefresh() {
-    setInterval(refreshDashboard, 300000); // 5 minutes
-}
-
-function refreshDashboard() {
-    location.reload();
-}
-
-function updateStatus(shipmentId) {
-    document.getElementById('shipmentId').value = shipmentId;
-    new bootstrap.Modal(document.getElementById('statusUpdateModal')).show();
-}
-
-function saveStatusUpdate() {
-    const shipmentId = document.getElementById('shipmentId').value;
-    const status = document.getElementById('status').value;
-    fetch(`/logistics/shipments/${shipmentId}/status`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        },
-        body: JSON.stringify({ status: status })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            bootstrap.Modal.getInstance(document.getElementById('statusUpdateModal')).hide();
-            location.reload();
-        } else {
-            alert('Error updating status');
-        }
-    })
-    .catch(error => {
-        alert('Error updating status');
-    });
-}
-
-function viewShipment(shipmentId) {
-    alert('viewShipment called with id: ' + shipmentId);
-    fetch(`/logistics/shipments/${shipmentId}`)
-    .then(response => response.json())
-    .then(data => {
-        const content = `
-            <div class="row">
-                <div class="col-md-6">
-                    <h6>Wine Shipment Information</h6>
-                    <p><strong>Tracking Number:</strong> ${data.shipment.tracking_number}</p>
-                    <p><strong>Status:</strong> <span class="badge bg-${getStatusColor(data.shipment.status)}">${data.shipment.status}</span></p>
-                    <p><strong>Carrier:</strong> ${data.shipment.carrier || 'N/A'}</p>
-                    <p><strong>Shipping Cost:</strong> $${data.shipment.shipping_cost}</p>
-                </div>
-                <div class="col-md-6">
-                    <h6>Order Information</h6>
-                    <p><strong>Order ID:</strong> ${data.shipment.order.id}</p>
-                    <p><strong>Customer:</strong> ${data.shipment.order.user.name}</p>
-                    <p><strong>Total Amount:</strong> $${data.shipment.order.total_amount}</p>
-                    <p><strong>Order Status:</strong> ${data.shipment.order.status}</p>
-                </div>
-            </div>
-            <div class="row mt-3">
-                <div class="col-12">
-                    <h6>Shipping Address</h6>
-                    <p>${data.shipment.shipping_address}</p>
-                </div>
-            </div>
-        `;
-        document.getElementById('shipmentDetailsContent').innerHTML = content;
-        new bootstrap.Modal(document.getElementById('shipmentDetailsModal')).show();
-    });
-}
-
-function markAsDelivered(shipmentId) {
-    if (confirm('Mark this wine shipment as delivered?')) {
-        fetch(`/logistics/shipments/${shipmentId}/status`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({ status: 'delivered' })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert('Error updating status');
-            }
-        });
-    }
-}
-
-function getStatusColor(status) {
-    const colors = {
-        'pending': 'warning',
-        'in_transit': 'info',
-        'delivered': 'success',
-        'cancelled': 'danger'
-    };
-    return colors[status] || 'secondary';
-}
-</script>
-@endpush
-@extends('layouts.admin')
-
-@section('title', 'Wine Supply Logistics Dashboard')
-
 @section('content')
-<div class="container-fluid">
-    <!-- Page Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="page-header border-bottom pb-3 mb-4 d-flex align-items-center justify-content-between">
-                <div>
-                    <h1 class="page-title mb-0 fw-bold text-burgundy">
-                        <i class="fas fa-truck me-2 text-gold"></i>
-                        Wine Supply Logistics Dashboard
-                    </h1>
-                    <span class="text-muted small">Monitor wine shipments, track deliveries, and manage logistics operations</span>
-                </div>
-                <div class="header-actions">
-                    <button class="btn btn-burgundy shadow-sm" onclick="refreshDashboard()" title="Refresh dashboard data">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                    </button>
-                    <span class="badge bg-gold text-burgundy px-3 py-2 ms-3">
-                        <i class="fas fa-clock me-1"></i>
-                        {{ now()->format('M d, Y H:i') }}
-                    </span>
-                </div>
-            </div>
+<!-- Custom Top Nav for Logistics Dashboard -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-burgundy fixed-top shadow wine-navbar" style="background: linear-gradient(90deg, #5e0f0f 0%, #7b2230 100%); z-index: 1050;">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="{{ route('logistics.dashboard') }}">
+            <span class="me-2" style="font-size: 2rem;"><i class="fas fa-wine-bottle"></i></span>
+            <span class="fw-bold" style="color: #c8a97e;">Terravin Logistics</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#logisticsNavbar" aria-controls="logisticsNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="logisticsNavbar">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link fw-bold" href="{{ route('logistics.dashboard') }}"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-bold" href="#shipments"><i class="fas fa-truck me-1"></i> Shipments</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-bold" href="{{ route('inventory.index') }}"><i class="fas fa-boxes me-1"></i> Inventory</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-bold" href="{{ route('orders.index') }}"><i class="fas fa-clipboard-list me-1"></i> Orders</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle fw-bold" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle me-1"></i> Profile
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Edit Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button class="dropdown-item text-danger" type="submit"><i class="fas fa-sign-out-alt me-1"></i> Logout</button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
         </div>
     </div>
-
-    <!-- Statistics Cards -->
-    <div class="row mb-4 g-3">
-        <div class="col-lg-3 col-md-6">
-            <div class="card wine-card shadow-sm border-0">
-                <div class="card-body text-center">
-                    <div class="icon-circle bg-burgundy mb-3">
-                        <i class="fas fa-wine-bottle fa-2x text-gold"></i>
-                    </div>
-                    <h4 class="mb-0 fw-bold text-burgundy">{{ number_format($totalShipments) }}</h4>
-                    <span class="text-muted small">Total Shipments</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card wine-card shadow-sm border-0">
-                <div class="card-body text-center">
-                    <div class="icon-circle bg-gold mb-3">
-                        <i class="fas fa-clock fa-2x text-burgundy"></i>
-                    </div>
-                    <h4 class="mb-0 fw-bold text-burgundy">{{ number_format($pendingShipments) }}</h4>
-                    <span class="text-muted small">Pending</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card wine-card shadow-sm border-0">
-                <div class="card-body text-center">
-                    <div class="icon-circle bg-burgundy mb-3">
-                        <i class="fas fa-truck fa-2x text-gold"></i>
-                    </div>
-                    <h4 class="mb-0 fw-bold text-burgundy">{{ number_format($inTransitShipments) }}</h4>
-                    <span class="text-muted small">In Transit</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card wine-card shadow-sm border-0">
-                <div class="card-body text-center">
-                    <div class="icon-circle bg-gold mb-3">
-                        <i class="fas fa-check-circle fa-2x text-burgundy"></i>
-                    </div>
-                    <h4 class="mb-0 fw-bold text-burgundy">{{ number_format($deliveredShipments) }}</h4>
-                    <span class="text-muted small">Delivered</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Revenue and Inventory Row -->
-    <div class="row mb-4 g-3">
-        <div class="col-lg-3 col-md-6">
-            <div class="card wine-card shadow-sm border-0">
-                <div class="card-body text-center">
-                    <div class="icon-circle bg-burgundy mb-3">
-                        <i class="fas fa-coins fa-2x text-gold"></i>
-                    </div>
-                    <h4 class="mb-0 fw-bold text-burgundy">UGX {{ number_format($totalRevenue, 0) }}</h4>
-                    <span class="text-muted small">Total Revenue</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card wine-card shadow-sm border-0">
-                <div class="card-body text-center">
-                    <div class="icon-circle bg-gold mb-3">
-                        <i class="fas fa-calendar fa-2x text-burgundy"></i>
-                    </div>
-                    <h4 class="mb-0 fw-bold text-burgundy">UGX {{ number_format($monthlyRevenue, 0) }}</h4>
-                    <span class="text-muted small">Monthly Revenue</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card wine-card shadow-sm border-0">
-                <div class="card-body text-center">
-                    <div class="icon-circle bg-burgundy mb-3">
-                        <i class="fas fa-exclamation-triangle fa-2x text-gold"></i>
-                    </div>
-                    <h4 class="mb-0 fw-bold text-burgundy">{{ number_format($lowStockItems->count()) }}</h4>
-                    <span class="text-muted small">Low Stock Wines</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card wine-card shadow-sm border-0">
-                <div class="card-body text-center">
-                    <div class="icon-circle bg-gold mb-3">
-                        <i class="fas fa-exclamation-circle fa-2x text-burgundy"></i>
-                    </div>
-                    <h4 class="mb-0 fw-bold text-burgundy">{{ number_format($overdueShipmentsCount) }}</h4>
-                    <span class="text-muted small">Overdue</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <hr class="my-4 wine-divider">
-
-    <!-- Charts Row -->
-    <div class="row mb-4 g-4">
-        <div class="col-xl-8 col-lg-7">
-            <div class="card wine-card shadow-sm border-0">
-                <div class="card-header bg-white border-bottom-0">
-                    <h5 class="card-title mb-0 fw-bold text-burgundy">
-                        <i class="fas fa-chart-line text-gold me-2"></i> Wine Sales Revenue
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="revenueChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-4 col-lg-5">
-            <div class="card wine-card shadow-sm border-0">
-                <div class="card-header bg-white border-bottom-0">
-                    <h5 class="card-title mb-0 fw-bold text-burgundy">
-                        <i class="fas fa-chart-pie text-gold me-2"></i> Shipment Status
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="shipmentStatusChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Content Row -->
-    <div class="row g-4">
-        <!-- Recent Shipments -->
-        <div class="col-lg-6">
-            <div class="card wine-card shadow-sm border-0">
-                <div class="card-header bg-white border-bottom-0">
-                    <h5 class="card-title mb-0 fw-bold text-burgundy">
-                        <i class="fas fa-history text-gold me-2"></i> Recent Wine Shipments
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="text-burgundy fw-bold">Tracking #</th>
-                                    <th class="text-burgundy fw-bold">Status</th>
-                                    <th class="text-burgundy fw-bold">Customer</th>
-                                    <th class="text-burgundy fw-bold">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($recentShipments as $shipment)
-                                <tr>
-                                    <td>
-                                        <strong class="text-burgundy">{{ $shipment->tracking_number }}</strong>
-                                    </td>
-                                    <td>
-                                        <span class="badge {{ $shipment->status_badge }}">
-                                            {{ ucfirst(str_replace('_', ' ', $shipment->status)) }}
-                                        </span>
-                                    </td>
-                                    <td>{{ $shipment->order->user->name ?? 'N/A' }}</td>
-                                    <td>
-                                        <div class="btn-group btn-group-sm" role="group">
-                                            <button class="btn btn-outline-burgundy" onclick="viewShipment({{ $shipment->id }})" title="View details">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <button class="btn btn-outline-gold" onclick="updateStatus({{ $shipment->id }})" title="Update status">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Low Stock Alerts -->
-        <div class="col-lg-6">
-            <div class="card wine-card shadow-sm border-0">
-                <div class="card-header bg-white border-bottom-0">
-                    <h5 class="card-title mb-0 fw-bold text-burgundy">
-                        <i class="fas fa-exclamation-triangle text-gold me-2"></i> Low Stock Wine Alerts
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="text-burgundy fw-bold">Wine</th>
-                                    <th class="text-burgundy fw-bold">SKU</th>
-                                    <th class="text-burgundy fw-bold">Bottles</th>
-                                    <th class="text-burgundy fw-bold">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($lowStockItemsList as $item)
-                                <tr class="{{ $item->isOutOfStock() ? 'table-danger' : 'table-warning' }}">
-                                    <td class="fw-semibold text-burgundy">{{ $item->name }}</td>
-                                    <td>{{ $item->sku }}</td>
-                                    <td>
-                                        <span class="badge bg-danger">{{ $item->quantity }}</span>
-                                    </td>
-                                    <td>
-                                        <span class="badge {{ $item->stock_status_badge }}">
-                                            {{ ucfirst(str_replace('_', ' ', $item->stock_status)) }}
-                                        </span>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Overdue Shipments -->
-    @if($overdueShipments->count() > 0)
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card wine-card shadow-sm border-0 border-start border-danger border-4">
-                <div class="card-header bg-white border-bottom-0">
-                    <h5 class="card-title mb-0 fw-bold text-danger">
-                        <i class="fas fa-exclamation-circle text-danger me-2"></i> Overdue Wine Shipments
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="text-burgundy fw-bold">Tracking #</th>
-                                    <th class="text-burgundy fw-bold">Customer</th>
-                                    <th class="text-burgundy fw-bold">Estimated Delivery</th>
-                                    <th class="text-burgundy fw-bold">Days Overdue</th>
-                                    <th class="text-burgundy fw-bold">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($overdueShipments as $shipment)
-                                <tr class="table-danger">
-                                    <td>
-                                        <strong class="text-burgundy">{{ $shipment->tracking_number }}</strong>
-                                    </td>
-                                    <td>{{ $shipment->order->user->name ?? 'N/A' }}</td>
-                                    <td>{{ $shipment->estimated_delivery_date->format('M d, Y') }}</td>
-                                    <td>
-                                        <span class="badge bg-danger">{{ $shipment->estimated_delivery_date->diffInDays(now()) }}</span>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-success" onclick="markAsDelivered({{ $shipment->id }})" title="Mark as delivered">
-                                            <i class="fas fa-check"></i> Mark Delivered
-                                        </button>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    @endif
-
-    <hr class="my-4 wine-divider">
-
-    <!-- Sidebar Content -->
-    <div class="row g-4">
-        <!-- Upcoming Deliveries -->
-        <div class="col-lg-6">
-            <div class="card wine-card shadow-sm border-0">
-                <div class="card-header bg-white border-bottom-0">
-                    <h5 class="card-title mb-0 fw-bold text-burgundy">
-                        <i class="fas fa-calendar-check text-gold me-2"></i> Upcoming Deliveries
-                    </h5>
-                </div>
-                <div class="card-body">
-                    @forelse($upcomingDeliveries as $procurement)
-                    <div class="mb-3 p-3 border-start border-3 border-burgundy bg-light rounded wine-list-item">
-                        <h6 class="mb-1 fw-semibold text-burgundy">{{ $procurement->item_name }}</h6>
-                        <span class="text-muted small">
-                            Expected: {{ $procurement->expected_delivery->format('M d, Y') }}<br>
-                            Supplier: {{ $procurement->supplier_name }}<br>
-                            PO: {{ $procurement->po_number }}
-                        </span>
-                    </div>
-                    @empty
-                    <div class="text-center text-muted py-4">
-                        <i class="fas fa-calendar-times fa-2x mb-2"></i>
-                        <p class="mb-0">No upcoming deliveries</p>
-                    </div>
-                    @endforelse
-                </div>
-            </div>
-        </div>
-
-        <!-- Top Suppliers -->
-        <div class="col-lg-6">
-            <div class="card wine-card shadow-sm border-0">
-                <div class="card-header bg-white border-bottom-0">
-                    <h5 class="card-title mb-0 fw-bold text-burgundy">
-                        <i class="fas fa-trophy text-gold me-2"></i> Top Suppliers
-                    </h5>
-                </div>
-                <div class="card-body">
-                    @forelse($topSuppliers as $supplier)
-                    <div class="d-flex justify-content-between align-items-center mb-3 p-2 wine-list-item rounded">
-                        <div>
-                            <h6 class="mb-0 fw-semibold text-burgundy">{{ $supplier->supplier_name }}</h6>
-                            <span class="text-muted small">Supplier</span>
-                        </div>
-                        <div class="text-end">
-                            <strong class="text-burgundy">UGX {{ number_format($supplier->total_value, 0) }}</strong>
-                        </div>
-                    </div>
-                    @empty
-                    <div class="text-center text-muted py-4">
-                        <i class="fas fa-info-circle fa-2x mb-2"></i>
-                        <p class="mb-0">No supplier data available</p>
-                    </div>
-                    @endforelse
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modals -->
-<div class="modal fade" id="statusUpdateModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-burgundy text-white">
-                <h5 class="modal-title">
-                    <i class="fas fa-edit me-2"></i> Update Wine Shipment Status
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="statusUpdateForm">
-                    <input type="hidden" id="shipmentId">
-                    <div class="mb-3">
-                        <label for="status" class="form-label fw-bold text-burgundy">Status</label>
-                        <select class="form-select" id="status" required>
-                            <option value="pending">Pending</option>
-                            <option value="in_transit">In Transit</option>
-                            <option value="delivered">Delivered</option>
-                            <option value="cancelled">Cancelled</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-burgundy" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-burgundy" onclick="saveStatusUpdate()">Update Status</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="shipmentDetailsModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-burgundy text-white">
-                <h5 class="modal-title">
-                    <i class="fas fa-wine-bottle me-2"></i> Wine Shipment Details
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="shipmentDetailsContent">
-                <!-- Content will be loaded here -->
-            </div>
-        </div>
-    </div>
-</div>
-
-@push('styles')
+</nav>
+<div style="height: 70px;"></div> <!-- Spacer for fixed nav -->
 <style>
 :root {
     --burgundy: #5e0f0f;
@@ -1016,300 +64,545 @@ function getStatusColor(status) {
     --light-burgundy: #8b1a1a;
     --dark-gold: #b8945f;
 }
-
+.wine-theme-bg {
+    background: linear-gradient(135deg, var(--cream) 0%, #fff 100%), url('/public/images/chateu-rouge.jpg') center/cover no-repeat;
+    min-height: 100vh;
+}
+.card, .stat-card {
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(94, 15, 15, 0.08);
+    border: none;
+    background: #fff7f3;
+}
 .page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
     background: linear-gradient(135deg, var(--cream) 0%, #fff 100%);
-    padding: 1.5rem;
     border-radius: 12px;
     box-shadow: 0 2px 10px rgba(94, 15, 15, 0.1);
 }
-
-.page-title {
-    margin: 0;
-}
-
 .text-burgundy {
     color: var(--burgundy) !important;
 }
-
 .text-gold {
     color: var(--gold) !important;
 }
-
 .bg-burgundy {
     background-color: var(--burgundy) !important;
 }
-
 .bg-gold {
     background-color: var(--gold) !important;
 }
-
+/* BUTTON VISIBILITY ENHANCEMENTS */
+.btn, .btn-burgundy, .btn-gold, .btn-outline-burgundy, .btn-outline-gold {
+    font-size: 1.1rem !important;
+    font-weight: 700 !important;
+    border-width: 2px !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 8px rgba(94, 15, 15, 0.10) !important;
+    transition: all 0.2s !important;
+    outline: none !important;
+}
 .btn-burgundy {
-    background-color: var(--burgundy);
-    border-color: var(--burgundy);
-    color: white;
+    background-color: var(--burgundy) !important;
+    border-color: var(--burgundy) !important;
+    color: #fff !important;
 }
-
-.btn-burgundy:hover {
-    background-color: var(--light-burgundy);
-    border-color: var(--light-burgundy);
-    color: white;
+.btn-burgundy:hover, .btn-burgundy:focus {
+    background-color: var(--light-burgundy) !important;
+    border-color: var(--light-burgundy) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 16px rgba(94, 15, 15, 0.18) !important;
 }
-
+.btn-gold {
+    background-color: var(--gold) !important;
+    border-color: var(--gold) !important;
+    color: var(--burgundy) !important;
+}
+.btn-gold:hover, .btn-gold:focus {
+    background-color: var(--dark-gold) !important;
+    border-color: var(--dark-gold) !important;
+    color: var(--burgundy) !important;
+    box-shadow: 0 4px 16px rgba(200, 169, 126, 0.18) !important;
+}
 .btn-outline-burgundy {
-    color: var(--burgundy);
-    border-color: var(--burgundy);
+    border-color: var(--burgundy) !important;
+    color: var(--burgundy) !important;
+    background: #fff !important;
 }
-
-.btn-outline-burgundy:hover {
-    background-color: var(--burgundy);
-    border-color: var(--burgundy);
-    color: white;
+.btn-outline-burgundy:hover, .btn-outline-burgundy:focus {
+    background-color: var(--burgundy) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 16px rgba(94, 15, 15, 0.18) !important;
 }
-
 .btn-outline-gold {
-    color: var(--gold);
-    border-color: var(--gold);
+    border-color: var(--gold) !important;
+    color: var(--gold) !important;
+    background: #fff !important;
 }
-
-.btn-outline-gold:hover {
-    background-color: var(--gold);
-    border-color: var(--gold);
-    color: var(--burgundy);
+.btn-outline-gold:hover, .btn-outline-gold:focus {
+    background-color: var(--gold) !important;
+    color: var(--burgundy) !important;
+    box-shadow: 0 4px 16px rgba(200, 169, 126, 0.18) !important;
 }
-
-.wine-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.wine-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(94, 15, 15, 0.15) !important;
-}
-
-.icon-circle {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.wine-divider {
-    border: none;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    margin: 2rem 0;
-}
-
 .wine-list-item {
-    transition: background-color 0.2s ease;
-    border-radius: 8px;
+    background: #f5f0e6;
+    border-left: 4px solid var(--burgundy);
     margin-bottom: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
 }
-
-.wine-list-item:hover {
-    background-color: var(--cream);
+.wine-action-btn {
+    min-width: 200px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.2s;
 }
-
-.header-actions .badge {
-    border-radius: 20px;
-    font-weight: 500;
+.wine-action-btn:active {
+    transform: scale(0.98);
 }
-
-.card-header {
-    border-bottom: 2px solid var(--cream);
-    background: linear-gradient(135deg, #fff 0%, var(--cream) 100%);
+.wine-navbar {
+    background: linear-gradient(90deg, #5e0f0f 0%, #7b2230 100%) !important;
+    color: #fff !important;
 }
-
-@media (max-width: 768px) {
-    .page-header {
-        flex-direction: column;
-        text-align: center;
-        gap: 1rem;
-    }
-    
-    .header-actions {
-        order: -1;
-    }
+.wine-navbar a, .wine-navbar .dropdown-link, .wine-navbar .nav-link, .wine-navbar .font-medium {
+    color: #fff !important;
+}
+.wine-navbar a:hover, .wine-navbar .dropdown-link:hover, .wine-navbar .nav-link:hover {
+    color: #c8a97e !important;
+}
+.wine-navbar .wine-logo {
+    font-size: 2rem;
+    color: #c8a97e;
+    margin-right: 0.5rem;
+}
+.wine-navbar .wine-btn {
+    background: #b85c38;
+    color: #fff;
+    border-radius: 2rem;
+    padding: 0.3rem 1.2rem;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+.wine-navbar .wine-btn:hover {
+    background: #7b2230;
+    color: #fff;
+}
+.wine-navbar .dropdown-menu {
+    background: #fff7f3;
 }
 </style>
-@endpush
+<div class="wine-theme-bg min-vh-100">
+    <div class="container-fluid py-4">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="page-header border-bottom pb-3 mb-4 d-flex align-items-center justify-content-between">
+                    <div>
+                        <h1 class="page-title mb-0 fw-bold text-burgundy">
+                            <i class="fas fa-truck me-2 text-gold"></i>
+                            Logistics Dashboard
+                        </h1>
+                        <span class="text-muted small">Monitor and manage all logistics operations in real time</span>
+                    </div>
+                    <div class="header-actions d-flex align-items-center gap-2">
+                        <button class="btn btn-gold shadow-sm" data-bs-toggle="modal" data-bs-target="#createShipmentModal">
+                            <i class="fas fa-plus me-1"></i> New Shipment
+                        </button>
+                        <a href="{{ route('logistics.dashboard') }}" class="btn btn-outline-burgundy shadow-sm">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </a>
+                        <span class="badge bg-gold text-burgundy px-3 py-2">
+                            <i class="fas fa-clock me-1"></i>
+                            {{ now()->format('M d, Y H:i') }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Overview Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-2 col-6">
+                <div class="card shadow-sm text-center stat-card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-shipping-fast fa-2x text-gold mb-2"></i>
+                        <h6 class="fw-bold">Total Shipments</h6>
+                        <div class="display-6 fw-bold">{{ $totalShipments ?? 0 }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="card shadow-sm text-center stat-card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-clock fa-2x text-burgundy mb-2"></i>
+                        <h6 class="fw-bold">Pending</h6>
+                        <div class="display-6 fw-bold">{{ $pendingShipments ?? 0 }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="card shadow-sm text-center stat-card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-truck-loading fa-2x text-gold mb-2"></i>
+                        <h6 class="fw-bold">In Transit</h6>
+                        <div class="display-6 fw-bold">{{ $inTransitShipments ?? 0 }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="card shadow-sm text-center stat-card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-box-open fa-2x text-burgundy mb-2"></i>
+                        <h6 class="fw-bold">Delivered</h6>
+                        <div class="display-6 fw-bold">{{ $deliveredShipments ?? 0 }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="card shadow-sm text-center stat-card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-exclamation-triangle fa-2x text-gold mb-2"></i>
+                        <h6 class="fw-bold">Overdue</h6>
+                        <div class="display-6 fw-bold">{{ $overdueShipmentsCount ?? 0 }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="card shadow-sm text-center stat-card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-boxes fa-2x text-gold mb-2"></i>
+                        <h6 class="fw-bold">Low Stock</h6>
+                        <div class="display-6 fw-bold">{{ $lowStockItems->count() ?? 0 }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Shipment Status Chart & Quick Actions -->
+        <div class="row mb-4 g-3">
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header bg-white border-bottom-0 d-flex align-items-center justify-content-between">
+                        <h5 class="card-title mb-0 fw-bold text-burgundy">
+                            <i class="fas fa-chart-pie text-gold me-2"></i> Shipment Status Overview
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="shipmentStatusChart" height="120"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header bg-white border-bottom-0">
+                        <h5 class="card-title mb-0 fw-bold text-burgundy">
+                            <i class="fas fa-bolt text-gold me-2"></i> Quick Actions
+                        </h5>
+                    </div>
+                    <div class="card-body d-grid gap-2">
+                        <a href="#" class="btn btn-burgundy shadow-sm" data-bs-toggle="modal" data-bs-target="#createShipmentModal"><i class="fas fa-plus"></i> Create Shipment</a>
+                        <a href="{{ route('orders.index') }}" class="btn btn-gold shadow-sm"><i class="fas fa-clipboard-list"></i> View Orders</a>
+                        <a href="{{ route('inventory.index') }}" class="btn btn-outline-burgundy shadow-sm"><i class="fas fa-boxes"></i> Inventory</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Recent Shipments Table -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header bg-white border-bottom-0 d-flex align-items-center justify-content-between">
+                        <h5 class="card-title mb-0 fw-bold text-burgundy">
+                            <i class="fas fa-truck text-gold me-2"></i> Recent Shipments
+                        </h5>
+                        <a href="#" class="btn btn-outline-secondary btn-sm">View All</a>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Status</th>
+                                        <th>Cost</th>
+                                        <th>Destination</th>
+                                        <th>Order</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($recentShipments ?? [] as $shipment)
+                                    <tr>
+                                        <td>#{{ $shipment->id }}</td>
+                                        <td><span class="badge bg-{{ $shipment->status == 'delivered' ? 'success' : ($shipment->status == 'in_transit' ? 'warning' : ($shipment->status == 'pending' ? 'secondary' : 'danger')) }}">{{ ucfirst($shipment->status) }}</span></td>
+                                        <td>UGX {{ number_format($shipment->shipping_cost, 0) }}</td>
+                                        <td>{{ $shipment->order->delivery_address ?? 'N/A' }}</td>
+                                        <td>#{{ $shipment->order->id ?? 'N/A' }}</td>
+                                        <td>{{ $shipment->created_at->format('M d, Y') }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-gold" data-bs-toggle="modal" data-bs-target="#shipmentDetailsModal" data-shipment-id="{{ $shipment->id }}"><i class="fas fa-eye"></i></button>
+                                            <button class="btn btn-sm btn-outline-burgundy" data-bs-toggle="modal" data-bs-target="#updateStatusModal" data-shipment-id="{{ $shipment->id }}"><i class="fas fa-edit"></i></button>
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted py-4">No recent shipments</td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Upcoming Deliveries Table -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header bg-white border-bottom-0">
+                        <h5 class="card-title mb-0 fw-bold text-burgundy">
+                            <i class="fas fa-calendar-alt text-gold me-2"></i> Upcoming Deliveries
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Expected Date</th>
+                                        <th>Supplier</th>
+                                        <th>Order</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($upcomingDeliveries ?? [] as $delivery)
+                                    <tr>
+                                        <td>#{{ $delivery->id }}</td>
+                                        <td>{{ $delivery->expected_delivery }}</td>
+                                        <td>{{ $delivery->supplier_name ?? 'N/A' }}</td>
+                                        <td>#{{ $delivery->order_id ?? 'N/A' }}</td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-4">No upcoming deliveries</td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Low Stock Items Table -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header bg-white border-bottom-0">
+                        <h5 class="card-title mb-0 fw-bold text-burgundy">
+                            <i class="fas fa-boxes text-gold me-2"></i> Low Stock Items
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Quantity</th>
+                                        <th>Reorder</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($lowStockItems ?? [] as $item)
+                                    <tr>
+                                        <td>{{ $item->name }}</td>
+                                        <td>{{ $item->quantity }}</td>
+                                        <td><a href="#" class="btn btn-sm btn-outline-gold"><i class="fas fa-cart-plus"></i> Reorder</a></td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted py-4">No low stock items</td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals (now functional) -->
+<div class="modal fade" id="createShipmentModal" tabindex="-1" aria-labelledby="createShipmentModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="createShipmentForm">
+        <div class="modal-header">
+          <h5 class="modal-title" id="createShipmentModalLabel">Create New Shipment</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="order_id" class="form-label">Order</label>
+            <select class="form-select" id="order_id" name="order_id" required>
+              <option value="">Select Order</option>
+              @foreach($orders as $order)
+                <option value="{{ $order->id }}">#{{ $order->id }} - {{ $order->customer_name ?? $order->user->name ?? 'N/A' }}</option>
+              @endforeach
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="status" class="form-label">Status</label>
+            <select class="form-select" id="status" name="status" required>
+              <option value="pending">Pending</option>
+              <option value="in_transit">In Transit</option>
+              <option value="delivered">Delivered</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="shipping_cost" class="form-label">Shipping Cost (UGX)</label>
+            <input type="number" class="form-control" id="shipping_cost" name="shipping_cost" min="0" required>
+          </div>
+          <div class="mb-3">
+            <label for="estimated_delivery_date" class="form-label">Estimated Delivery Date</label>
+            <input type="date" class="form-control" id="estimated_delivery_date" name="estimated_delivery_date">
+          </div>
+          <div id="createShipmentError" class="alert alert-danger d-none"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-burgundy">Create Shipment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="shipmentDetailsModal" tabindex="-1" aria-labelledby="shipmentDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="shipmentDetailsModalLabel">Shipment Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="shipmentDetailsBody">
+        <p>Loading...</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="updateStatusForm">
+        <div class="modal-header">
+          <h5 class="modal-title" id="updateStatusModalLabel">Update Shipment Status</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="update_shipment_id" name="shipment_id">
+          <div class="mb-3">
+            <label for="update_status" class="form-label">Status</label>
+            <select class="form-select" id="update_status" name="status" required>
+              <option value="pending">Pending</option>
+              <option value="in_transit">In Transit</option>
+              <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div id="updateStatusError" class="alert alert-danger d-none"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-gold">Update Status</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    initializeCharts();
-    setupAutoRefresh();
+// CSRF token for AJAX
+const csrfToken = '{{ csrf_token() }}';
+
+// Create Shipment AJAX
+$('#createShipmentForm').on('submit', function(e) {
+    e.preventDefault();
+    const form = $(this);
+    const data = form.serialize();
+    $.ajax({
+        url: '{{ route('logistics.shipments.store') }}',
+        method: 'POST',
+        data: data,
+        headers: { 'X-CSRF-TOKEN': csrfToken },
+        success: function(response) {
+            $('#createShipmentModal').modal('hide');
+            location.reload();
+        },
+        error: function(xhr) {
+            $('#createShipmentError').removeClass('d-none').text(xhr.responseJSON?.message || 'Error creating shipment.');
+        }
+    });
 });
 
-function initializeCharts() {
-    try {
-        // Revenue Chart
-        const revenueCtx = document.getElementById('revenueChart');
-        if (!revenueCtx) return;
-        const revenueData = {!! json_encode($revenueData) !!};
-        const revenueLabels = Object.keys(revenueData);
-        const revenueValues = Object.values(revenueData);
-        new Chart(revenueCtx.getContext('2d'), {
-            type: 'line',
-            data: {
-                labels: revenueLabels,
-                datasets: [{
-                    label: 'Wine Sales Revenue',
-                    data: revenueValues,
-                    borderColor: 'rgb(75, 192, 192)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    tension: 0.1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: { y: { beginAtZero: true } }
-            }
-        });
-        // Shipment Status Chart
-        const statusCtx = document.getElementById('shipmentStatusChart');
-        if (!statusCtx) return;
-        const statusData = {!! json_encode($shipmentStatusData) !!};
-        const statusLabels = Object.keys(statusData);
-        const statusValues = Object.values(statusData);
-        new Chart(statusCtx.getContext('2d'), {
-            type: 'doughnut',
-            data: {
-                labels: statusLabels,
-                datasets: [{
-                    data: statusValues,
-                    backgroundColor: [
-                        '#f6c23e',
-                        '#36b9cc',
-                        '#1cc88a',
-                        '#e74a3b'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
-    } catch (error) {
-        console.error('Error initializing charts:', error);
-    }
-}
-
-function setupAutoRefresh() {
-    setInterval(refreshDashboard, 300000); // 5 minutes
-}
-
-function refreshDashboard() {
-    location.reload();
-}
-
-function updateStatus(shipmentId) {
-    document.getElementById('shipmentId').value = shipmentId;
-    new bootstrap.Modal(document.getElementById('statusUpdateModal')).show();
-}
-
-function saveStatusUpdate() {
-    const shipmentId = document.getElementById('shipmentId').value;
-    const status = document.getElementById('status').value;
-    fetch(`/logistics/shipments/${shipmentId}/status`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        },
-        body: JSON.stringify({ status: status })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            bootstrap.Modal.getInstance(document.getElementById('statusUpdateModal')).hide();
-            location.reload();
+// Load Shipment Details AJAX
+$('#shipmentDetailsModal').on('show.bs.modal', function(event) {
+    const button = $(event.relatedTarget);
+    const shipmentId = button.data('shipment-id');
+    const modalBody = $('#shipmentDetailsBody');
+    modalBody.html('<p>Loading...</p>');
+    $.get('/logistics/shipments/' + shipmentId, function(data) {
+        if (data.shipment) {
+            const s = data.shipment;
+            modalBody.html(`
+                <ul class="list-group">
+                    <li class="list-group-item"><strong>ID:</strong> #${s.id}</li>
+                    <li class="list-group-item"><strong>Status:</strong> ${s.status}</li>
+                    <li class="list-group-item"><strong>Shipping Cost:</strong> UGX ${s.shipping_cost}</li>
+                    <li class="list-group-item"><strong>Order ID:</strong> #${s.order_id}</li>
+                    <li class="list-group-item"><strong>Estimated Delivery:</strong> ${s.estimated_delivery_date ?? 'N/A'}</li>
+                    <li class="list-group-item"><strong>Created:</strong> ${s.created_at}</li>
+                </ul>
+            `);
         } else {
-            alert('Error updating status');
+            modalBody.html('<p>Shipment not found.</p>');
         }
-    })
-    .catch(error => {
-        alert('Error updating status');
+    }).fail(function() {
+        modalBody.html('<p>Error loading shipment details.</p>');
     });
-}
+});
 
-function viewShipment(shipmentId) {
-    alert('viewShipment called with id: ' + shipmentId);
-    fetch(`/logistics/shipments/${shipmentId}`)
-    .then(response => response.json())
-    .then(data => {
-        const content = `
-            <div class="row">
-                <div class="col-md-6">
-                    <h6>Wine Shipment Information</h6>
-                    <p><strong>Tracking Number:</strong> ${data.shipment.tracking_number}</p>
-                    <p><strong>Status:</strong> <span class="badge bg-${getStatusColor(data.shipment.status)}">${data.shipment.status}</span></p>
-                    <p><strong>Carrier:</strong> ${data.shipment.carrier || 'N/A'}</p>
-                    <p><strong>Shipping Cost:</strong> UGX ${data.shipment.shipping_cost}</p>
-                </div>
-                <div class="col-md-6">
-                    <h6>Order Information</h6>
-                    <p><strong>Order ID:</strong> ${data.shipment.order.id}</p>
-                    <p><strong>Customer:</strong> ${data.shipment.order.user.name}</p>
-                    <p><strong>Total Amount:</strong> UGX ${data.shipment.order.total_amount}</p>
-                    <p><strong>Order Status:</strong> ${data.shipment.order.status}</p>
-                </div>
-            </div>
-            <div class="row mt-3">
-                <div class="col-12">
-                    <h6>Shipping Address</h6>
-                    <p>${data.shipment.shipping_address}</p>
-                </div>
-            </div>
-        `;
-        document.getElementById('shipmentDetailsContent').innerHTML = content;
-        new bootstrap.Modal(document.getElementById('shipmentDetailsModal')).show();
+// Update Status Modal: set shipment id
+$('#updateStatusModal').on('show.bs.modal', function(event) {
+    const button = $(event.relatedTarget);
+    const shipmentId = button.data('shipment-id');
+    $('#update_shipment_id').val(shipmentId);
+});
+
+// Update Status AJAX
+$('#updateStatusForm').on('submit', function(e) {
+    e.preventDefault();
+    const shipmentId = $('#update_shipment_id').val();
+    const status = $('#update_status').val();
+    $.ajax({
+        url: '/logistics/shipments/' + shipmentId + '/status',
+        method: 'PUT',
+        data: { status: status, _token: csrfToken },
+        success: function(response) {
+            $('#updateStatusModal').modal('hide');
+            location.reload();
+        },
+        error: function(xhr) {
+            $('#updateStatusError').removeClass('d-none').text(xhr.responseJSON?.message || 'Error updating status.');
+        }
     });
-}
-
-function markAsDelivered(shipmentId) {
-    if (confirm('Mark this wine shipment as delivered?')) {
-        fetch(`/logistics/shipments/${shipmentId}/status`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({ status: 'delivered' })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert('Error updating status');
-            }
-        });
-    }
-}
-
-function getStatusColor(status) {
-    const colors = {
-        'pending': 'warning',
-        'in_transit': 'info',
-        'delivered': 'success',
-        'cancelled': 'danger'
-    };
-    return colors[status] || 'secondary';
-}
+});
 </script>
 @endpush

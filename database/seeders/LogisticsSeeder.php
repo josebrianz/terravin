@@ -30,7 +30,10 @@ class LogisticsSeeder extends Seeder
         ];
 
         foreach ($inventoryItems as $item) {
-            Inventory::create($item);
+            Inventory::updateOrCreate(
+                ['sku' => $item['sku']],
+                $item
+            );
         }
     }
 } 

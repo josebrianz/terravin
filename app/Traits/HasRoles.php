@@ -38,6 +38,7 @@ trait HasRoles
             'Vendor' => 'Vendor',
             'Retailer' => 'Retailer',
             'Supplier' => 'Supplier',
+            'Wholesaler' => 'Wholesaler',
             'Customer' => 'Customer'
         ];
 
@@ -54,6 +55,7 @@ trait HasRoles
             'Vendor' => 'info',
             'Retailer' => 'success',
             'Supplier' => 'warning',
+            'Wholesaler' => 'warning',
             'Customer' => 'secondary'
         ];
 

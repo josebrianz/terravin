@@ -32,8 +32,8 @@ This Laravel application implements a comprehensive Role-Based Access Control (R
   - `update_procurement_status` - Update procurement status
   - `view_inventory` - View inventory information
 
-### 4. Supplier
-- **Description**: Supplier access for order fulfillment and shipment management
+### 4. Wholesaler
+- **Description**: Wholesaler access for order fulfillment and shipment management
 - **Permissions**:
   - `view_orders` - View order details
   - `update_order_status` - Update order status
@@ -67,7 +67,7 @@ This Laravel application implements a comprehensive Role-Based Access Control (R
 $user->isAdmin();
 $user->isVendor();
 $user->isRetailer();
-$user->isSupplier();
+$user->isWholesaler();
 $user->isCustomer();
 
 // Permission checking methods

@@ -13,9 +13,12 @@
                         <i class="fas fa-wine-bottle me-2 text-gold"></i>
                         Wine Supply Procurement Dashboard
                     </h1>
-                    <span class="text-muted small">Overview of all procurement activities and supplier performance</span>
+                    <span class="text-muted small">Overview of all procurement activities and wholesaler performance</span>
                 </div>
                 <div class="header-actions">
+                    <a href="{{ route('help.index') }}" class="btn btn-outline-burgundy shadow-sm me-2" title="Get help and support">
+                        <i class="fas fa-question-circle"></i> Help
+                    </a>
                     <a href="{{ route('procurement.create') }}" class="btn btn-burgundy shadow-sm" title="Create a new supply order">
                         <i class="fas fa-plus"></i> New Supply Order
                     </a>
@@ -166,7 +169,7 @@
                                 <tr>
                                     <th class="text-burgundy fw-bold">PO Number</th>
                                     <th class="text-burgundy fw-bold">Supply Item</th>
-                                    <th class="text-burgundy fw-bold">Supplier</th>
+                                    <th class="text-burgundy fw-bold">Wholesaler</th>
                                     <th class="text-burgundy fw-bold">Amount</th>
                                     <th class="text-burgundy fw-bold">Status</th>
                                     <th class="text-burgundy fw-bold">Requested By</th>
@@ -182,7 +185,7 @@
                                         </a>
                                     </td>
                                     <td>{{ $procurement->item_name }}</td>
-                                    <td>{{ $procurement->supplier_name }}</td>
+                                    <td>{{ $procurement->wholesaler_name }}</td>
                                     <td class="fw-bold">UGX {{ number_format($procurement->amount, 0) }}</td>
                                     <td>
                                         @switch($procurement->status)
@@ -254,26 +257,26 @@
                 </div>
             </div>
 
-            <!-- Supplier Performance -->
+            <!-- Wholesaler Performance -->
             <div class="card wine-card shadow-sm border-0 mt-4">
                 <div class="card-header bg-white border-bottom-0">
                     <h5 class="card-title mb-0 fw-bold text-burgundy">
-                        <i class="fas fa-chart-line text-gold me-2"></i> Top Suppliers
+                        <i class="fas fa-chart-line text-gold me-2"></i> Top Wholesalers
                     </h5>
                 </div>
                 <div class="card-body">
-                    @forelse($topSuppliers as $supplier)
+                    @forelse($topWholesalers as $wholesaler)
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div>
-                            <h6 class="mb-0 fw-bold text-burgundy">{{ $supplier->supplier_name }}</h6>
-                            <small class="text-muted">{{ $supplier->orders_count }} orders</small>
+                            <h6 class="mb-0 fw-bold text-burgundy">{{ $wholesaler->wholesaler_name }}</h6>
+                            <small class="text-muted">{{ $wholesaler->orders_count }} orders</small>
                         </div>
-                        <span class="badge bg-gold text-burgundy">UGX {{ number_format($supplier->total_amount, 0) }}</span>
+                        <span class="badge bg-gold text-burgundy">UGX {{ number_format($wholesaler->total_amount, 0) }}</span>
                     </div>
                     @empty
                     <div class="text-center text-muted py-3">
                         <i class="fas fa-chart-bar fa-2x mb-2"></i>
-                        <p class="mb-0">No supplier data available</p>
+                        <p class="mb-0">No wholesaler data available</p>
                     </div>
                     @endforelse
                 </div>

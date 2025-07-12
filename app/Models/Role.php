@@ -40,48 +40,113 @@ class Role extends Model
     {
         return [
             'Admin' => [
-                'description' => 'Full system access',
+                'description' => 'Full system access with complete administrative privileges',
                 'permissions' => [
-                    'manage_users',
+                    // User Management
+                    'view_users',
+                    'create_users',
+                    'edit_users',
+                    'delete_users',
                     'manage_roles',
-                    'manage_inventory',
-                    'manage_orders',
-                    'manage_procurement',
-                    'manage_logistics',
+                    
+                    // Inventory Management
+                    'view_inventory',
+                    'create_inventory',
+                    'edit_inventory',
+                    'delete_inventory',
+                    'manage_inventory_categories',
+                    
+                    // Order Management
+                    'view_orders',
+                    'create_orders',
+                    'edit_orders',
+                    'delete_orders',
+                    'update_order_status',
+                    'view_all_orders',
+                    
+                    // Procurement Management
+                    'view_procurement',
+                    'create_procurement',
+                    'edit_procurement',
+                    'delete_procurement',
+                    'approve_procurement',
+                    'update_procurement_status',
+                    
+                    // Logistics Management
+                    'view_logistics',
+                    'manage_shipments',
+                    'track_shipments',
+                    'update_shipment_status',
+                    
+                    // Reports & Analytics
                     'view_reports',
-                    'system_settings'
+                    'export_reports',
+                    'view_analytics',
+                    
+                    // System Settings
+                    'system_settings',
+                    'view_audit_logs',
+                    'manage_notifications'
                 ]
             ],
             'Vendor' => [
-                'description' => 'Vendor access for order management',
+                'description' => 'Vendor access for order management and inventory viewing',
                 'permissions' => [
+                    'view_inventory',
                     'view_orders',
                     'update_order_status',
-                    'view_inventory'
+                    'view_order_details',
+                    'create_order_reports',
+                    'view_customer_info'
                 ]
             ],
             'Retailer' => [
-                'description' => 'Retailer access for procurement',
+                'description' => 'Retailer access for procurement and inventory management',
                 'permissions' => [
+                    'view_inventory',
                     'view_procurement',
+                    'create_procurement',
+                    'edit_procurement',
                     'update_procurement_status',
-                    'view_inventory'
+                    'view_supplier_info',
+                    'create_procurement_reports',
+                    'view_orders',
+                    'view_order_details',
+                    'create_orders',
+                    'edit_orders',
+                    'delete_orders',
                 ]
             ],
-            'Supplier' => [
-                'description' => 'Supplier access for order fulfillment',
+            'Wholesaler' => [
+                'description' => 'Wholesaler access for order fulfillment and shipment management',
                 'permissions' => [
                     'view_orders',
                     'update_order_status',
                     'view_inventory',
-                    'manage_shipments'
+                    'manage_shipments',
+                    'track_shipments',
+                    'update_shipment_status',
+                    'view_customer_info',
+                    'create_shipment_reports',
+                    // Add procurement permissions for wholesalers
+                    'view_procurement',
+                    'create_procurement',
+                    'edit_procurement',
+                    'delete_procurement',
+                    'approve_procurement',
+                    'update_procurement_status',
                 ]
             ],
             'Customer' => [
-                'description' => 'Basic customer access',
+                'description' => 'Basic customer access for order management',
                 'permissions' => [
-                    'view_orders',
-                    'create_orders'
+                    'view_own_orders',
+                    'create_orders',
+                    'edit_own_orders',
+                    'cancel_own_orders',
+                    'view_available_inventory',
+                    'view_order_history',
+                    'track_own_shipments'
                 ]
             ]
         ];

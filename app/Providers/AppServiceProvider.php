@@ -40,5 +40,25 @@ class AppServiceProvider extends ServiceProvider
         Blade::if('allPermissions', function ($permissions) {
             return Auth::check() && Auth::user()->hasAllPermissions($permissions);
         });
+
+        // Blade directive for checking if user can perform action on resource
+        Blade::if('canPerform', function ($action, $resource) {
+            return Auth::check() && Auth::user()->canPerform($action, $resource);
+        });
+
+        // Blade directive for checking if user can view own data
+        Blade::if('canViewOwn', function ($resource) {
+            return Auth::check() && Auth::user()->canViewOwn($resource);
+        });
+
+        // Blade directive for checking if user can view all data
+        Blade::if('canViewAll', function ($resource) {
+            return Auth::check() && Auth::user()->canViewAll($resource);
+        });
+
+        // Blade directive for checking if user has admin permissions
+        Blade::if('hasAdminPermissions', function () {
+            return Auth::check() && Auth::user()->hasAdminPermissions();
+        });
     }
 }

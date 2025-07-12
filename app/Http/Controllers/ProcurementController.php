@@ -31,9 +31,9 @@ class ProcurementController extends Controller
             ->take(10)
             ->get();
 
-        // Top suppliers
-        $topSuppliers = Procurement::selectRaw('supplier_name, COUNT(*) as count, SUM(total_amount) as total_value')
-            ->groupBy('supplier_name')
+        // Top wholesalers
+        $topWholesalers = Procurement::selectRaw('wholesaler_name, COUNT(*) as count, SUM(total_amount) as total_value')
+            ->groupBy('wholesaler_name')
             ->orderBy('count', 'desc')
             ->take(5)
             ->get();
@@ -63,7 +63,7 @@ class ProcurementController extends Controller
             'approvedValue',
             'orderedValue',
             'recentProcurements',
-            'topSuppliers',
+            'topWholesalers',
             'monthlyTrend',
             'overdueProcurements'
         ));
@@ -89,9 +89,9 @@ class ProcurementController extends Controller
         $request->validate([
             'item_name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'supplier_name' => 'required|string|max:255',
-            'supplier_email' => 'nullable|email',
-            'supplier_phone' => 'nullable|string',
+            'wholesaler_name' => 'required|string|max:255',
+            'wholesaler_email' => 'nullable|email',
+            'wholesaler_phone' => 'nullable|string',
             'quantity' => 'required|integer|min:1',
             'unit_price' => 'required|numeric|min:0',
             'expected_delivery' => 'nullable|date|after:today',
@@ -125,9 +125,9 @@ class ProcurementController extends Controller
         $request->validate([
             'item_name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'supplier_name' => 'required|string|max:255',
-            'supplier_email' => 'nullable|email',
-            'supplier_phone' => 'nullable|string',
+            'wholesaler_name' => 'required|string|max:255',
+            'wholesaler_email' => 'nullable|email',
+            'wholesaler_phone' => 'nullable|string',
             'quantity' => 'required|integer|min:1',
             'unit_price' => 'required|numeric|min:0',
             'status' => 'required|in:pending,approved,ordered,received,cancelled',

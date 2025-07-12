@@ -13,8 +13,11 @@ return new class extends Migration {
             $table->string('customer_phone');
             $table->string('shipping_address');
             $table->text('notes')->nullable();
+            $table->text('admin_notes')->nullable();
             $table->decimal('total_amount', 12, 2);
             $table->string('status')->default('pending');
+            $table->unsignedBigInteger('assigned_to')->nullable();
+            $table->foreign('assigned_to')->references('id')->on('users')->nullOnDelete();
             $table->timestamps();
         });
     }

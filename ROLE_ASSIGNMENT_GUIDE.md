@@ -212,7 +212,7 @@ User::create([
 | **Admin** | Full system access | All permissions |
 | **Manager** | Department management | Inventory, Orders, Procurement, Logistics, Reports |
 | **Vendor** | Order management | View Orders, Update Order Status, View Inventory |
-| **Supplier** | Procurement access | View Procurement, Update Procurement Status, View Inventory |
+| **Wholesaler** | Procurement access | View Procurement, Update Procurement Status, View Inventory |
 | **Customer** | Basic access | View Orders, Create Orders, View Inventory |
 
 ---

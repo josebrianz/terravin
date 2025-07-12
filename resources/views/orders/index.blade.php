@@ -16,9 +16,6 @@
                     <span class="text-muted small">Manage and track all customer wine orders</span>
                 </div>
                 <div class="header-actions">
-                    <a href="{{ route('orders.create') }}" class="btn btn-burgundy shadow-sm" title="Create a new wine order">
-                        <i class="fas fa-plus"></i> New Order
-                    </a>
                     <span class="badge bg-gold text-burgundy px-3 py-2 ms-3">
                         <i class="fas fa-clock me-1"></i>
                         {{ now()->format('M d, Y H:i') }}
