@@ -39,7 +39,7 @@ Route::get('/admin', function () {
 Route::get('/application-status', [\App\Http\Controllers\Auth\ApplicationStatusController::class, 'index'])->name('application.status');
 
 // Logistics Routes - Accessible by Admin and Logistics roles
-Route::middleware(['auth', 'permission:manage_logistics,view_reports'])->group(function () {
+Route::middleware(['auth', 'role:Admin,Logistics'])->group(function () {
     Route::get('/logistics/dashboard', [LogisticsDashboardController::class, 'index'])->name('logistics.dashboard');
     Route::put('/logistics/shipments/{shipment}/status', [LogisticsDashboardController::class, 'updateShipmentStatus'])->name('logistics.shipments.update-status');
     Route::get('/logistics/shipments/{shipment}', [LogisticsDashboardController::class, 'getShipmentDetails'])->name('logistics.shipments.show');
@@ -52,8 +52,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('inventory', InventoryController::class);
 });
 
-// Procurement Routes - Accessible by Admin, Retailer
-Route::middleware(['auth', 'permission:manage_procurement,view_procurement'])->group(function () {
+// Procurement Routes - Accessible by Admin, Retailer, Vendor, Wholesaler
+Route::middleware(['auth', 'role:Admin,Retailer,Vendor,Wholesaler'])->group(function () {
     Route::get('/procurement/dashboard', [ProcurementController::class, 'dashboard'])->name('procurement.dashboard');
     Route::resource('procurement', ProcurementController::class);
     
@@ -160,7 +160,10 @@ Route::post('/supplycentre', function(Request $request) {
 // Assign Workforce to Supply Centre
 Route::post('/workforce/assign', function(Request $request) {
     $workforce = Workforce::findOrFail($request->workforce_id);
-    $workforce->supplyCentres()->attach($request->supply_centre_id);
+    $workforce->supplyCentres()->syncWithoutDetaching([
+        $request->supply_centre_id => ['assigned_at' => now()]
+    ]);
+    $workforce->supplyCentres()->updateExistingPivot($request->supply_centre_id, ['assigned_at' => now()]);
     $workforce->status = 'assigned';
     $workforce->save();
     return redirect()->back()->with('success', 'Workforce assigned!');
@@ -190,6 +193,24 @@ Route::delete('/supplycentre/{id}', function($id) {
     return redirect()->back()->with('success', 'Supply centre deleted!');
 })->name('supplycentre.delete');
 
+// Auto-Assign Workforce to Supply Centres with No Workers
+Route::post('/workforce/auto-assign', function() {
+    $availableWorkforce = \App\Models\Workforce::where('status', 'available')->get();
+    $emptyCentres = \App\Models\SupplyCentre::doesntHave('workforces')->get();
+    $assigned = 0;
+    foreach ($emptyCentres as $centre) {
+        $worker = $availableWorkforce->shift();
+        if ($worker) {
+            $worker->supplyCentres()->attach($centre->id, ['assigned_at' => now()]);
+            $worker->status = 'assigned';
+            $worker->save();
+            $assigned++;
+        } else {
+            break;
+        }
+    }
+    return redirect()->back()->with('success', $assigned . ' workforce assigned to empty supply centres.');
+})->name('workforce.autoassign');
 
 
 Route::get('/stakeholders', function (Request $request) {
@@ -249,6 +270,8 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/analytics/dashboard', [AnalyticsDashboardController::class, 'index'])->name('analytics.dashboard');
     Route::post('/predict-sales', [AnalyticsDashboardController::class, 'predictSales'])->name('predict.sales');
 });
+
+Route::get('/workforce/assignments', [App\Http\Controllers\WorkforceDashboardController::class, 'assignments'])->name('workforce.assignments');
 
 // Forecast Routes
 Route::get('/forecast', [SalesController::class, 'dashboard'])->name('forecast.dashboard');
