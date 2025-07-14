@@ -253,3 +253,9 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
 // Forecast Routes
 Route::get('/forecast', [SalesController::class, 'dashboard'])->name('forecast.dashboard');
 Route::post('/forecast/predict', [SalesController::class, 'predictCategory'])->name('forecast.predict');
+
+Route::middleware(['auth', 'role:Wholesaler'])->group(function () {
+    Route::get('/wholesaler/dashboard', function () {
+        return view('wholesaler.dashboard');
+    })->name('wholesaler.dashboard');
+});
