@@ -57,6 +57,10 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
+        if ($request->role === 'Vendor') {
+            return redirect()->route('vendor.apply');
+}
+
         return redirect()->route('application.status')
             ->with('success', 'Account created successfully! Your role upgrade request has been submitted and is pending admin approval.');
     }

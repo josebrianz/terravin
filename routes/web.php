@@ -9,7 +9,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoleApprovalController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ChatController;
-use App\Http\Controllers\VendorFormController;
+use App\Http\Controllers\VendorApplicationController;
 use App\Http\Controllers\HelpController;
 use Illuminate\Support\Facades\Route;
 
@@ -116,9 +116,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/chat/{user}', [ChatController::class, 'show'])->name('chat.show')->middleware('role:Wholesaler,Customer');
     Route::post('/chat/{user}', [ChatController::class, 'store'])->name('chat.store')->middleware('role:Wholesaler,Customer');
 });
-// Vendor routes (commented out due to missing controller)
-// Route::view('/vendor/apply', 'vendor.apply');
-// Route::post('/vendor/submit', [VendorFormController::class, 'submit']);
+
+Route::get('/vendor/apply', [VendorApplicationController::class, 'create'])->name('vendor.apply');
+
+Route::post('/vendor/submit', [VendorApplicationController::class, 'submit'])->name('vendor.submit');
+Route::get('/vendor/waiting', [VendorApplicationController::class, 'waiting'])->name('vendor.waiting'); 
+//Route::view('/vendor/apply', 'vendor.apply');
+//Route::post('/vendor/submit', [VendorFormController::class, 'submit']);
 
 // Retailer Dashboard Route
 Route::middleware(['auth', 'role:Retailer'])->group(function () {
