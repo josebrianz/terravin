@@ -97,7 +97,7 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    @if($order->items && count($order->items) > 0)
+                    @if($order->items_array && count($order->items_array) > 0)
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
                                 <thead class="table-light">
@@ -109,7 +109,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($order->items as $item)
+                                    @foreach($order->items_array as $item)
                                     <tr class="wine-list-item">
                                         <td>
                                             <div class="d-flex align-items-center">

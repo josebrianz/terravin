@@ -27,7 +27,7 @@
                     <td>{{ $s->email }}</td>
                     <td>{{ $s->role }}</td>
                     <td>
-                        <a href="{{ route('stakeholders.preferences', $s->id) }}" class="btn btn-sm btn-info">View/Edit</a>
+                        <!-- Preferences View/Edit button removed, now managed in dashboard -->
                     </td>
                     <td>
                         <a href="{{ route('stakeholders.edit', $s->id) }}" class="btn btn-sm btn-warning">Edit</a>

@@ -2,17 +2,22 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ProcurementController;
-use App\Http\Controllers\LogisticsDashboardController;
 use App\Http\Controllers\AnalyticsDashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoleApprovalController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ChatController;
-use App\Http\Controllers\VendorFormController;
+use App\Http\Controllers\VendorApplicationController;
 use App\Http\Controllers\HelpController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
+
+use App\Http\Controllers\SalesController;
+
+use Illuminate\Http\Request;
+use App\Models\Workforce;
+use App\Models\SupplyCentre;
 
 
 Route::get('/', function () {
@@ -33,22 +38,13 @@ Route::get('/admin', function () {
 
 Route::get('/application-status', [\App\Http\Controllers\Auth\ApplicationStatusController::class, 'index'])->name('application.status');
 
-// Logistics Routes - Accessible by Admin and Logistics roles
-Route::middleware(['auth', 'permission:manage_logistics,view_reports'])->group(function () {
-    Route::get('/logistics/dashboard', [LogisticsDashboardController::class, 'index'])->name('logistics.dashboard');
-    Route::put('/logistics/shipments/{shipment}/status', [LogisticsDashboardController::class, 'updateShipmentStatus'])->name('logistics.shipments.update-status');
-    Route::get('/logistics/shipments/{shipment}', [LogisticsDashboardController::class, 'getShipmentDetails'])->name('logistics.shipments.show');
-    // Add AJAX endpoints for dashboard interactivity
-    Route::post('/logistics/shipments', [LogisticsDashboardController::class, 'store'])->name('logistics.shipments.store');
-});
-
 // Inventory Routes - Accessible by Admin, Vendor, Retailer
 Route::middleware(['auth'])->group(function () {
     Route::resource('inventory', InventoryController::class);
 });
 
-// Procurement Routes - Accessible by Admin, Retailer
-Route::middleware(['auth', 'permission:manage_procurement,view_procurement'])->group(function () {
+// Procurement Routes - Accessible by Admin, Retailer, Vendor, Wholesaler
+Route::middleware(['auth', 'role:Admin,Retailer,Vendor,Wholesaler'])->group(function () {
     Route::get('/procurement/dashboard', [ProcurementController::class, 'dashboard'])->name('procurement.dashboard');
     Route::resource('procurement', ProcurementController::class);
     
@@ -58,8 +54,8 @@ Route::middleware(['auth', 'permission:manage_procurement,view_procurement'])->g
     Route::post('/procurement/{procurement}/mark-as-received', [ProcurementController::class, 'markAsReceived'])->name('procurement.markAsReceived');
 });
 
-// Order Management Routes - Accessible by Admin, Vendor, Retailer, Customer
-Route::middleware(['auth', 'permission:view_orders,create_orders,edit_orders'])->group(function () {
+// Order Management Routes - Accessible by Admin, Vendor, Retailer, Wholesaler
+Route::middleware(['auth', 'role:Admin,Vendor,Retailer,Wholesaler'])->group(function () {
     Route::resource('orders', OrderController::class);
     Route::post('/orders/place', [OrderController::class, 'store'])->name('orders.place');
     Route::get('/orders/pending', [OrderController::class, 'pending'])->name('orders.pending');
@@ -113,8 +109,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/chat/{user}', [ChatController::class, 'show'])->name('chat.show')->middleware('role:Wholesaler,Customer');
     Route::post('/chat/{user}', [ChatController::class, 'store'])->name('chat.store')->middleware('role:Wholesaler,Customer');
 });
-Route::view('/vendor/apply', 'vendor.apply');
-Route::post('/vendor/submit', [VendorFormController::class, 'submit']);
+
+Route::get('/vendor/apply', [VendorApplicationController::class, 'create'])->name('vendor.apply');
+
+Route::post('/vendor/submit', [VendorApplicationController::class, 'submit'])->name('vendor.submit');
+Route::get('/vendor/waiting', [VendorApplicationController::class, 'waiting'])->name('vendor.waiting'); 
+//Route::view('/vendor/apply', 'vendor.apply');
+//Route::post('/vendor/submit', [VendorFormController::class, 'submit']);
 
 // Retailer Dashboard Route
 Route::middleware(['auth', 'role:Retailer'])->group(function () {
@@ -131,10 +132,140 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports', [App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
 });
 
+
 // Financial Reports Route - Accessible by all authenticated users
 Route::middleware(['auth'])->group(function () {
     Route::get('/financial-reports', [App\Http\Controllers\FinancialReportController::class, 'index'])->name('financial-reports.index');
 });
+
+// Workforce Dashboard Route
+Route::get('/workforce/dashboard', function () {
+    $workforces = \App\Models\Workforce::with('supplyCentres')->get();
+    $supplyCentres = \App\Models\SupplyCentre::with('workforces')->get();
+    $total = $workforces->count();
+    $assigned = $workforces->where('status', 'assigned')->count();
+    $available = $workforces->where('status', 'available')->count();
+    return view('workforce.dashboard', compact('workforces', 'supplyCentres', 'total', 'assigned', 'available'));
+})->name('workforce.dashboard');
+
+// Add Workforce
+Route::post('/workforce', function(Request $request) {
+    Workforce::create($request->only('name', 'role', 'status', 'contact'));
+    return redirect()->back()->with('success', 'Workforce added!');
+})->name('workforce.store');
+
+// Add Supply Centre
+Route::post('/supplycentre', function(Request $request) {
+    SupplyCentre::create($request->only('name', 'location'));
+    return redirect()->back()->with('success', 'Supply centre added!');
+})->name('supplycentre.store');
+
+// Assign Workforce to Supply Centre
+Route::post('/workforce/assign', function(Request $request) {
+    $workforce = Workforce::findOrFail($request->workforce_id);
+    $workforce->supplyCentres()->syncWithoutDetaching([
+        $request->supply_centre_id => ['assigned_at' => now()]
+    ]);
+    $workforce->supplyCentres()->updateExistingPivot($request->supply_centre_id, ['assigned_at' => now()]);
+    $workforce->status = 'assigned';
+    $workforce->save();
+    return redirect()->back()->with('success', 'Workforce assigned!');
+})->name('workforce.assign');
+
+// Unassign Workforce from Supply Centre
+Route::post('/workforce/unassign', function(Request $request) {
+    $workforce = Workforce::findOrFail($request->workforce_id);
+    $workforce->supplyCentres()->detach($request->supply_centre_id);
+    // Optionally update status if no more assignments
+    if ($workforce->supplyCentres()->count() == 0) {
+        $workforce->status = 'available';
+        $workforce->save();
+    }
+    return redirect()->back()->with('success', 'Workforce unassigned!');
+})->name('workforce.unassign');
+
+// Delete Workforce
+Route::delete('/workforce/{id}', function($id) {
+    Workforce::destroy($id);
+    return redirect()->back()->with('success', 'Workforce deleted!');
+})->name('workforce.delete');
+
+// Delete Supply Centre
+Route::delete('/supplycentre/{id}', function($id) {
+    SupplyCentre::destroy($id);
+    return redirect()->back()->with('success', 'Supply centre deleted!');
+})->name('supplycentre.delete');
+
+// Auto-Assign Workforce to Supply Centres with No Workers
+Route::post('/workforce/auto-assign', function() {
+    $availableWorkforce = \App\Models\Workforce::where('status', 'available')->get();
+    $emptyCentres = \App\Models\SupplyCentre::doesntHave('workforces')->get();
+    $assigned = 0;
+    foreach ($emptyCentres as $centre) {
+        $worker = $availableWorkforce->shift();
+        if ($worker) {
+            $worker->supplyCentres()->attach($centre->id, ['assigned_at' => now()]);
+            $worker->status = 'assigned';
+            $worker->save();
+            $assigned++;
+        } else {
+            break;
+        }
+    }
+    return redirect()->back()->with('success', $assigned . ' workforce assigned to empty supply centres.');
+})->name('workforce.autoassign');
+
+
+Route::get('/stakeholders', function (Request $request) {
+    $view = $request->query('view', 'index');
+    $id = $request->query('id');
+
+    switch ($view) {
+        case 'create':
+            return view('stakeholders.create');
+        case 'edit':
+            if ($id) {
+                $stakeholder = \App\Models\Stakeholder::findOrFail($id);
+                return view('stakeholders.edit', compact('stakeholder'));
+            }
+            abort(404);
+        case 'index':
+        default:
+            $stakeholders = \App\Models\Stakeholder::all();
+            return view('stakeholders.index', compact('stakeholders'));
+    }
+})->name('stakeholders.unified');
+
+// Store new stakeholder
+Route::post('/stakeholders', function(Illuminate\Http\Request $request) {
+    \App\Models\Stakeholder::create($request->only('name', 'email', 'role'));
+    return redirect()->back()->with('success', 'Stakeholder added!');
+})->name('stakeholders.store');
+
+// Update stakeholder
+Route::put('/stakeholders/{id}', function(Illuminate\Http\Request $request, $id) {
+    $stakeholder = \App\Models\Stakeholder::findOrFail($id);
+    $stakeholder->update($request->only('name', 'email', 'role'));
+    return redirect()->back()->with('success', 'Stakeholder updated!');
+})->name('stakeholders.update');
+
+// Delete stakeholder
+Route::delete('/stakeholders/{id}', function($id) {
+    \App\Models\Stakeholder::destroy($id);
+    return redirect()->back()->with('success', 'Stakeholder deleted!');
+})->name('stakeholders.destroy');
+
+// Save preferences
+Route::post('/stakeholders/preferences', function(Illuminate\Http\Request $request) {
+    // Save preferences logic here (customize as needed)
+    // Example: \App\Models\Preference::updateOrCreate([...], [...]);
+    return redirect()->back()->with('success', 'Preferences saved!');
+})->name('stakeholders.preferences');
+
+Route::post('/stakeholders/{id}/preferences', [App\Http\Controllers\StakeholderController::class, 'updatePreferences'])->name('stakeholders.preferences.update');
+
+Route::get('/stakeholders/dashboard', [App\Http\Controllers\StakeholderController::class, 'dashboard'])->name('stakeholders.dashboard');
+>>>>>>> 7ffe00b4ea562d0090b2290e70835773f61c3459
 
 require __DIR__.'/auth.php';
 
@@ -236,3 +367,21 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/cart/remove/{id}', [App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
     Route::get('/cart/checkout', [App\Http\Controllers\CartController::class, 'checkout'])->name('cart.checkout');
 });
+
+Route::get('/workforce/assignments', [App\Http\Controllers\WorkforceDashboardController::class, 'assignments'])->name('workforce.assignments');
+
+// Forecast Routes
+Route::get('/forecast', [SalesController::class, 'dashboard'])->name('forecast.dashboard');
+Route::post('/forecast/predict', [SalesController::class, 'predictCategory'])->name('forecast.predict');
+
+Route::middleware(['auth', 'role:Wholesaler'])->group(function () {
+    Route::get('/wholesaler/dashboard', function () {
+        return view('wholesaler.dashboard');
+    })->name('wholesaler.dashboard');});
+// Logistics Module - Admin Only
+Route::middleware(['auth', 'role:Admin'])->group(function () {
+    Route::get('/logistics/dashboard', [\App\Http\Controllers\LogisticsDashboardController::class, 'index'])->name('logistics.dashboard');
+    Route::get('/shipments', [\App\Http\Controllers\LogisticsDashboardController::class, 'shipmentsIndex'])->name('shipments.index');
+    Route::resource('shipments', \App\Http\Controllers\LogisticsDashboardController::class)->except(['index']); // index handled by dashboard
+}); 
+

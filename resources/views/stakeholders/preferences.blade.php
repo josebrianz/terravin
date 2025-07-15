@@ -1,3 +1,8 @@
+{{-- DEPRECATED: This page is no longer in use. All preferences are managed in the dashboard. --}}
+@if (request())
+    <script>window.location.href = '{{ route('stakeholders.dashboard') }}';</script>
+    <div class="alert alert-warning">This page is deprecated. Redirecting to dashboard...</div>
+@endif
 @extends('layout')
 
 @section('title', 'Report Preferences')

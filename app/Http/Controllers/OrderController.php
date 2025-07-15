@@ -65,6 +65,7 @@ class OrderController extends Controller
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
+
         $items = [];
         $total = 0;
         foreach ($cartItems as $item) {
@@ -84,6 +85,7 @@ class OrderController extends Controller
             'customer_phone' => $user->phone ?? '',
             'items' => json_encode($items),
             'total_amount' => $total,
+
             'shipping_address' => $request->shipping_address,
             'notes' => $request->notes,
             'status' => 'pending',

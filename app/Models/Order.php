@@ -16,7 +16,15 @@ class Order extends Model
         'shipping_address',
         'notes',
         'status',
+
         'payment_method',
+
+    ];
+
+    protected $casts = [
+        'total_amount' => 'decimal:2',
+        'items' => 'array'
+
     ];
 
     public function user()
@@ -44,6 +52,38 @@ class Order extends Model
 
     public function getTotalAttribute()
     {
+
         return $this->total_amount;
+
+        return $query->where('created_at', '>=', now()->subDays($days));
+    }
+
+    public function scopeByStatus($query, $status)
+    {
+        return $query->where('status', $status);
+    }
+
+    public function getStatusBadgeAttribute()
+    {
+        $badges = [
+            'pending' => 'badge-warning',
+            'processing' => 'badge-info',
+            'shipped' => 'badge-primary',
+            'delivered' => 'badge-success',
+            'cancelled' => 'badge-danger'
+        ];
+
+        return $badges[$this->status] ?? 'badge-secondary';
+    }
+
+    public function getItemsArrayAttribute()
+    {
+        return json_decode($this->items, true) ?? [];
+    }
+
+    public function hasShipment()
+    {
+        return $this->shipment()->exists();
+
     }
 } 

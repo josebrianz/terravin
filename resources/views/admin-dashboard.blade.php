@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-e
+
 @section('title', 'Terravin Wine Management Dashboard')
 
 @section('content')
@@ -22,6 +22,9 @@ e
                             Chat
                         </a>
                     @endif
+                    <a href="{{ route('help.index') }}" class="btn btn-burgundy me-2" title="Help & Support">
+                        <i class="fas fa-question-circle me-1"></i> Help & Support
+                    </a>
                     <span class="badge bg-gold text-burgundy px-3 py-2">
                         <i class="fas fa-clock me-1"></i>
                         {{ now()->format('M d, Y H:i') }}
@@ -84,8 +87,7 @@ e
             </div>
         </div>
         @endif
-        <!-- Wine Logistics Module -->
-        @if(auth()->user()->role !== 'Customer')
+        @if(auth()->user()->role === 'Admin')
         <div class="col-lg-4 col-md-6">
             <div class="card h-100 shadow-sm border-0 wine-card">
                 <div class="card-body text-center">
@@ -94,11 +96,60 @@ e
                             <i class="fas fa-truck fa-2x text-gold"></i>
                         </div>
                     </div>
-                    <h5 class="card-title fw-bold text-burgundy">Wine Logistics Dashboard</h5>
-                    <p class="card-text text-muted small">Monitor wine shipments, track deliveries, and manage logistics operations.</p>
+                    <h5 class="card-title fw-bold text-burgundy">Wine Logistics</h5>
+                    <p class="card-text text-muted small">Manage and track all wine shipments and deliveries.</p>
                     <div class="d-grid gap-2">
+
                         <a href="#" class="btn btn-burgundy shadow-sm disabled" title="Logistics dashboard is disabled" tabindex="-1" aria-disabled="true" style="pointer-events: none; opacity: 0.6;">
                             <i class="fas fa-truck"></i> Logistics
+
+                        <a href="{{ route('logistics.dashboard') }}" class="btn btn-burgundy shadow-sm" title="Go to logistics dashboard">
+                            <i class="fas fa-truck"></i> Logistics Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+        <!-- Workforce Distribution Module -->
+        @if(auth()->user()->role === 'Admin')
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm border-0 wine-card">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <div class="icon-circle bg-gold">
+                            <i class="fas fa-users fa-2x text-burgundy"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title fw-bold text-burgundy">Workforce Distribution</h5>
+                    <p class="card-text text-muted small">Manage workforce allocation, assign staff to supply centers, and track personnel distribution.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ route('workforce.dashboard') }}" class="btn btn-gold shadow-sm" title="Go to workforce dashboard">
+                            <i class="fas fa-users"></i> Workforce
+                        </a>
+                        <a href="{{ route('workforce.assignments') }}" class="btn btn-outline-burgundy" title="View workforce assignments">
+                            <i class="fas fa-map-marker-alt"></i> Assignments
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+        @if(auth()->user()->role === 'Admin')
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm border-0 wine-card">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <div class="icon-circle bg-burgundy">
+                            <i class="fas fa-user-tie fa-2x text-gold"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title fw-bold text-burgundy">Stakeholder Preferences</h5>
+                    <p class="card-text text-muted small">View and manage report type preferences for all stakeholders.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ route('stakeholders.dashboard') }}" class="btn btn-burgundy shadow-sm" title="Go to stakeholder preferences dashboard">
+                            <i class="fas fa-user-tie"></i> Preferences Dashboard
+
                         </a>
                     </div>
                 </div>
@@ -107,25 +158,27 @@ e
         @endif
         <!-- Order Processing Module -->
         <div class="col-lg-4 col-md-6">
-            <div class="card h-100 shadow-sm border-0 wine-card">
-                <div class="card-body text-center">
-                    <div class="mb-3">
-                        <div class="icon-circle bg-gold">
-                            <i class="fas fa-shopping-cart fa-2x text-burgundy"></i>
+            <a href="{{ route('orders.index') }}" style="text-decoration: none; color: inherit;">
+                <div class="card h-100 shadow-sm border-0 wine-card" style="cursor:pointer;">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <div class="icon-circle bg-gold">
+                                <i class="fas fa-shopping-cart fa-2x text-burgundy"></i>
+                            </div>
+                        </div>
+                        <h5 class="card-title fw-bold text-burgundy">Order Processing</h5>
+                        <p class="card-text text-muted small">Manage customer orders, track order status, and process wine sales transactions.</p>
+                        <div class="d-grid gap-2">
+                            <a href="{{ route('orders.index') }}" class="btn btn-gold shadow-sm" title="View all orders">
+                                <i class="fas fa-list"></i> All Orders
+                            </a>
+                            <a href="{{ route('orders.pending') }}" class="btn btn-outline-burgundy" title="View pending orders">
+                                <i class="fas fa-clock"></i> Pending Orders
+                            </a>
                         </div>
                     </div>
-                    <h5 class="card-title fw-bold text-burgundy">Order Processing</h5>
-                    <p class="card-text text-muted small">Manage customer orders, track order status, and process wine sales transactions.</p>
-                    <div class="d-grid gap-2">
-                        <a href="{{ route('orders.index') }}" class="btn btn-gold shadow-sm" title="View all orders">
-                            <i class="fas fa-list"></i> All Orders
-                        </a>
-                        <a href="{{ route('orders.pending') }}" class="btn btn-outline-burgundy" title="View pending orders">
-                            <i class="fas fa-clock"></i> Pending Orders
-                        </a>
-                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         <!-- Order Analytics/Reports Module -->
         <div class="col-lg-4 col-md-6">
