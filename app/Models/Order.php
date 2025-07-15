@@ -2,13 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'user_id',
         'customer_name',
@@ -18,14 +15,8 @@ class Order extends Model
         'total_amount',
         'shipping_address',
         'notes',
-        'admin_notes',
         'status',
-        'assigned_to',
-    ];
-
-    protected $casts = [
-        'total_amount' => 'decimal:2',
-        'items' => 'array'
+        'payment_method',
     ];
 
     public function user()
@@ -33,41 +24,26 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
     public function shipment()
     {
-        return $this->hasOne(Shipment::class);
+        return $this->hasOne(\App\Models\Shipment::class);
     }
 
-    public function assignedTo()
+    public function getItemsAttribute($value)
     {
-        return $this->belongsTo(User::class, 'assigned_to');
+        if (is_array($value) || is_null($value)) {
+            return $value ?: [];
+        }
+        return json_decode($value, true) ?: [];
     }
 
-    public function scopeRecent($query, $days = 30)
+    public function getTotalAttribute()
     {
-        return $query->where('created_at', '>=', now()->subDays($days));
-    }
-
-    public function scopeByStatus($query, $status)
-    {
-        return $query->where('status', $status);
-    }
-
-    public function getStatusBadgeAttribute()
-    {
-        $badges = [
-            'pending' => 'badge-warning',
-            'processing' => 'badge-info',
-            'shipped' => 'badge-primary',
-            'delivered' => 'badge-success',
-            'cancelled' => 'badge-danger'
-        ];
-
-        return $badges[$this->status] ?? 'badge-secondary';
-    }
-
-    public function hasShipment()
-    {
-        return $this->shipment()->exists();
+        return $this->total_amount;
     }
 } 

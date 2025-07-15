@@ -53,55 +53,45 @@ class OrderController extends Controller
     /**
      * Store a newly created order in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
-        if (auth()->user() && auth()->user()->isAdmin()) {
-            abort(403, 'Admins are not allowed to place orders.');
-        }
         $request->validate([
-            'customer_name' => 'required|string|max:255',
-            'customer_email' => 'required|email',
-            'customer_phone' => 'required|string|max:20',
-            'items' => 'required|array',
-            'items.*.wine_id' => 'required|exists:inventories,id',
-            'items.*.wine_name' => 'required|string|max:255',
-            'items.*.wine_category' => 'required|string|max:255',
-            'items.*.quantity' => 'required|integer|min:1',
-            'items.*.unit_price' => 'required|numeric|min:0',
-            'total_amount' => 'required|numeric|min:0',
             'shipping_address' => 'required|string',
             'notes' => 'nullable|string',
+            'payment_method' => 'required|in:Cash on Delivery,Mobile Money,Card',
         ]);
-
-        // Check inventory availability and update quantities
-        foreach ($request->items as $item) {
-            $inventory = \App\Models\Inventory::find($item['wine_id']);
-            if (!$inventory) {
-                return back()->withErrors(['items' => 'Selected wine not found in inventory.']);
-            }
-            
-            if ($inventory->quantity < $item['quantity']) {
-                return back()->withErrors(['items' => "Insufficient stock for {$inventory->name}. Available: {$inventory->quantity}"]);
-            }
-            
-            // Update inventory quantity
-            $inventory->decrement('quantity', $item['quantity']);
+        $user = auth()->user();
+        $cartItems = \App\Models\CartItem::where('user_id', $user->id)->with('wine')->get();
+        if ($cartItems->isEmpty()) {
+            return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
-
-        $order = Order::create([
-            'user_id' => auth()->id(),
-            'customer_name' => $request->customer_name,
-            'customer_email' => $request->customer_email,
-            'customer_phone' => $request->customer_phone,
-            'items' => json_encode($request->items),
-            'total_amount' => $request->total_amount,
+        $items = [];
+        $total = 0;
+        foreach ($cartItems as $item) {
+            $items[] = [
+                'wine_id' => $item->wine_id,
+                'wine_name' => $item->wine->name,
+                'wine_category' => $item->wine->category ?? '',
+                'quantity' => $item->quantity,
+                'unit_price' => $item->wine->unit_price,
+            ];
+            $total += $item->wine->unit_price * $item->quantity;
+        }
+        $order = \App\Models\Order::create([
+            'user_id' => $user->id,
+            'customer_name' => $user->name,
+            'customer_email' => $user->email,
+            'customer_phone' => $user->phone ?? '',
+            'items' => json_encode($items),
+            'total_amount' => $total,
             'shipping_address' => $request->shipping_address,
             'notes' => $request->notes,
             'status' => 'pending',
+            'payment_method' => $request->payment_method,
         ]);
-
-        return redirect()->route('orders.show', $order)
-            ->with('success', 'Order created successfully.');
+        // Clear cart
+        \App\Models\CartItem::where('user_id', $user->id)->delete();
+        return redirect()->route('orders.confirmation', $order->id)->with('success', 'Order placed successfully!');
     }
 
     /**
@@ -174,5 +164,31 @@ class OrderController extends Controller
             ->latest()
             ->paginate(10);
         return view('orders.pending', compact('orders'));
+    }
+
+    /**
+     * Show only the logged-in customer's orders (order history).
+     */
+    public function customerOrders(): View
+    {
+        $orders = Order::where('customer_email', auth()->user()->email)
+            ->latest()
+            ->paginate(10);
+        return view('orders.customer-index', compact('orders'));
+    }
+
+    public function confirmation($orderId)
+    {
+        $order = \App\Models\Order::with('orderItems.inventory')->where('id', $orderId)->where('user_id', auth()->id())->firstOrFail();
+        return view('orders.confirmation', compact('order'));
+    }
+
+    public function history()
+    {
+        $orders = \App\Models\Order::with('orderItems.inventory')
+            ->where('user_id', auth()->id())
+            ->orderByDesc('created_at')
+            ->get();
+        return view('orders.history', compact('orders'));
     }
 } 

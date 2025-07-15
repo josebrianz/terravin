@@ -2,6 +2,10 @@
 
 @section('title', 'Retailer Dashboard')
 
+@section('navigation')
+    @include('layouts.navigation')
+@endsection
+
 @section('content')
 <div class="wine-theme-bg min-vh-100">
     <div class="container-fluid py-4">

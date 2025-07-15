@@ -97,7 +97,7 @@ e
                     <h5 class="card-title fw-bold text-burgundy">Wine Logistics Dashboard</h5>
                     <p class="card-text text-muted small">Monitor wine shipments, track deliveries, and manage logistics operations.</p>
                     <div class="d-grid gap-2">
-                        <a href="{{ route('logistics.dashboard') }}" class="btn btn-burgundy shadow-sm" title="Go to logistics dashboard">
+                        <a href="#" class="btn btn-burgundy shadow-sm disabled" title="Logistics dashboard is disabled" tabindex="-1" aria-disabled="true" style="pointer-events: none; opacity: 0.6;">
                             <i class="fas fa-truck"></i> Logistics
                         </a>
                     </div>

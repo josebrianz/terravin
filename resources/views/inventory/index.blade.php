@@ -51,6 +51,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th class="text-burgundy fw-bold">#</th>
+                                <th class="text-burgundy fw-bold">Image</th>
                                 <th class="text-burgundy fw-bold">Wine Name</th>
                                 <th class="text-burgundy fw-bold">SKU</th>
                                 <th class="text-burgundy fw-bold">Category</th>
@@ -65,6 +66,13 @@
                             <tr class="wine-list-item">
                                 <td>
                                     <span class="badge bg-burgundy text-gold">{{ $loop->iteration }}</span>
+                                </td>
+                                <td>
+                                    @if(!empty($item->images) && is_array($item->images) && count($item->images) > 0)
+                                        <img src="{{ asset('storage/' . $item->images[0]) }}" alt="Image" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #ccc;">
+                                    @else
+                                        <span class="text-muted">No Image</span>
+                                    @endif
                                 </td>
                                 <td>
                                     <div>
@@ -90,7 +98,7 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <strong class="text-burgundy">UGX {{ number_format($item->unit_price, 0) }}</strong>
+                                    <strong class="text-burgundy">${{ number_format($item->unit_price, 2) }}</strong>
                                 </td>
                                 <td>
                                     <span class="text-muted">{{ $item->location ?? 'Main Storage' }}</span>
@@ -170,7 +178,7 @@
                     <div class="icon-circle bg-burgundy mb-3">
                         <i class="fas fa-coins fa-2x text-gold"></i>
                     </div>
-                    <h4 class="mb-0 fw-bold text-burgundy">UGX{{ number_format($items->sum('unit_price'), 2) }}</h4>
+                    <h4 class="mb-0 fw-bold text-burgundy">${{ number_format($items->sum('unit_price'), 0) }}</h4>
                     <span class="text-muted small">Total Value</span>
                 </div>
             </div>

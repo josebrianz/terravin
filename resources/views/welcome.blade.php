@@ -210,7 +210,6 @@
   </div>
         <h1 class="logo"> Welcome To Terravin Winery</h1>
         <p class="tagline">Manage your wine supply chain from vineyard to consumer. Track inventory, shipments, and quality control in one system.</p>
-        <a href="#wines" class="cta-button">Explore Our Wines</a>
     </section>
     
     <section class="intro-text">

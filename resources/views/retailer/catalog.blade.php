@@ -26,7 +26,7 @@
                         <h5 class="card-title text-burgundy">{{ $wine->name }}</h5>
                         <p class="card-text text-muted">{{ $wine->description }}</p>
                         <div class="mt-auto d-flex justify-content-between align-items-center">
-                            <span class="fw-bold text-gold" style="color: #b85c38; font-size: 1.2rem;">UGX {{ number_format($wine->price, 0) }}</span>
+                            <span class="fw-bold text-gold" style="color: #b85c38; font-size: 1.2rem;">{{ format_usd($wine->price) }}</span>
                             <a href="#" class="btn wine-btn" style="background: #b85c38; color: #fff;"><i class="fas fa-cart-plus me-1"></i> Add to Order</a>
                         </div>
                     </div>

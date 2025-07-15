@@ -80,7 +80,7 @@
                                 </td>
                                 <td>
                                     @if($order->items)
-                                        @foreach(json_decode($order->items, true) as $item)
+                                        @foreach($order->items as $item)
                                             <div class="small text-burgundy">
                                                 <i class="fas fa-wine-bottle me-1 text-gold"></i>
                                                 {{ $item['wine_name'] }} ({{ $item['quantity'] }})
@@ -91,10 +91,20 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <strong class="text-burgundy">UGX {{ number_format($order->total_amount, 0) }}</strong>
+                                    <strong class="text-burgundy">{{ format_usd($order->total_amount) }}</strong>
                                 </td>
                                 <td>
-                                    <span class="badge {{ $order->status_badge }}">
+                                    @php
+                                        $statusColors = [
+                                            'pending' => 'badge-warning',
+                                            'processing' => 'badge-primary',
+                                            'shipped' => 'badge-info',
+                                            'delivered' => 'badge-success',
+                                            'cancelled' => 'badge-danger',
+                                        ];
+                                        $badgeClass = $statusColors[$order->status] ?? 'badge-secondary';
+                                    @endphp
+                                    <span class="badge {{ $badgeClass }}" style="font-size:1em;">
                                         {{ ucfirst($order->status) }}
                                     </span>
                                 </td>
@@ -264,6 +274,13 @@
     border-bottom: 2px solid var(--cream);
     background: linear-gradient(135deg, #fff 0%, var(--cream) 100%);
 }
+
+.badge-warning { background-color: #ffc107 !important; color: #212529 !important; }
+.badge-primary { background-color: #007bff !important; color: #fff !important; }
+.badge-info { background-color: #17a2b8 !important; color: #fff !important; }
+.badge-success { background-color: #28a745 !important; color: #fff !important; }
+.badge-danger { background-color: #dc3545 !important; color: #fff !important; }
+.badge-secondary { background-color: #6c757d !important; color: #fff !important; }
 
 @media (max-width: 768px) {
     .page-header {
