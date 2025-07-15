@@ -274,10 +274,10 @@ Route::post('/forecast/predict', [SalesController::class, 'predictCategory'])->n
 Route::middleware(['auth', 'role:Wholesaler'])->group(function () {
     Route::get('/wholesaler/dashboard', function () {
         return view('wholesaler.dashboard');
-    })->name('wholesaler.dashboard');
+    })->name('wholesaler.dashboard');});
 // Logistics Module - Admin Only
 Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/logistics/dashboard', [\App\Http\Controllers\LogisticsDashboardController::class, 'index'])->name('logistics.dashboard');
     Route::get('/shipments', [\App\Http\Controllers\LogisticsDashboardController::class, 'shipmentsIndex'])->name('shipments.index');
     Route::resource('shipments', \App\Http\Controllers\LogisticsDashboardController::class)->except(['index']); // index handled by dashboard
-});
+}); 
