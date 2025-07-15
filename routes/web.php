@@ -265,7 +265,7 @@ Route::post('/stakeholders/preferences', function(Illuminate\Http\Request $reque
 Route::post('/stakeholders/{id}/preferences', [App\Http\Controllers\StakeholderController::class, 'updatePreferences'])->name('stakeholders.preferences.update');
 
 Route::get('/stakeholders/dashboard', [App\Http\Controllers\StakeholderController::class, 'dashboard'])->name('stakeholders.dashboard');
->>>>>>> 7ffe00b4ea562d0090b2290e70835773f61c3459
+
 
 require __DIR__.'/auth.php';
 
