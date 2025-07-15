@@ -18,9 +18,7 @@ class Order extends Model
         'total_amount',
         'shipping_address',
         'notes',
-        'admin_notes',
         'status',
-        'assigned_to',
     ];
 
     protected $casts = [
@@ -64,6 +62,11 @@ class Order extends Model
         ];
 
         return $badges[$this->status] ?? 'badge-secondary';
+    }
+
+    public function getItemsArrayAttribute()
+    {
+        return json_decode($this->items, true) ?? [];
     }
 
     public function hasShipment()

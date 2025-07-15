@@ -2,196 +2,99 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Procurement;
-use App\Models\Inventory;
-use App\Models\User;
 use App\Models\Shipment;
-use Illuminate\Support\Facades\DB;
-
+use App\Models\Order;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LogisticsDashboardController extends Controller
 {
+    // Dashboard overview
     public function index()
     {
-    $totalShipments = Shipment::count();
-    $pendingShipments = Shipment::where('status', 'pending')->count();
-    $inTransitShipments = Shipment::where('status', 'in_transit')->count();
-    $deliveredShipments = Shipment::where('status', 'delivered')->count();
+        $total = Shipment::count();
+        $pending = Shipment::pending()->count();
+        $inTransit = Shipment::inTransit()->count();
+        $delivered = Shipment::delivered()->count();
+        $recent = Shipment::latest()->take(5)->get();
+        return view('logistics.dashboard', compact('total', 'pending', 'inTransit', 'delivered', 'recent'));
+    }
 
-    $totalRevenue = Shipment::sum('shipping_cost');
-    $monthlyRevenue = Shipment::whereMonth('created_at', now()->month)->sum('shipping_cost');
+    // List all shipments
+    public function shipments()
+    {
+        $shipments = Shipment::latest()->paginate(20);
+        return view('logistics.shipments.index', compact('shipments'));
+    }
 
-    $lowStockItems = Inventory::where('quantity', '<', 10)->get();
-    $lowStockItemsList = $lowStockItems;
+    // List all shipments (for shipments.index route)
+    public function shipmentsIndex()
+    {
+        $shipments = Shipment::latest()->paginate(20);
+        return view('logistics.shipments.index', compact('shipments'));
+    }
 
-    $overdueShipments = Shipment::where('status', '!=', 'delivered')
-        ->where('estimated_delivery_date', '<', now())
-        ->get();
-    $overdueShipmentsCount = $overdueShipments->count();
+    // Show create shipment form
+    public function create()
+    {
+        $orders = Order::all();
+        return view('logistics.shipments.create', compact('orders'));
+    }
 
-    $recentShipments = Shipment::with('order.user')->latest()->take(5)->get();
-
-    $upcomingDeliveries = Procurement::where('expected_delivery', '>=', now())->get();
-
-    $topWholesalers = Procurement::selectRaw('wholesaler_name, COUNT(*) as order_count, SUM(total_amount) as total_value')
-        ->groupBy('wholesaler_name')
-        ->orderBy('order_count', 'desc')
-        ->take(5)
-        ->get();
-
-    $revenueData = Shipment::selectRaw("DATE_FORMAT(created_at, '%b') as month, SUM(shipping_cost) as total")
-        ->groupBy('month')
-        ->pluck('total', 'month');
-
-    $shipmentStatusData = Shipment::select('status', DB::raw('count(*) as count'))
-        ->groupBy('status')
-        ->pluck('count', 'status');
-
-    $warehouseCoords = [121.4737, 31.2304]; // Example: Shanghai
-
-    $shipmentRoutes = Shipment::whereIn('status', ['pending', 'in_transit'])
-        ->get()
-        ->map(function($shipment) use ($warehouseCoords) {
-            $destinationCoords = [121.5, 31.25]; // Example only
-            return [
-                'from' => $warehouseCoords,
-                'to' => $destinationCoords,
-                'status' => $shipment->status
-            ];
-        })
-        ->values()
-        ->all();
-
-    $deliveryZones = [
-        [
-            [121.45, 31.22],
-            [121.47, 31.22],
-            [121.47, 31.24],
-            [121.45, 31.24]
-        ]
-    ];
-
-    $orders = \App\Models\Order::whereDoesntHave('shipment')->get();
-
-    return view('logistics.dashboard', compact(
-        'totalShipments',
-        'pendingShipments',
-        'inTransitShipments',
-        'deliveredShipments',
-        'totalRevenue',
-        'monthlyRevenue',
-        'lowStockItems',
-        'lowStockItemsList',
-        'overdueShipments',
-        'overdueShipmentsCount',
-        'recentShipments',
-        'upcomingDeliveries',
-        'topWholesalers',
-        'revenueData',
-        'shipmentStatusData',
-        'shipmentRoutes',
-        'deliveryZones',
-        'orders'
-    ));
-}
-
+    // Store new shipment
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $data = $request->validate([
             'order_id' => 'required|exists:orders,id',
-            'status' => 'required|in:pending,in_transit,delivered',
-            'shipping_cost' => 'required|numeric|min:0',
+            'tracking_number' => 'nullable|string|unique:shipments',
+            'status' => 'required|string',
+            'carrier' => 'nullable|string',
+            'shipping_cost' => 'nullable|numeric',
             'estimated_delivery_date' => 'nullable|date',
+            'shipping_address' => 'nullable|string',
+            'notes' => 'nullable|string',
         ]);
-
-        $shipment = new \App\Models\Shipment();
-        $shipment->order_id = $validated['order_id'];
-        $shipment->status = $validated['status'];
-        $shipment->shipping_cost = $validated['shipping_cost'];
-        $shipment->estimated_delivery_date = $validated['estimated_delivery_date'] ?? null;
-        $shipment->save();
-
-        return response()->json(['success' => true, 'shipment' => $shipment]);
+        $data['created_by'] = Auth::id();
+        $shipment = Shipment::create($data);
+        return redirect()->route('shipments.show', $shipment)->with('success', 'Shipment created successfully.');
     }
 
-    public function getShipmentDetails($shipmentId)
+    // Show shipment details
+    public function show(Shipment $shipment)
     {
-        $shipment = \App\Models\Shipment::with('order.user')->findOrFail($shipmentId);
-        return response()->json(['shipment' => $shipment]);
+        return view('logistics.shipments.show', compact('shipment'));
     }
 
-    public function updateShipmentStatus(Request $request, $shipmentId)
+    // Show edit shipment form
+    public function edit(Shipment $shipment)
     {
-        $request->validate([
-            'status' => 'required|in:pending,in_transit,delivered,cancelled'
+        $orders = Order::all();
+        return view('logistics.shipments.edit', compact('shipment', 'orders'));
+    }
+
+    // Update shipment
+    public function update(Request $request, Shipment $shipment)
+    {
+        $data = $request->validate([
+            'order_id' => 'required|exists:orders,id',
+            'tracking_number' => 'nullable|string|unique:shipments,tracking_number,' . $shipment->id,
+            'status' => 'required|string',
+            'carrier' => 'nullable|string',
+            'shipping_cost' => 'nullable|numeric',
+            'estimated_delivery_date' => 'nullable|date',
+            'actual_delivery_date' => 'nullable|date',
+            'shipping_address' => 'nullable|string',
+            'notes' => 'nullable|string',
         ]);
-
-        $shipment = \App\Models\Shipment::findOrFail($shipmentId);
-        $shipment->status = $request->status;
-        $shipment->save();
-
-        return response()->json(['success' => true]);
+        $data['updated_by'] = Auth::id();
+        $shipment->update($data);
+        return redirect()->route('shipments.show', $shipment)->with('success', 'Shipment updated successfully.');
     }
-}
 
-   /* {
-        // Fetch procurement-based logistics metrics
-        $totalProcurements = Procurement::count();
-        $orderedProcurements = Procurement::where('status', 'ordered')->count();
-        $receivedProcurements = Procurement::where('status', 'received')->count();
-        $overdueProcurements = Procurement::where('expected_delivery', '<', now())
-            ->whereNotIn('status', ['received', 'cancelled'])
-            ->count();
-
-        // Fetch inventory levels for logistics planning
-        $lowStockItems = Inventory::where('quantity', '<', 10)->get();
-        $totalInventoryItems = Inventory::count();
-        $totalInventoryValue = Inventory::sum('quantity');
-
-        // Fetch recent procurements for logistics tracking
-        $recentProcurements = Procurement::with(['requester', 'approver'])
-            ->whereIn('status', ['ordered', 'received'])
-            ->latest()
-            ->take(10)
-            ->get();
-
-        // Fetch upcoming deliveries
-        $upcomingDeliveries = Procurement::where('expected_delivery', '>=', now())
-            ->whereNotIn('status', ['received', 'cancelled'])
-            ->with('requester')
-            ->orderBy('expected_delivery')
-            ->take(10)
-            ->get();
-
-        // Fetch supplier performance for logistics
-        $topSuppliers = Procurement::selectRaw('supplier_name, COUNT(*) as order_count, SUM(total_amount) as total_value')
-            ->groupBy('supplier_name')
-            ->orderBy('order_count', 'desc')
-            ->take(5)
-            ->get();
-
-        // Calculate delivery performance
-        $onTimeDeliveries = Procurement::where('status', 'received')
-            ->where('actual_delivery', '<=', 'expected_delivery')
-            ->count();
-        $totalDeliveries = Procurement::where('status', 'received')->count();
-        $onTimePercentage = $totalDeliveries > 0 ? round(($onTimeDeliveries / $totalDeliveries) * 100, 1) : 0;
-
-        return view('logistics.dashboard', compact(
-            'totalProcurements',
-            'orderedProcurements',
-            'receivedProcurements',
-            'overdueProcurements',
-            'lowStockItems',
-            'totalInventoryItems',
-            'totalInventoryValue',
-            'recentProcurements',
-            'upcomingDeliveries',
-            'topSuppliers',
-            'onTimePercentage',
-            'onTimeDeliveries',
-            'totalDeliveries'
-        ));
+    // Delete shipment
+    public function destroy(Shipment $shipment)
+    {
+        $shipment->delete();
+        return redirect()->route('logistics.dashboard')->with('success', 'Shipment deleted successfully.');
     }
-} */
+} 

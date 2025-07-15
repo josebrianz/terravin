@@ -184,9 +184,13 @@ function updateWineDetails(itemId) {
                 stockInfo.className = 'text-danger small';
             }
             
-            // Update description
+            // Update description (show only if not null/empty)
             const descriptionDiv = document.querySelector(`#wine-description-${itemId}`);
-            descriptionDiv.innerHTML = `<small class="text-muted"><i class="fas fa-info-circle"></i> ${wine.description}</small>`;
+            if (wine.description) {
+                descriptionDiv.innerHTML = `<small class="text-muted"><i class="fas fa-info-circle"></i> ${wine.description}</small>`;
+            } else {
+                descriptionDiv.innerHTML = '';
+            }
         }
     } else {
         // Clear fields if no wine selected

@@ -2,7 +2,6 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ProcurementController;
-use App\Http\Controllers\LogisticsDashboardController;
 use App\Http\Controllers\AnalyticsDashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\RoleController;
@@ -38,15 +37,6 @@ Route::get('/admin', function () {
 
 Route::get('/application-status', [\App\Http\Controllers\Auth\ApplicationStatusController::class, 'index'])->name('application.status');
 
-// Logistics Routes - Accessible by Admin and Logistics roles
-Route::middleware(['auth', 'role:Admin,Logistics'])->group(function () {
-    Route::get('/logistics/dashboard', [LogisticsDashboardController::class, 'index'])->name('logistics.dashboard');
-    Route::put('/logistics/shipments/{shipment}/status', [LogisticsDashboardController::class, 'updateShipmentStatus'])->name('logistics.shipments.update-status');
-    Route::get('/logistics/shipments/{shipment}', [LogisticsDashboardController::class, 'getShipmentDetails'])->name('logistics.shipments.show');
-    // Add AJAX endpoints for dashboard interactivity
-    Route::post('/logistics/shipments', [LogisticsDashboardController::class, 'store'])->name('logistics.shipments.store');
-});
-
 // Inventory Routes - Accessible by Admin, Vendor, Retailer
 Route::middleware(['auth'])->group(function () {
     Route::resource('inventory', InventoryController::class);
@@ -63,8 +53,8 @@ Route::middleware(['auth', 'role:Admin,Retailer,Vendor,Wholesaler'])->group(func
     Route::post('/procurement/{procurement}/mark-as-received', [ProcurementController::class, 'markAsReceived'])->name('procurement.markAsReceived');
 });
 
-// Order Management Routes - Accessible by Admin, Vendor, Retailer, Customer
-Route::middleware(['auth', 'permission:view_orders,create_orders,edit_orders'])->group(function () {
+// Order Management Routes - Accessible by Admin, Vendor, Retailer, Wholesaler
+Route::middleware(['auth', 'role:Admin,Vendor,Retailer,Wholesaler'])->group(function () {
     Route::resource('orders', OrderController::class);
     Route::get('/orders/pending', [OrderController::class, 'pending'])->name('orders.pending');
     Route::get('/catalog', [OrderController::class, 'catalog'])->name('orders.catalog');
@@ -285,4 +275,9 @@ Route::middleware(['auth', 'role:Wholesaler'])->group(function () {
     Route::get('/wholesaler/dashboard', function () {
         return view('wholesaler.dashboard');
     })->name('wholesaler.dashboard');
+// Logistics Module - Admin Only
+Route::middleware(['auth', 'role:Admin'])->group(function () {
+    Route::get('/logistics/dashboard', [\App\Http\Controllers\LogisticsDashboardController::class, 'index'])->name('logistics.dashboard');
+    Route::get('/shipments', [\App\Http\Controllers\LogisticsDashboardController::class, 'shipmentsIndex'])->name('shipments.index');
+    Route::resource('shipments', \App\Http\Controllers\LogisticsDashboardController::class)->except(['index']); // index handled by dashboard
 });
