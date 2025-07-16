@@ -269,6 +269,8 @@ Route::post('/stakeholders/{id}/preferences', [App\Http\Controllers\StakeholderC
 
 Route::get('/stakeholders/dashboard', [App\Http\Controllers\StakeholderController::class, 'dashboard'])->name('stakeholders.dashboard');
 
+Route::get('/stakeholders/{id}/reports', [App\Http\Controllers\StakeholderController::class, 'showReports'])->name('stakeholders.reports');
+
 
 require __DIR__.'/auth.php';
 

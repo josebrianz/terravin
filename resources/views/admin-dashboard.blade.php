@@ -144,12 +144,11 @@
                             <i class="fas fa-user-tie fa-2x text-gold"></i>
                         </div>
                     </div>
-                    <h5 class="card-title fw-bold text-burgundy">Stakeholder Preferences</h5>
+                    <h5 class="card-title fw-bold text-burgundy">Stakeholder Preferences and Reports</h5>
                     <p class="card-text text-muted small">View and manage report type preferences for all stakeholders.</p>
                     <div class="d-grid gap-2">
                         <a href="{{ route('stakeholders.dashboard') }}" class="btn btn-burgundy shadow-sm" title="Go to stakeholder preferences dashboard">
-                            <i class="fas fa-user-tie"></i> Preferences Dashboard
-
+                            <i class="fas fa-user-tie"></i>  Preferences and Reports
                         </a>
                     </div>
                 </div>
