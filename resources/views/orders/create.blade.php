@@ -141,7 +141,7 @@ function addItem() {
                 </div>
                 <div class="col-md-2 mb-2">
                     <label class="form-label fw-bold text-burgundy">Subtotal</label>
-                    <input type="text" class="form-control subtotal-input" readonly>
+                    <input type="text" class="form-control subtotal-input" value="UGX 0" readonly>
                 </div>
                 <div class="col-md-2 mb-2">
                     <label class="form-label">&nbsp;</label>

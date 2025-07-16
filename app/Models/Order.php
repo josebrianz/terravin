@@ -2,13 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'user_id',
         'customer_name',
@@ -19,11 +16,15 @@ class Order extends Model
         'shipping_address',
         'notes',
         'status',
+
+        'payment_method',
+
     ];
 
     protected $casts = [
         'total_amount' => 'decimal:2',
         'items' => 'array'
+
     ];
 
     public function user()
@@ -31,18 +32,29 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
     public function shipment()
     {
-        return $this->hasOne(Shipment::class);
+        return $this->hasOne(\App\Models\Shipment::class);
     }
 
-    public function assignedTo()
+    public function getItemsAttribute($value)
     {
-        return $this->belongsTo(User::class, 'assigned_to');
+        if (is_array($value) || is_null($value)) {
+            return $value ?: [];
+        }
+        return json_decode($value, true) ?: [];
     }
 
-    public function scopeRecent($query, $days = 30)
+    public function getTotalAttribute()
     {
+
+        return $this->total_amount;
+
         return $query->where('created_at', '>=', now()->subDays($days));
     }
 
@@ -72,5 +84,6 @@ class Order extends Model
     public function hasShipment()
     {
         return $this->shipment()->exists();
+
     }
 } 

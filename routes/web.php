@@ -11,6 +11,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\VendorApplicationController;
 use App\Http\Controllers\HelpController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CartController;
 
 use App\Http\Controllers\SalesController;
 
@@ -56,8 +57,10 @@ Route::middleware(['auth', 'role:Admin,Retailer,Vendor,Wholesaler'])->group(func
 // Order Management Routes - Accessible by Admin, Vendor, Retailer, Wholesaler
 Route::middleware(['auth', 'role:Admin,Vendor,Retailer,Wholesaler'])->group(function () {
     Route::resource('orders', OrderController::class);
+    Route::post('/orders/place', [OrderController::class, 'store'])->name('orders.place');
     Route::get('/orders/pending', [OrderController::class, 'pending'])->name('orders.pending');
     Route::get('/catalog', [OrderController::class, 'catalog'])->name('orders.catalog');
+    Route::get('/orders/confirmation/{order}', [App\Http\Controllers\OrderController::class, 'confirmation'])->name('orders.confirmation');
 });
 
 // Profile Routes - Accessible by all authenticated users
@@ -127,6 +130,12 @@ Route::middleware(['auth', 'role:Retailer'])->group(function () {
 // Reports Route - Accessible by authenticated users
 Route::middleware('auth')->group(function () {
     Route::get('/reports', [App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
+});
+
+
+// Financial Reports Route - Accessible by all authenticated users
+Route::middleware(['auth'])->group(function () {
+    Route::get('/financial-reports', [App\Http\Controllers\FinancialReportController::class, 'index'])->name('financial-reports.index');
 });
 
 // Workforce Dashboard Route
@@ -259,12 +268,106 @@ Route::get('/stakeholders/dashboard', [App\Http\Controllers\StakeholderControlle
 
 Route::get('/stakeholders/{id}/reports', [App\Http\Controllers\StakeholderController::class, 'showReports'])->name('stakeholders.reports');
 
+
 require __DIR__.'/auth.php';
 
 // Analytics Dashboard Routes - Accessible by Admin (add more roles/permissions as needed)
 Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/analytics/dashboard', [AnalyticsDashboardController::class, 'index'])->name('analytics.dashboard');
     Route::post('/predict-sales', [AnalyticsDashboardController::class, 'predictSales'])->name('predict.sales');
+});
+
+// Vendor Dashboard Route - Accessible only by Vendor role
+Route::middleware(['auth', 'role:Vendor'])->group(function () {
+    Route::get('/vendor/dashboard', [App\Http\Controllers\VendorDashboardController::class, 'index'])->name('vendor.dashboard');
+});
+
+// Vendor Orders Resource Routes - Accessible only by Vendor role
+Route::middleware(['auth', 'role:Vendor'])->group(function () {
+    Route::resource('vendor/orders', App\Http\Controllers\VendorOrderController::class)->names('vendor.orders');
+});
+
+// Vendor Finance Route - Accessible only by Vendor role
+Route::middleware(['auth', 'role:Vendor'])->group(function () {
+    Route::get('/vendor/finance', [App\Http\Controllers\VendorFinanceController::class, 'index'])->name('vendor.finance');
+});
+
+// Vendor Reports Route - Accessible only by Vendor role
+Route::middleware(['auth', 'role:Vendor'])->group(function () {
+    Route::get('/vendor/reports', [App\Http\Controllers\VendorReportController::class, 'index'])->name('vendor.reports');
+});
+
+// Vendor Messages Route - Accessible only by Vendor role
+Route::middleware(['auth', 'role:Vendor'])->group(function () {
+    Route::get('/vendor/messages', [App\Http\Controllers\VendorMessageController::class, 'index'])->name('vendor.messages');
+});
+
+// Vendor Contracts Route - Accessible only by Vendor role
+Route::middleware(['auth', 'role:Vendor'])->group(function () {
+    Route::get('/vendor/contracts', [App\Http\Controllers\VendorContractController::class, 'index'])->name('vendor.contracts');
+});
+
+// Wholesaler Dashboard Route - Accessible only by Wholesaler role
+Route::middleware(['auth', 'role:Wholesaler'])->group(function () {
+    Route::get('/wholesaler/dashboard', [App\Http\Controllers\WholesalerDashboardController::class, 'index'])->name('wholesaler.dashboard');
+});
+
+// Batch Management Routes - Accessible by all authenticated users
+Route::middleware(['auth'])->group(function () {
+    Route::resource('batches', App\Http\Controllers\BatchController::class);
+});
+
+// Pricing Management Route - Accessible by all authenticated users
+Route::middleware(['auth'])->group(function () {
+    Route::get('/pricing', [App\Http\Controllers\PricingController::class, 'index'])->name('pricing.index');
+});
+
+// Compliance Document Management Routes - Accessible by all authenticated users
+Route::middleware(['auth'])->group(function () {
+    Route::resource('compliance-documents', App\Http\Controllers\ComplianceDocumentController::class);
+});
+
+// Customer Products Page - All products for customers
+Route::middleware(['auth', 'role:Customer'])->group(function () {
+    Route::get('/customer/products', [App\Http\Controllers\OrderController::class, 'catalog'])->name('customer.products');
+});
+
+// Customer Dashboard Route - Accessible only by Customer role
+Route::middleware(['auth', 'role:Customer'])->group(function () {
+    Route::get('/customer/dashboard', function () {
+        return view('customer-dashboard');
+    })->name('customer.dashboard');
+});
+
+// Customer Order History Page - Only customer's own orders
+Route::middleware(['auth', 'role:Customer'])->group(function () {
+    Route::get('/customer/orders', [App\Http\Controllers\OrderController::class, 'customerOrders'])->name('customer.orders');
+});
+
+// Customer Favorites Placeholder Page
+Route::middleware(['auth', 'role:Customer'])->group(function () {
+    Route::get('/customer/favorites', function () {
+        return view('customer.favorites');
+    })->name('customer.favorites');
+});
+
+// Blade test route
+Route::get('/test-blade', function () {
+    return view('test');
+});
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/orders/history', [App\Http\Controllers\OrderController::class, 'history'])->name('orders.history');
+});
+
+// Cart Routes - Authenticated users
+Route::middleware(['auth'])->group(function () {
+    Route::get('/cart', [App\Http\Controllers\CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add', [App\Http\Controllers\CartController::class, 'add'])->name('cart.add');
+    Route::post('/cart/update/{id}', [App\Http\Controllers\CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/remove/{id}', [App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
+    Route::get('/cart/checkout', [App\Http\Controllers\CartController::class, 'checkout'])->name('cart.checkout');
 });
 
 Route::get('/workforce/assignments', [App\Http\Controllers\WorkforceDashboardController::class, 'assignments'])->name('workforce.assignments');
@@ -282,3 +385,4 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/shipments', [\App\Http\Controllers\LogisticsDashboardController::class, 'shipmentsIndex'])->name('shipments.index');
     Route::resource('shipments', \App\Http\Controllers\LogisticsDashboardController::class)->except(['index']); // index handled by dashboard
 }); 
+

@@ -35,6 +35,48 @@
         .wine-navbar .dropdown-menu {
             background: #fff7f3;
         }
+        .cart-icon-container {
+            position: relative;
+            display: inline-block;
+        }
+        .cart-count-badge {
+            position: absolute;
+            top: -8px;
+            right: -12px;
+            background: #b85c38;
+            color: #fff;
+            border-radius: 50%;
+            padding: 0.25em 0.6em;
+            font-size: 1rem;
+            font-weight: bold;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 8px rgba(94,15,15,0.15);
+            z-index: 2;
+            transition: background 0.2s;
+        }
+        .cart-icon-container:hover .cart-count-badge {
+            background: #7b2230;
+        }
+        /* Profile photo: 3x size, bolder border */
+        .profile-photo-large {
+            width: 72px !important;
+            height: 72px !important;
+            border-width: 6px !important;
+            border-color: #c8a97e !important;
+            object-fit: cover;
+        }
+        .profile-photo-placeholder-large {
+            width: 72px !important;
+            height: 72px !important;
+            border-width: 6px !important;
+            border-color: #c8a97e !important;
+            background: #fff7f3;
+            color: #b85c38;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
@@ -53,18 +95,29 @@
                         <i class="fas fa-question-circle me-2"></i> Help
                     </a>
                 </div>
-                <div class="flex items-center justify-end" style="flex:1;">
+                <div class="flex items-center justify-end gap-6" style="flex:1;">
+                    <!-- Modern Cart Icon -->
+                    @php
+                        $cartCount = \App\Models\CartItem::where('user_id', Auth::id())->sum('quantity');
+                    @endphp
+                    <a href="{{ route('cart.index') }}" class="relative group" style="display:inline-block;">
+                        <span class="cart-icon-container">
+                            <i class="fas fa-shopping-cart" style="font-size:2.2rem;color:#c8a97e;"></i>
+                            <span class="cart-count-badge">{{ $cartCount }}</span>
+                        </span>
+                    </a>
+                    <!-- Profile Dropdown -->
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
                             <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md wine-btn focus:outline-none transition ease-in-out duration-150">
                                 <div class="flex items-center">
                                     @if(Auth::user()?->profile_photo)
-                                        <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}?v={{ time() }}" 
-                                             alt="{{ Auth::user()->name }}" 
-                                             class="h-8 w-8 rounded-full object-cover mr-2 border-2 border-gold" style="border-color:#c8a97e !important;">
+                                        <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}?v={{ time() }}"
+                                             alt="{{ Auth::user()->name }}"
+                                             class="profile-photo-large rounded-full object-cover mr-2 border-2 border-gold">
                                     @else
-                                        <div class="h-8 w-8 rounded-full bg-transparent border-2 border-gold flex items-center justify-center mr-2" style="border-color:#c8a97e !important;">
-                                            <span class="text-white text-sm font-medium">
+                                        <div class="profile-photo-placeholder-large rounded-full border-2 border-gold mr-2">
+                                            <span class="font-medium">
                                                 {{ strtoupper(substr(Auth::user()?->name ?? 'U', 0, 1)) }}
                                             </span>
                                         </div>
@@ -128,6 +181,11 @@
                             <x-nav-link :href="route('help.index')" :active="request()->routeIs('help.index')">
                                 {{ __('Help') }}
                             </x-nav-link>
+                            @if(Auth::user() && Auth::user()->hasRole('Customer'))
+                                <x-nav-link :href="route('customer.products')" :active="request()->routeIs('customer.products')">
+                                    {{ __('Products') }}
+                                </x-nav-link>
+                            @endif
                         @elseif(Auth::user() && Auth::user()->hasRole('Admin'))
                             <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                                 {{ __('Dashboard') }}
@@ -214,6 +272,11 @@
                 <x-responsive-nav-link :href="route('help.index')" :active="request()->routeIs('help.index')">
                     {{ __('Help') }}
                 </x-responsive-nav-link>
+                @if(Auth::user() && Auth::user()->hasRole('Customer'))
+                    <x-responsive-nav-link :href="route('customer.products')" :active="request()->routeIs('customer.products')">
+                        {{ __('Products') }}
+                    </x-responsive-nav-link>
+                @endif
             @elseif(Auth::user() && Auth::user()->hasRole('Admin'))
                 <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                     {{ __('Dashboard') }}

@@ -117,8 +117,8 @@
                                     <td>{{ $procurement->item_name }}</td>
                                     <td>{{ $procurement->wholesaler_name }}</td>
                                     <td>{{ $procurement->quantity }}</td>
-                                    <td>UGX {{ number_format($procurement->unit_price, 0) }}</td>
-                                    <td>UGX {{ number_format($procurement->total_amount, 0) }}</td>
+                                    <td>{{ format_usd($procurement->unit_price) }}</td>
+                                    <td>{{ format_usd($procurement->total_amount) }}</td>
                                     <td>
                                         <span class="badge {{ $procurement->status_badge_class }}">
                                             {{ ucfirst($procurement->status) }}

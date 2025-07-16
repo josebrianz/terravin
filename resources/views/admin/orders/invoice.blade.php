@@ -39,16 +39,16 @@
                     @foreach($order->items as $item)
                     <tr>
                         <td>{{ $item->item_name ?? $item['wine_name'] ?? '-' }}</td>
-                        <td>UGX {{ number_format($item->unit_price ?? $item['unit_price'] ?? 0) }}</td>
+                        <td>{{ format_usd($item->unit_price ?? $item['unit_price'] ?? 0) }}</td>
                         <td>{{ $item->quantity ?? $item['quantity'] ?? 0 }}</td>
-                        <td>UGX {{ number_format(($item->subtotal ?? ($item['quantity'] ?? 0 * $item['unit_price'] ?? 0))) }}</td>
+                        <td>{{ format_usd($item->subtotal ?? ($item['quantity'] ?? 0 * $item['unit_price'] ?? 0)) }}</td>
                     </tr>
                     @endforeach
                 </tbody>
                 <tfoot>
                     <tr>
                         <th colspan="3" class="text-end">Total</th>
-                        <th>UGX {{ number_format($order->total_amount) }}</th>
+                        <th>{{ format_usd($order->total_amount) }}</th>
                     </tr>
                 </tfoot>
             </table>

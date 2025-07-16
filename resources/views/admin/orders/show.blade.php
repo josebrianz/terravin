@@ -196,9 +196,9 @@
                                 <tr>
                                     <td><img src="{{ $item->item_image }}" alt="{{ $item->item_name }}" style="width:40px;height:60px;object-fit:cover;border-radius:4px;"></td>
                                     <td>{{ $item->item_name }}</td>
-                                    <td>UGX {{ number_format($item->unit_price) }}</td>
+                                    <td>{{ format_usd($item->unit_price) }}</td>
                                     <td>{{ $item->quantity }}</td>
-                                    <td>UGX {{ number_format($item->subtotal) }}</td>
+                                    <td>{{ format_usd($item->subtotal) }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -206,7 +206,7 @@
                     </div>
                 </div>
                 <div class="card-footer bg-white d-flex justify-content-end">
-                    <span class="fw-bold text-burgundy fs-5">Total: UGX {{ number_format($order->total_amount) }}</span>
+                    <span class="fw-bold text-burgundy fs-5">Total: {{ format_usd($order->total_amount) }}</span>
                 </div>
             </div>
         </div>

@@ -2,6 +2,10 @@
 
 @section('title', 'Vendor Dashboard')
 
+@section('navigation')
+    @include('layouts.navigation')
+@endsection
+
 @section('content')
 <style>
 :root {
