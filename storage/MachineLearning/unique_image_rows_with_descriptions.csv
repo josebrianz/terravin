@@ -1,0 +1,311 @@
+YEAR,MONTH,CATEGORY,ITEM CODE,WINE NAME,RETAIL SALES,RETAIL TRANSFERS,WAREHOUSE SALES,QUANTITY,IMAGE,PRICE PER UNIT,CUSTOMER ID,DATE,SPENDING LEVEL,DESCRIPTION
+2015,1,red wine,10387,Sangiovese,1.42,0.0,2.0,2.0,img22,12.34,C84854,2015-01-23,medium,"An Italian red grape known for bright acidity, firm tannins, and cherry flavors; key in Chianti wines."
+2015,1,red wine,10632,Nebbiolo,1.42,0.0,1.0,1.0,img12,12.34,C17988,2015-01-15,medium,"A Piedmont grape famed for Barolo and Barbaresco; offers rose, tar, and red fruit notes with high tannin."
+2015,1,red wine,10944,Zinfandel,1.42,0.0,3.0,3.0,img51,10.87,C77243,2015-01-16,medium,"A bold red grape popular in California, producing jammy wines with blackberry, spice, and pepper."
+2015,1,red wine,10946,Syrah/Shiraz,1.42,0.0,5.0,5.0,img178,22.99,C75713,2015-01-10,high,"Known as Syrah in France and Shiraz in Australia; rich, full-bodied, with dark fruit and pepper."
+2015,1,red wine,10954,Zinfandel,1.42,0.0,1.0,1.0,img15,20.62,C93431,2015-01-02,high,"A bold red grape popular in California, producing jammy wines with blackberry, spice, and pepper."
+2015,1,red wine,10968,Syrah/Shiraz,1.42,0.0,1.0,1.0,img18,10.31,C15469,2015-01-05,medium,"Known as Syrah in France and Shiraz in Australia; rich, full-bodied, with dark fruit and pepper."
+2015,1,red wine,11443,Malbec,1.42,0.0,1.0,1.0,img24,24.55,C60046,2015-01-18,high,"A dark, juicy red grape from Argentina and France; shows plum, blackberry, and cocoa notes."
+2015,1,red wine,11529,Tempranillo,1.42,0.0,2.0,2.0,img169,22.49,C86448,2015-01-23,high,"Spain’s top red grape, key in Rioja wines; offers dried cherry, tobacco, and leather flavors."
+2015,1,red wine,11539,Nebbiolo,1.42,0.0,2.0,2.0,img175,13.19,C29255,2015-01-22,medium,"A Piedmont grape famed for Barolo and Barbaresco; offers rose, tar, and red fruit notes with high tannin."
+2015,1,red wine,11811,Malbec,1.42,0.0,4.0,4.0,img10,12.73,C97533,2015-01-03,medium,"A dark, juicy red grape from Argentina and France; shows plum, blackberry, and cocoa notes."
+2015,1,red wine,11834,Cabernet Sauvignon,1.42,0.0,1.0,1.0,img3,12.75,C42818,2015-01-15,medium,"A global red grape; full-bodied with blackcurrant, cedar, and firm tannins; ages well."
+2015,1,red wine,11918,Sangiovese,1.42,0.0,7.0,7.0,img27,14.56,C13917,2015-01-22,medium,"An Italian red grape known for bright acidity, firm tannins, and cherry flavors; key in Chianti wines."
+2015,1,red wine,11987,Nebbiolo,1.42,0.0,3.0,3.0,img159,17.87,C64860,2015-01-01,medium,"A Piedmont grape famed for Barolo and Barbaresco; offers rose, tar, and red fruit notes with high tannin."
+2015,1,red wine,12002,Malbec,1.42,0.0,1.0,1.0,img148,16.48,C45722,2015-01-13,medium,"A dark, juicy red grape from Argentina and France; shows plum, blackberry, and cocoa notes."
+2015,1,red wine,12145,Tempranillo,1.42,0.0,1.0,1.0,img145,19.18,C88860,2015-01-23,medium,"Spain’s top red grape, key in Rioja wines; offers dried cherry, tobacco, and leather flavors."
+2015,1,red wine,12251,Nebbiolo,1.42,0.0,1.0,1.0,img150,12.09,C90402,2015-01-26,medium,"A Piedmont grape famed for Barolo and Barbaresco; offers rose, tar, and red fruit notes with high tannin."
+2015,1,red wine,12254,Pinot Noir,1.42,0.0,2.0,2.0,img158,14.38,C43837,2015-01-05,medium,"A delicate red grape from Burgundy and beyond; light-bodied with cherry, floral, and earthy tones."
+2015,1,red wine,12631,Cabernet Sauvignon,1.42,0.0,1.0,1.0,img56,15.5,C08310,2015-01-18,medium,"A global red grape; full-bodied with blackcurrant, cedar, and firm tannins; ages well."
+2015,1,red wine,12730,Zinfandel,1.42,0.0,2.0,2.0,img182,16.84,C79210,2015-01-15,medium,"A bold red grape popular in California, producing jammy wines with blackberry, spice, and pepper."
+2015,1,red wine,12891,Syrah/Shiraz,1.42,0.0,1.0,1.0,img177,21.78,C22240,2015-01-09,high,"Known as Syrah in France and Shiraz in Australia; rich, full-bodied, with dark fruit and pepper."
+2015,1,red wine,12934,Nebbiolo,1.42,0.0,2.0,2.0,img49,17.71,C83730,2015-01-14,medium,"A Piedmont grape famed for Barolo and Barbaresco; offers rose, tar, and red fruit notes with high tannin."
+2015,1,red wine,13011,Sangiovese,1.42,0.0,1.0,1.0,img181,18.89,C82449,2015-01-09,medium,"An Italian red grape known for bright acidity, firm tannins, and cherry flavors; key in Chianti wines."
+2015,1,red wine,13054,Pinot Noir,1.42,0.0,1.0,1.0,img41,10.7,C49099,2015-01-23,medium,"A delicate red grape from Burgundy and beyond; light-bodied with cherry, floral, and earthy tones."
+2015,1,red wine,20093,Zinfandel,1.42,0.0,8.0,8.0,img7,12.56,C78317,2015-01-24,medium,"A bold red grape popular in California, producing jammy wines with blackberry, spice, and pepper."
+2015,1,red wine,2194,Cabernet Sauvignon,1.42,0.0,42.0,42.0,img25,10.98,C54550,2015-01-28,medium,"A global red grape; full-bodied with blackcurrant, cedar, and firm tannins; ages well."
+2015,1,red wine,2216,Tempranillo,1.42,0.0,2.0,2.0,img165,24.23,C68781,2015-01-02,high,"Spain’s top red grape, key in Rioja wines; offers dried cherry, tobacco, and leather flavors."
+2015,1,red wine,22425,Cabernet Sauvignon,1.42,0.0,1.0,1.0,img157,24.48,C93587,2015-01-13,high,"A global red grape; full-bodied with blackcurrant, cedar, and firm tannins; ages well."
+2015,1,red wine,22492,Nebbiolo,1.42,0.0,1.0,1.0,img156,22.13,C71139,2015-01-23,high,"A Piedmont grape famed for Barolo and Barbaresco; offers rose, tar, and red fruit notes with high tannin."
+2015,1,red wine,22571,Zinfandel,1.42,0.0,4.0,4.0,img166,14.57,C61553,2015-01-17,medium,"A bold red grape popular in California, producing jammy wines with blackberry, spice, and pepper."
+2015,1,red wine,22573,Pinot Noir,1.42,0.0,2.0,2.0,img48,11.47,C12637,2015-01-27,medium,"A delicate red grape from Burgundy and beyond; light-bodied with cherry, floral, and earthy tones."
+2015,1,red wine,2259,Pinot Noir,1.42,0.0,25.0,25.0,img188,20.26,C08945,2015-01-19,high,"A delicate red grape from Burgundy and beyond; light-bodied with cherry, floral, and earthy tones."
+2015,1,red wine,22681,Cabernet Sauvignon,1.42,0.0,1.0,1.0,img147,16.6,C82733,2015-01-21,medium,"A global red grape; full-bodied with blackcurrant, cedar, and firm tannins; ages well."
+2015,1,red wine,22988,Pinot Noir,1.42,0.0,3.0,3.0,img163,11.83,C87035,2015-01-24,medium,"A delicate red grape from Burgundy and beyond; light-bodied with cherry, floral, and earthy tones."
+2015,1,red wine,22996,Nebbiolo,1.42,0.0,9.0,9.0,img8,17.43,C95709,2015-01-25,medium,"A Piedmont grape famed for Barolo and Barbaresco; offers rose, tar, and red fruit notes with high tannin."
+2015,1,red wine,23054,Malbec,1.42,0.0,5.0,5.0,img17,10.52,C80137,2015-01-27,medium,"A dark, juicy red grape from Argentina and France; shows plum, blackberry, and cocoa notes."
+2015,1,red wine,23079,Malbec,1.42,0.0,7.0,7.0,img171,23.64,C42512,2015-01-27,high,"A dark, juicy red grape from Argentina and France; shows plum, blackberry, and cocoa notes."
+2015,1,red wine,23092,Pinot Noir,1.42,0.0,2.0,2.0,img153,13.88,C65277,2015-01-14,medium,"A delicate red grape from Burgundy and beyond; light-bodied with cherry, floral, and earthy tones."
+2015,1,red wine,23133,Pinot Noir,1.42,0.0,41.0,41.0,img183,19.94,C87630,2015-01-02,medium,"A delicate red grape from Burgundy and beyond; light-bodied with cherry, floral, and earthy tones."
+2015,1,red wine,23143,Pinot Noir,1.42,0.0,12.0,12.0,img186,14.68,C42663,2015-01-23,medium,"A delicate red grape from Burgundy and beyond; light-bodied with cherry, floral, and earthy tones."
+2015,1,red wine,23258,Zinfandel,1.42,0.0,28.0,28.0,img192,17.8,C61104,2015-01-11,medium,"A bold red grape popular in California, producing jammy wines with blackberry, spice, and pepper."
+2015,1,red wine,23335,Cabernet Sauvignon,1.42,0.0,2.0,2.0,img161,18.2,C56351,2015-01-11,medium,"A global red grape; full-bodied with blackcurrant, cedar, and firm tannins; ages well."
+2015,1,red wine,23364,Tempranillo,1.42,0.0,7.0,7.0,img168,12.77,C27546,2015-01-01,medium,"Spain’s top red grape, key in Rioja wines; offers dried cherry, tobacco, and leather flavors."
+2015,1,red wine,23514,Nebbiolo,1.42,0.0,5.0,5.0,img35,24.09,C93771,2015-01-12,high,"A Piedmont grape famed for Barolo and Barbaresco; offers rose, tar, and red fruit notes with high tannin."
+2015,1,red wine,23528,Syrah/Shiraz,1.42,0.0,40.0,40.0,img38,18.97,C10525,2015-01-26,medium,"Known as Syrah in France and Shiraz in Australia; rich, full-bodied, with dark fruit and pepper."
+2015,1,red wine,23551,Grenache,1.42,0.0,1.0,1.0,img176,23.83,C91271,2015-01-28,high,A warm-climate red grape; juicy and spicy with red berry and herbal notes; popular in GSM blends.
+2015,1,red wine,23667,Cabernet Sauvignon,1.42,0.0,1.0,1.0,img151,11.33,C62202,2015-01-21,medium,"A global red grape; full-bodied with blackcurrant, cedar, and firm tannins; ages well."
+2015,1,red wine,23669,Zinfandel,1.42,0.0,1.0,1.0,img31,12.94,C77731,2015-01-12,medium,"A bold red grape popular in California, producing jammy wines with blackberry, spice, and pepper."
+2015,1,red wine,23712,Sangiovese,1.42,0.0,9.0,9.0,img50,15.83,C45769,2015-01-17,medium,"An Italian red grape known for bright acidity, firm tannins, and cherry flavors; key in Chianti wines."
+2015,1,red wine,23729,Tempranillo,1.42,0.0,83.0,83.0,img45,14.07,C05311,2015-01-03,medium,"Spain’s top red grape, key in Rioja wines; offers dried cherry, tobacco, and leather flavors."
+2015,1,red wine,23866,Cabernet Sauvignon,1.42,0.0,8.0,8.0,img190,18.14,C37444,2015-01-02,medium,"A global red grape; full-bodied with blackcurrant, cedar, and firm tannins; ages well."
+2015,1,red wine,24012,Tempranillo,1.42,0.0,45.0,45.0,img2,11.12,C01452,2015-01-10,medium,"Spain’s top red grape, key in Rioja wines; offers dried cherry, tobacco, and leather flavors."
+2015,1,red wine,24021,Merlot,1.42,0.0,1.0,1.0,img6,21.58,C24749,2015-01-08,high,"A smooth, medium-to-full bodied red grape; plum, chocolate, and soft tannins make it approachable."
+2015,1,red wine,24038,Pinot Noir,1.42,0.0,39.0,39.0,img162,12.98,C27152,2015-01-09,medium,"A delicate red grape from Burgundy and beyond; light-bodied with cherry, floral, and earthy tones."
+2015,1,red wine,24362,Pinot Noir,1.42,0.0,2.0,2.0,img16,22.23,C76893,2015-01-06,high,"A delicate red grape from Burgundy and beyond; light-bodied with cherry, floral, and earthy tones."
+2015,1,red wine,24553,Malbec,1.42,0.0,2.0,2.0,img29,21.57,C71039,2015-01-15,high,"A dark, juicy red grape from Argentina and France; shows plum, blackberry, and cocoa notes."
+2015,1,red wine,24612,Zinfandel,1.42,0.0,1.0,1.0,img46,11.11,C99404,2015-01-04,medium,"A bold red grape popular in California, producing jammy wines with blackberry, spice, and pepper."
+2015,1,red wine,24620,Malbec,1.42,0.0,2.0,2.0,img180,15.38,C25831,2015-01-26,medium,"A dark, juicy red grape from Argentina and France; shows plum, blackberry, and cocoa notes."
+2015,1,red wine,24776,Zinfandel,1.42,0.0,1.0,1.0,img21,22.95,C29673,2015-01-04,high,"A bold red grape popular in California, producing jammy wines with blackberry, spice, and pepper."
+2015,1,red wine,25564,Grenache,1.42,0.0,24.0,24.0,img179,17.08,C71883,2015-01-26,medium,A warm-climate red grape; juicy and spicy with red berry and herbal notes; popular in GSM blends.
+2015,1,red wine,25581,Cabernet Sauvignon,1.42,0.0,17.0,17.0,img154,21.41,C01082,2015-01-06,high,"A global red grape; full-bodied with blackcurrant, cedar, and firm tannins; ages well."
+2015,1,red wine,25587,Tempranillo,1.42,0.0,3.0,3.0,img33,18.42,C11083,2015-01-23,medium,"Spain’s top red grape, key in Rioja wines; offers dried cherry, tobacco, and leather flavors."
+2015,1,red wine,25590,Nebbiolo,1.42,0.0,4.0,4.0,img152,21.56,C88795,2015-01-08,high,"A Piedmont grape famed for Barolo and Barbaresco; offers rose, tar, and red fruit notes with high tannin."
+2015,1,red wine,25669,Nebbiolo,1.42,0.0,1.0,1.0,img57,17.41,C26182,2015-01-15,medium,"A Piedmont grape famed for Barolo and Barbaresco; offers rose, tar, and red fruit notes with high tannin."
+2015,1,red wine,25742,Pinot Noir,1.42,0.0,6.0,6.0,img43,16.41,C38419,2015-01-02,medium,"A delicate red grape from Burgundy and beyond; light-bodied with cherry, floral, and earthy tones."
+2015,1,red wine,25743,Cabernet Sauvignon,1.42,0.0,6.0,6.0,img167,10.38,C61708,2015-01-13,medium,"A global red grape; full-bodied with blackcurrant, cedar, and firm tannins; ages well."
+2015,1,red wine,25903,Malbec,1.42,0.0,3.0,3.0,img19,14.72,C82598,2015-01-06,medium,"A dark, juicy red grape from Argentina and France; shows plum, blackberry, and cocoa notes."
+2015,1,red wine,25961,Syrah/Shiraz,1.42,0.0,15.0,15.0,img173,17.63,C19587,2015-01-09,medium,"Known as Syrah in France and Shiraz in Australia; rich, full-bodied, with dark fruit and pepper."
+2015,1,red wine,26019,Pinot Noir,1.42,0.0,7.0,7.0,img34,23.61,C57563,2015-01-24,high,"A delicate red grape from Burgundy and beyond; light-bodied with cherry, floral, and earthy tones."
+2015,1,red wine,26156,Pinot Noir,1.42,0.0,7.0,7.0,img170,13.43,C87904,2015-01-24,medium,"A delicate red grape from Burgundy and beyond; light-bodied with cherry, floral, and earthy tones."
+2015,1,red wine,26165,Syrah/Shiraz,1.42,0.0,10.0,10.0,img164,11.15,C80982,2015-01-11,medium,"Known as Syrah in France and Shiraz in Australia; rich, full-bodied, with dark fruit and pepper."
+2015,1,red wine,26215,Malbec,1.42,0.0,7.0,7.0,img23,14.35,C46064,2015-01-14,medium,"A dark, juicy red grape from Argentina and France; shows plum, blackberry, and cocoa notes."
+2015,1,red wine,26242,Nebbiolo,1.42,0.0,26.0,26.0,img30,12.42,C36511,2015-01-07,medium,"A Piedmont grape famed for Barolo and Barbaresco; offers rose, tar, and red fruit notes with high tannin."
+2015,1,red wine,26350,Tempranillo,1.42,0.0,1.0,1.0,img26,23.07,C88905,2015-01-28,high,"Spain’s top red grape, key in Rioja wines; offers dried cherry, tobacco, and leather flavors."
+2015,1,red wine,26788,Zinfandel,1.42,0.0,4.0,4.0,img53,11.8,C22309,2015-01-16,medium,"A bold red grape popular in California, producing jammy wines with blackberry, spice, and pepper."
+2015,1,red wine,26938,Sangiovese,1.42,0.0,3.0,3.0,img14,17.78,C33656,2015-01-19,medium,"An Italian red grape known for bright acidity, firm tannins, and cherry flavors; key in Chianti wines."
+2015,1,red wine,27815,Zinfandel,1.42,0.0,3.0,3.0,img32,13.78,C18747,2015-01-22,medium,"A bold red grape popular in California, producing jammy wines with blackberry, spice, and pepper."
+2015,1,red wine,27853,Sangiovese,1.42,0.0,2.0,2.0,img28,17.46,C71795,2015-01-22,medium,"An Italian red grape known for bright acidity, firm tannins, and cherry flavors; key in Chianti wines."
+2015,1,red wine,27885,Zinfandel,1.42,0.0,4.0,4.0,img185,14.51,C26471,2015-01-19,medium,"A bold red grape popular in California, producing jammy wines with blackberry, spice, and pepper."
+2015,1,red wine,28392,Merlot,1.42,0.0,7.0,7.0,img52,24.78,C34984,2015-01-03,high,"A smooth, medium-to-full bodied red grape; plum, chocolate, and soft tannins make it approachable."
+2015,1,red wine,28401,Pinot Noir,1.42,0.0,5.0,5.0,img1,13.63,C80790,2015-01-07,medium,"A delicate red grape from Burgundy and beyond; light-bodied with cherry, floral, and earthy tones."
+2015,1,red wine,28433,Cabernet Sauvignon,1.42,0.0,5.0,5.0,img155,20.08,C87744,2015-01-18,high,"A global red grape; full-bodied with blackcurrant, cedar, and firm tannins; ages well."
+2015,1,red wine,28438,Nebbiolo,1.42,0.0,24.0,24.0,img187,21.42,C60346,2015-01-10,high,"A Piedmont grape famed for Barolo and Barbaresco; offers rose, tar, and red fruit notes with high tannin."
+2015,1,red wine,28442,Pinot Noir,1.42,0.0,15.0,15.0,img55,13.56,C33091,2015-01-22,medium,"A delicate red grape from Burgundy and beyond; light-bodied with cherry, floral, and earthy tones."
+2015,1,red wine,28482,Cabernet Sauvignon,1.42,0.0,4.0,4.0,img191,19.48,C06293,2015-01-18,medium,"A global red grape; full-bodied with blackcurrant, cedar, and firm tannins; ages well."
+2015,1,red wine,28612,Pinot Noir,1.42,0.0,68.0,68.0,img5,22.53,C10221,2015-01-25,high,"A delicate red grape from Burgundy and beyond; light-bodied with cherry, floral, and earthy tones."
+2015,1,red wine,28833,Nebbiolo,1.42,0.0,5.0,5.0,img193,10.25,C74187,2015-01-21,medium,"A Piedmont grape famed for Barolo and Barbaresco; offers rose, tar, and red fruit notes with high tannin."
+2015,1,red wine,29865,Malbec,1.42,0.0,1.0,1.0,img47,12.06,C73755,2015-01-07,medium,"A dark, juicy red grape from Argentina and France; shows plum, blackberry, and cocoa notes."
+2015,1,red wine,31091,Malbec,1.42,0.0,6.0,6.0,img160,23.46,C32110,2015-01-18,high,"A dark, juicy red grape from Argentina and France; shows plum, blackberry, and cocoa notes."
+2015,1,red wine,31121,Cabernet Sauvignon,1.42,0.0,3.0,3.0,img144,19.5,C70003,2015-01-26,medium,"A global red grape; full-bodied with blackcurrant, cedar, and firm tannins; ages well."
+2015,1,red wine,3310,Tempranillo,1.42,0.0,4.0,4.0,img172,15.24,C96939,2015-01-27,medium,"Spain’s top red grape, key in Rioja wines; offers dried cherry, tobacco, and leather flavors."
+2015,1,red wine,347253,Tempranillo,1.42,0.0,1.0,1.0,img143,19.63,C67516,2015-01-01,medium,"Spain’s top red grape, key in Rioja wines; offers dried cherry, tobacco, and leather flavors."
+2015,1,red wine,50518,Tempranillo,1.42,0.0,1.0,1.0,img4,20.68,C96663,2015-01-02,high,"Spain’s top red grape, key in Rioja wines; offers dried cherry, tobacco, and leather flavors."
+2015,1,red wine,50641,Malbec,1.42,0.0,6.0,6.0,img184,14.88,C87147,2015-01-11,medium,"A dark, juicy red grape from Argentina and France; shows plum, blackberry, and cocoa notes."
+2015,1,red wine,50830,Grenache,1.42,0.0,1.0,1.0,img9,18.65,C31501,2015-01-19,medium,A warm-climate red grape; juicy and spicy with red berry and herbal notes; popular in GSM blends.
+2015,1,red wine,60592,Malbec,1.42,0.0,1.0,1.0,img37,24.04,C44228,2015-01-04,high,"A dark, juicy red grape from Argentina and France; shows plum, blackberry, and cocoa notes."
+2015,1,red wine,62396,Pinot Noir,1.42,0.0,1.0,1.0,img40,11.41,C38512,2015-01-17,medium,"A delicate red grape from Burgundy and beyond; light-bodied with cherry, floral, and earthy tones."
+2015,1,red wine,62411,Grenache,1.42,0.0,1.0,1.0,img42,18.86,C09741,2015-01-19,medium,A warm-climate red grape; juicy and spicy with red berry and herbal notes; popular in GSM blends.
+2015,1,red wine,62419,Cabernet Sauvignon,1.42,0.0,2.0,2.0,img11,10.46,C05646,2015-01-24,medium,"A global red grape; full-bodied with blackcurrant, cedar, and firm tannins; ages well."
+2015,1,red wine,62555,Tempranillo,1.42,0.0,2.0,2.0,img20,17.83,C58536,2015-01-04,medium,"Spain’s top red grape, key in Rioja wines; offers dried cherry, tobacco, and leather flavors."
+2015,1,red wine,62800,Tempranillo,1.42,0.0,1.0,1.0,img189,18.11,C14632,2015-01-11,medium,"Spain’s top red grape, key in Rioja wines; offers dried cherry, tobacco, and leather flavors."
+2015,1,red wine,62910,Zinfandel,1.42,0.0,1.0,1.0,img174,12.35,C48420,2015-01-13,medium,"A bold red grape popular in California, producing jammy wines with blackberry, spice, and pepper."
+2015,1,red wine,62922,Zinfandel,1.42,0.0,4.0,4.0,img54,13.75,C59050,2015-01-26,medium,"A bold red grape popular in California, producing jammy wines with blackberry, spice, and pepper."
+2015,1,red wine,63014,Pinot Noir,1.42,0.0,1.0,1.0,img13,16.29,C67285,2015-01-27,medium,"A delicate red grape from Burgundy and beyond; light-bodied with cherry, floral, and earthy tones."
+2015,1,red wine,63101,Merlot,1.42,0.0,3.0,3.0,img146,19.39,C03103,2015-01-04,medium,"A smooth, medium-to-full bodied red grape; plum, chocolate, and soft tannins make it approachable."
+2015,1,red wine,63103,Nebbiolo,1.42,0.0,1.0,1.0,img39,17.55,C83169,2015-01-24,medium,"A Piedmont grape famed for Barolo and Barbaresco; offers rose, tar, and red fruit notes with high tannin."
+2015,1,red wine,63110,Nebbiolo,1.42,0.0,2.0,2.0,img44,11.06,C89299,2015-01-15,medium,"A Piedmont grape famed for Barolo and Barbaresco; offers rose, tar, and red fruit notes with high tannin."
+2015,1,red wine,77607,Malbec,1.42,0.0,9.0,9.0,img149,15.79,C91575,2015-01-07,medium,"A dark, juicy red grape from Argentina and France; shows plum, blackberry, and cocoa notes."
+2015,1,red wine,78069,Zinfandel,1.42,0.0,30.0,30.0,img36,24.42,C57037,2015-01-15,high,"A bold red grape popular in California, producing jammy wines with blackberry, spice, and pepper."
+2015,1,white wine,10346,Pinot Grigio,3.75,11.0,12.0,23.0,img220,19.36,C74270,2015-01-23,medium,
+2015,1,white wine,1001,Chenin Blanc,4.0,8.0,2.0,2.0,img79,10.01,C56939,2015-01-15,medium,
+2015,1,white wine,10014,Riesling,4.0,8.0,1.0,1.0,img90,11.14,C48613,2015-01-03,medium,
+2015,1,white wine,10095,Pinot Grigio,5.0,5.0,3.0,8.0,img206,17.74,C50652,2015-01-02,medium,
+2015,1,white wine,10271,Moscato,0.67,2.0,8.0,10.0,img231,14.22,C63687,2015-01-13,medium,
+2015,1,white wine,10345,Semillon,6.41,5.0,12.0,5.0,img241,13.44,C24973,2015-01-27,medium,
+2015,1,white wine,10407,Viognier,0.5,8.0,3.0,3.0,img244,15.22,C73546,2015-01-19,medium,
+2015,1,white wine,10430,Semillon,41.66,53.0,119.0,172.0,img74,19.65,C73216,2015-01-13,medium,
+2015,1,white wine,10431,Semillon,11.25,21.0,138.0,159.0,img91,15.01,C09316,2015-01-17,medium,
+2015,1,white wine,10432,Moscato,1.0,1.0,34.0,35.0,img203,13.59,C03508,2015-01-27,medium,
+2015,1,white wine,10434,Gruner Veltliner,79.5,101.0,223.0,324.0,img200,14.51,C21493,2015-01-28,medium,
+2015,1,white wine,10435,Chenin Blanc,16.46,19.0,74.0,93.0,img214,17.7,C77955,2015-01-13,medium,
+2015,1,white wine,10436,Gewurztraminer,43.91,42.75,129.5,172.25,img226,15.35,C50286,2015-01-16,medium,
+2015,1,white wine,10437,Gruner Veltliner,2.5,4.0,30.0,34.0,img201,15.76,C82818,2015-01-20,medium,
+2015,1,white wine,10438,Gewurztraminer,11.21,15.0,32.0,47.0,img217,19.66,C34515,2015-01-15,medium,
+2015,1,white wine,10475,Viognier,4.0,8.0,1.0,1.0,img199,15.42,C95700,2015-01-12,medium,
+2015,1,white wine,10478,Gewurztraminer,4.0,8.0,12.0,13.0,img227,12.56,C65403,2015-01-26,medium,
+2015,1,white wine,1058,Chardonnay,12.5,15.0,14.0,29.0,img94,16.3,C70826,2015-01-19,medium,
+2015,1,white wine,10593,Moscato,4.0,8.0,13.0,13.0,img197,15.91,C90135,2015-01-13,medium,
+2015,1,white wine,10603,Sauvignon Blanc,0.32,1.0,2.0,3.0,img84,8.17,C97053,2015-01-13,low,
+2015,1,white wine,10609,Pinot Grigio,0.5,1.0,8.0,9.0,img83,13.61,C02594,2015-01-03,medium,
+2015,1,white wine,10610,Semillon,4.0,8.0,4.0,4.0,img210,16.91,C73316,2015-01-09,medium,
+2015,1,white wine,10615,Chardonnay,4.0,8.0,1.0,1.0,img233,13.99,C58152,2015-01-23,medium,
+2015,1,white wine,10646,Pinot Grigio,0.25,8.0,6.0,6.0,img240,17.36,C83258,2015-01-06,medium,
+2015,1,white wine,10686,Sauvignon Blanc,4.0,8.0,1.0,1.0,img68,13.41,C59361,2015-01-02,medium,
+2015,1,white wine,10714,Chardonnay,4.0,8.0,12.0,13.0,img253,9.11,C49068,2015-01-03,low,
+2015,1,white wine,10768,Pinot Grigio,4.0,8.0,2.0,2.0,img85,13.16,C08979,2015-01-23,medium,
+2015,1,white wine,10818,Chenin Blanc,0.34,8.0,12.0,13.0,img236,14.5,C09467,2015-01-17,medium,
+2015,1,white wine,10910,Chardonnay,1.25,8.0,3.0,3.0,img76,15.58,C09752,2015-01-19,medium,
+2015,1,white wine,10931,Moscato,8.0,11.0,214.0,225.0,img251,17.35,C46999,2015-01-11,medium,
+2015,1,white wine,10934,Sauvignon Blanc,4.0,8.0,16.0,16.0,img61,12.5,C59444,2015-01-12,medium,
+2015,1,white wine,10936,Moscato,4.0,8.0,20.0,20.0,img75,14.81,C12723,2015-01-25,medium,
+2015,1,white wine,10994,Chenin Blanc,4.0,8.0,9.0,9.0,img202,18.45,C96458,2015-01-18,medium,
+2015,1,white wine,11496,Moscato,4.0,8.0,14.0,14.0,img247,18.55,C32491,2015-01-16,medium,
+2015,1,white wine,11056,Sauvignon Blanc,4.0,8.0,18.0,18.0,img246,9.1,C88913,2015-01-24,low,
+2015,1,white wine,11057,Gewurztraminer,4.0,8.0,11.0,11.0,img195,10.01,C10211,2015-01-27,medium,
+2015,1,white wine,11083,Semillon,4.0,8.0,126.75,126.75,img194,15.88,C70617,2015-01-02,medium,
+2015,1,white wine,11108,Pinot Grigio,4.0,8.0,2.0,2.0,img96,11.98,C96098,2015-01-24,medium,
+2015,1,white wine,11109,Semillon,4.0,8.0,1.0,1.0,img78,16.01,C28939,2015-01-07,medium,
+2015,1,white wine,11271,Viognier,4.0,8.0,2.0,2.0,img213,19.25,C43924,2015-01-12,medium,
+2015,1,white wine,11272,Chardonnay,4.0,8.0,1.0,1.0,img81,15.82,C88236,2015-01-28,medium,
+2015,1,white wine,11354,Sauvignon Blanc,4.0,8.0,5.0,5.0,img248,14.96,C66121,2015-01-19,medium,
+2015,1,white wine,11360,Moscato,0.5,8.0,10.0,10.0,img82,12.2,C20848,2015-01-26,medium,
+2015,1,white wine,11520,Moscato,4.0,8.0,1.0,1.0,img70,15.18,C29959,2015-01-05,medium,
+2015,1,white wine,11523,Pinot Grigio,4.0,8.0,1.0,1.0,img211,14.29,C34422,2015-01-21,medium,
+2015,1,white wine,11535,Riesling,4.5,5.0,10.25,15.25,img80,16.63,C27199,2015-01-22,medium,
+2015,1,white wine,11536,Riesling,10.25,9.0,47.0,56.0,img205,8.48,C74748,2015-01-11,low,
+2015,1,white wine,11654,Viognier,4.0,8.0,3.0,3.0,img232,15.94,C66156,2015-01-24,medium,
+2015,1,white wine,11655,Semillon,4.0,8.0,4.0,4.0,img66,9.89,C36570,2015-01-10,low,
+2015,1,white wine,11803,Gewurztraminer,1.3,8.0,3.0,3.0,img250,11.71,C12375,2015-01-24,medium,
+2015,1,white wine,11888,Gruner Veltliner,4.0,8.0,3.0,3.0,img72,14.93,C28674,2015-01-18,medium,
+2015,1,white wine,11928,Chenin Blanc,4.0,8.0,1.0,1.0,img245,11.03,C14155,2015-01-17,medium,
+2015,1,white wine,12050,Semillon,4.0,8.0,5.0,5.0,img62,17.38,C63351,2015-01-24,medium,
+2015,1,white wine,12060,Chardonnay,4.0,8.0,30.0,30.0,img235,17.96,C27918,2015-01-17,medium,
+2015,1,white wine,12085,Semillon,4.0,8.0,4.0,4.0,img208,13.14,C90954,2015-01-05,medium,
+2015,1,white wine,12097,Chenin Blanc,4.0,8.0,3.0,3.0,img87,18.49,C20010,2015-01-15,medium,
+2015,1,white wine,12102,Gruner Veltliner,4.0,8.0,20.0,20.0,img221,19.49,C98904,2015-01-17,medium,
+2015,1,white wine,12193,Sauvignon Blanc,11.0,15.0,120.0,135.0,img237,14.98,C52432,2015-01-16,medium,
+2015,1,white wine,12227,Gruner Veltliner,4.0,8.0,5.0,5.0,img216,17.57,C06157,2015-01-16,medium,
+2015,1,white wine,12384,Pinot Grigio,4.0,8.0,1.0,1.0,img64,15.88,C48156,2015-01-11,medium,
+2015,1,white wine,12480,Gewurztraminer,4.0,8.0,2.0,2.0,img69,18.98,C88042,2015-01-19,medium,
+2015,1,white wine,12523,Riesling,4.0,8.0,11.0,11.0,img60,17.73,C04149,2015-01-04,medium,
+2015,1,white wine,12533,Chenin Blanc,4.0,8.0,10.0,10.0,img229,8.78,C83661,2015-01-26,low,
+2015,1,white wine,12611,Pinot Grigio,4.0,8.0,3.0,3.0,img198,10.16,C02322,2015-01-09,medium,
+2015,1,white wine,12709,Moscato,4.0,8.0,3.0,3.0,img59,12.71,C71157,2015-01-17,medium,
+2015,1,white wine,12724,Moscato,4.0,8.0,5.0,5.0,img209,17.26,C96354,2015-01-02,medium,
+2015,1,white wine,12742,Riesling,4.0,8.0,9.0,9.0,img215,17.37,C36091,2015-01-18,medium,
+2015,1,white wine,12801,Chenin Blanc,4.0,8.0,1.0,1.0,img230,10.77,C01400,2015-01-03,medium,
+2015,1,white wine,12874,Gewurztraminer,0.25,8.0,12.0,13.0,img89,16.82,C12044,2015-01-11,medium,
+2015,1,white wine,12885,Chardonnay,0.5,2.0,6.0,8.0,img207,8.56,C50503,2015-01-21,low,
+2015,1,white wine,12894,Sauvignon Blanc,4.0,8.0,2.0,2.0,img225,18.86,C06148,2015-01-15,medium,
+2015,1,white wine,12944,Pinot Grigio,109.83,131.0,217.0,348.0,img254,8.89,C21884,2015-01-24,low,
+2015,1,white wine,12949,Semillon,4.0,8.0,4.0,4.0,img212,13.77,C53517,2015-01-25,medium,
+2015,1,white wine,13002,Sauvignon Blanc,4.0,8.0,2.0,2.0,img67,15.98,C30496,2015-01-04,medium,
+2015,1,white wine,13020,Riesling,0.11,8.0,12.0,13.0,img249,10.52,C39388,2015-01-27,medium,
+2015,1,white wine,1406,Semillon,6.59,7.0,21.0,28.0,img88,15.97,C72217,2015-01-19,medium,
+2015,1,white wine,1562,Chenin Blanc,20.0,26.0,52.0,78.0,img86,15.11,C81164,2015-01-26,medium,
+2015,1,white wine,1775,Chardonnay,4.0,8.0,4.0,4.0,img219,10.38,C81549,2015-01-27,medium,
+2015,1,white wine,1880,Chenin Blanc,37.33,54.5,205.0,259.5,img242,15.05,C64830,2015-01-13,medium,
+2015,1,white wine,1970,Riesling,5.5,7.0,92.0,99.0,img228,8.59,C95980,2015-01-05,low,
+2015,1,white wine,21973,Moscato,4.0,8.0,3.0,3.0,img218,10.82,C20646,2015-01-09,medium,
+2015,1,white wine,22103,Gewurztraminer,4.0,8.0,4.0,4.0,img63,14.41,C74103,2015-01-08,medium,
+2015,1,white wine,22382,Semillon,8.29,3.0,3.0,6.0,img77,13.17,C45978,2015-01-11,medium,
+2015,1,white wine,22422,Gewurztraminer,4.0,8.0,3.0,3.0,img196,11.98,C19084,2015-01-28,medium,
+2015,1,white wine,22946,Gruner Veltliner,6.0,10.0,317.0,327.0,img93,8.43,C84379,2015-01-08,low,
+2015,1,white wine,22981,Semillon,0.75,8.0,5.0,5.0,img71,17.77,C34444,2015-01-11,medium,
+2015,1,white wine,23007,Semillon,3.29,1.0,26.0,27.0,img92,9.61,C57592,2015-01-04,low,
+2015,1,white wine,233848,Moscato,14.0,15.0,58.0,73.0,img58,15.76,C58654,2015-01-28,medium,
+2015,1,white wine,23475,Chenin Blanc,4.0,8.0,102.0,102.0,img204,12.54,C70114,2015-01-20,medium,
+2015,1,white wine,23560,Gewurztraminer,0.5,1.0,3.0,4.0,img73,8.32,C29072,2015-01-21,low,
+2015,1,white wine,23692,Gruner Veltliner,5.25,7.0,24.0,31.0,img65,19.09,C25957,2015-01-07,medium,
+2015,1,white wine,23734,Moscato,4.0,8.0,614.0,614.0,img243,13.84,C28771,2015-01-11,medium,
+2015,1,white wine,23768,Chardonnay,4.0,7.0,59.0,66.0,img223,19.12,C32243,2015-01-07,medium,
+2015,1,white wine,23803,Viognier,0.08,8.0,12.0,13.0,img238,12.01,C21120,2015-01-15,medium,
+2015,1,white wine,239630,Chenin Blanc,4.0,8.0,7.0,7.0,img222,16.05,C29844,2015-01-28,medium,
+2015,1,white wine,24178,Chenin Blanc,4.0,8.0,12.0,12.0,img239,16.98,C17968,2015-01-27,medium,
+2015,1,white wine,24500,Chardonnay,1.25,1.0,1.0,2.0,img224,14.73,C55270,2015-01-18,medium,
+2015,1,white wine,24675,Chenin Blanc,4.0,8.0,8.0,8.0,img95,11.37,C98180,2015-01-04,medium,
+2015,1,white wine,25944,Viognier,0.5,8.0,12.0,13.0,img252,19.76,C78682,2015-01-11,medium,
+2015,1,white wine,26150,Riesling,4.0,8.0,298.0,298.0,img234,12.65,C22458,2015-01-19,medium,
+2015,1,sparkling wine,10030,Schramsberg,0.08,6.0,2.0,6.0,img99,28.81,C91297,2015-01-03,high,
+2015,1,sparkling wine,10103,Lambrusco,5.6,8.0,2.0,8.0,img264,17.22,C10983,2015-01-27,medium,
+2015,1,sparkling wine,10120,Franciacorta,0.34,6.0,2.0,6.0,img277,17.21,C43412,2015-01-07,medium,
+2015,1,sparkling wine,10123,Sekt,1.19,6.0,2.0,6.0,img128,24.7,C63515,2015-01-25,high,
+2015,1,sparkling wine,10124,Franciacorta,1.53,1.0,2.0,1.0,img306,19.68,C61883,2015-01-08,medium,
+2015,1,sparkling wine,10125,Cava,1.7,1.0,2.0,1.0,img295,30.53,C36283,2015-01-12,premium,
+2015,1,sparkling wine,10197,Asti Spumante,12.07,12.0,2.0,12.0,img290,25.62,C22611,2015-01-11,high,
+2015,1,sparkling wine,10243,Asti Spumante,1.12,2.0,2.0,2.0,img269,31.66,C36547,2015-01-20,premium,
+2015,1,sparkling wine,10269,Prosecco,0.85,2.0,2.0,2.0,img280,15.57,C94938,2015-01-21,medium,
+2015,1,sparkling wine,10270,Franciacorta,0.82,6.0,2.0,6.0,img103,37.46,C35605,2015-01-03,premium,
+2015,1,sparkling wine,10272,Prosecco,0.08,1.0,2.0,1.0,img127,22.13,C84803,2015-01-24,high,
+2015,1,sparkling wine,10275,Lambrusco,0.34,6.0,2.0,6.0,img133,29.31,C06762,2015-01-12,high,
+2015,1,sparkling wine,10276,Sekt,0.34,6.0,2.0,6.0,img126,25.84,C57889,2015-01-01,high,
+2015,1,sparkling wine,10278,Schramsberg,0.16,6.0,2.0,6.0,img112,23.16,C22988,2015-01-09,high,
+2015,1,sparkling wine,10279,Schramsberg,1.52,6.0,2.0,6.0,img288,17.12,C75876,2015-01-16,medium,
+2015,1,sparkling wine,10443,Sekt,13.31,15.0,3.0,18.0,img268,17.97,C80235,2015-01-24,medium,
+2015,1,sparkling wine,10444,Sekt,21.86,19.75,1.0,20.75,img276,27.1,C83588,2015-01-05,high,
+2015,1,sparkling wine,10445,Cava,10.2,5.0,2.0,7.0,img111,20.33,C98583,2015-01-10,high,
+2015,1,sparkling wine,10472,Prosecco,3.07,5.0,2.0,5.0,img291,18.81,C48543,2015-01-26,medium,
+2015,1,sparkling wine,10480,Sekt,1.53,3.0,2.0,3.0,img287,37.8,C75621,2015-01-19,premium,
+2015,1,sparkling wine,10529,Champagne,37.4,38.67,2.0,38.67,img278,15.37,C57869,2015-01-04,medium,
+2015,1,sparkling wine,10607,Lambrusco,0.17,6.0,2.0,6.0,img301,25.42,C25258,2015-01-03,high,
+2015,1,sparkling wine,10608,Champagne,0.17,6.0,2.0,6.0,img104,16.14,C81274,2015-01-17,medium,
+2015,1,sparkling wine,10634,Brut Rose,8.11,9.0,1.0,10.0,img130,21.76,C48490,2015-01-19,high,
+2015,1,sparkling wine,10665,Lambrusco,2.78,1.0,2.0,1.0,img300,36.1,C87353,2015-01-27,premium,
+2015,1,sparkling wine,10666,Sekt,0.28,6.0,2.0,6.0,img138,16.04,C98869,2015-01-18,medium,
+2015,1,sparkling wine,10669,Schramsberg,0.85,6.0,2.0,6.0,img117,23.0,C71742,2015-01-15,high,
+2015,1,sparkling wine,10674,Franciacorta,0.34,6.0,2.0,6.0,img271,20.29,C20364,2015-01-21,high,
+2015,1,sparkling wine,10677,Franciacorta,0.17,6.0,2.0,6.0,img114,38.44,C30485,2015-01-23,premium,
+2015,1,sparkling wine,10844,Cremant,0.51,6.0,2.0,6.0,img255,35.91,C39409,2015-01-06,premium,
+2015,1,sparkling wine,10851,Cremant,0.68,1.0,2.0,1.0,img122,39.61,C58008,2015-01-24,premium,
+2015,1,sparkling wine,10856,Asti Spumante,0.08,6.0,2.0,6.0,img309,16.28,C51600,2015-01-02,medium,
+2015,1,sparkling wine,10862,Franciacorta,6.23,3.0,2.0,3.0,img101,20.0,C64065,2015-01-05,medium,
+2015,1,sparkling wine,10866,Brut Rose,1.01,2.0,1.0,3.0,img270,25.76,C57903,2015-01-14,high,
+2015,1,sparkling wine,10869,Cremant,0.64,1.0,2.0,1.0,img256,25.41,C00578,2015-01-03,high,
+2015,1,sparkling wine,10870,Cremant,0.34,6.0,2.0,6.0,img305,20.86,C51596,2015-01-15,high,
+2015,1,sparkling wine,10907,Prosecco,20.44,21.0,4.0,25.0,img263,15.95,C30505,2015-01-17,medium,
+2015,1,sparkling wine,10930,Brut Rose,1.19,6.0,2.0,6.0,img257,38.87,C76128,2015-01-28,premium,
+2015,1,sparkling wine,10959,Franciacorta,0.34,4.0,2.0,4.0,img296,20.64,C94522,2015-01-22,high,
+2015,1,sparkling wine,10961,Schramsberg,0.51,6.0,2.0,6.0,img113,39.17,C95135,2015-01-02,premium,
+2015,1,sparkling wine,11029,Cava,50.56,33.0,2.0,33.0,img310,22.3,C84975,2015-01-03,high,
+2015,1,sparkling wine,11037,Prosecco,6.56,6.0,2.0,6.0,img123,33.09,C91021,2015-01-15,premium,
+2015,1,sparkling wine,11077,Lambrusco,0.17,6.0,2.0,6.0,img311,36.84,C30199,2015-01-27,premium,
+2015,1,sparkling wine,11088,Franciacorta,46.44,37.0,11.0,48.0,img141,33.4,C50719,2015-01-25,premium,
+2015,1,sparkling wine,11118,Sekt,75.1,95.0,24.0,119.0,img106,30.02,C86354,2015-01-24,premium,
+2015,1,sparkling wine,11169,Cava,2.48,2.0,2.0,2.0,img98,26.74,C30872,2015-01-21,high,
+2015,1,sparkling wine,11266,Brut Rose,18.69,22.0,8.0,30.0,img308,22.1,C58277,2015-01-21,high,
+2015,1,sparkling wine,11306,Cremant,0.17,6.0,2.0,6.0,img118,30.4,C03653,2015-01-02,premium,
+2015,1,sparkling wine,11307,Schramsberg,1.02,1.0,2.0,1.0,img129,37.46,C84609,2015-01-28,premium,
+2015,1,sparkling wine,11310,Lambrusco,1.68,6.0,2.0,6.0,img262,36.85,C05177,2015-01-04,premium,
+2015,1,sparkling wine,11316,Champagne,0.51,2.0,2.0,2.0,img284,37.8,C09717,2015-01-21,premium,
+2015,1,sparkling wine,11373,Lambrusco,1.53,3.0,2.0,3.0,img115,27.05,C48074,2015-01-09,high,
+2015,1,sparkling wine,11374,Champagne,0.68,6.0,2.0,6.0,img136,16.04,C52005,2015-01-09,medium,
+2015,1,sparkling wine,11375,Cremant,0.84,6.0,2.0,6.0,img285,21.9,C47366,2015-01-10,high,
+2015,1,sparkling wine,11376,Schramsberg,1.86,2.0,2.0,2.0,img258,16.38,C40980,2015-01-22,medium,
+2015,1,sparkling wine,11382,Cremant,0.08,6.0,2.0,6.0,img275,37.41,C01485,2015-01-10,premium,
+2015,1,sparkling wine,11383,Sekt,0.9,6.0,2.0,6.0,img100,32.25,C82133,2015-01-14,premium,
+2015,1,sparkling wine,11418,Champagne,1.52,1.0,2.0,1.0,img259,33.27,C63136,2015-01-25,premium,
+2015,1,sparkling wine,11448,Franciacorta,0.8,6.0,2.0,6.0,img303,27.43,C15514,2015-01-20,high,
+2015,1,sparkling wine,11451,Schramsberg,0.33,6.0,2.0,6.0,img261,30.64,C10883,2015-01-13,premium,
+2015,1,sparkling wine,11452,Franciacorta,0.17,6.0,2.0,6.0,img272,22.14,C63600,2015-01-02,high,
+2015,1,sparkling wine,11453,Cremant,2.04,1.0,2.0,1.0,img266,27.15,C17430,2015-01-11,high,
+2015,1,sparkling wine,11454,Franciacorta,0.48,6.0,2.0,6.0,img281,25.58,C58276,2015-01-25,high,
+2015,1,sparkling wine,11457,Cava,1.19,6.0,2.0,6.0,img282,23.99,C06968,2015-01-02,high,
+2015,1,sparkling wine,11460,Brut Rose,0.08,6.0,2.0,6.0,img134,15.35,C16658,2015-01-28,medium,
+2015,1,sparkling wine,11464,Franciacorta,3.06,6.0,2.0,6.0,img125,16.31,C49866,2015-01-28,medium,
+2015,1,sparkling wine,11482,Brut Rose,1.86,4.0,2.0,4.0,img279,17.08,C16250,2015-01-23,medium,
+2015,1,sparkling wine,11487,Cremant,1.3,6.0,2.0,6.0,img283,19.51,C44818,2015-01-07,medium,
+2015,1,sparkling wine,11703,Asti Spumante,162.16,110.67,3.0,113.67,img273,16.92,C41506,2015-01-16,medium,
+2015,1,sparkling wine,11720,Lambrusco,18.49,17.17,2.0,17.17,img105,26.43,C63026,2015-01-24,high,
+2015,1,sparkling wine,11819,Prosecco,12.22,9.84,2.0,9.84,img107,26.13,C47927,2015-01-28,high,
+2015,1,sparkling wine,11835,Asti Spumante,32.24,44.98,2.0,44.98,img121,29.05,C33142,2015-01-13,high,
+2015,1,sparkling wine,11837,Sekt,4.35,7.0,2.0,7.0,img140,36.47,C65001,2015-01-08,premium,
+2015,1,sparkling wine,11927,Lambrusco,0.17,6.0,2.0,6.0,img110,16.65,C12194,2015-01-24,medium,
+2015,1,sparkling wine,12203,Asti Spumante,14.02,13.0,1.0,14.0,img294,15.53,C26516,2015-01-25,medium,
+2015,1,sparkling wine,12204,Schramsberg,0.51,3.0,2.0,3.0,img139,17.26,C69443,2015-01-19,medium,
+2015,1,sparkling wine,12220,Cava,4.45,3.0,5.0,8.0,img302,24.08,C38591,2015-01-03,high,
+2015,1,sparkling wine,12412,Sekt,0.08,6.0,2.0,6.0,img102,32.37,C70570,2015-01-27,premium,
+2015,1,sparkling wine,12419,Sekt,0.85,6.0,2.0,6.0,img289,23.32,C53828,2015-01-18,high,
+2015,1,sparkling wine,12424,Schramsberg,16.62,17.0,3.0,20.0,img293,15.81,C49403,2015-01-01,medium,
+2015,1,sparkling wine,125148,Schramsberg,2.05,6.0,2.0,2.0,img265,15.79,C99663,2015-01-22,medium,
+2015,1,sparkling wine,12527,Prosecco,7.5,9.0,2.0,9.0,img286,27.07,C66355,2015-01-22,high,
+2015,1,sparkling wine,12548,Champagne,28.33,24.92,2.0,24.92,img135,22.09,C59008,2015-01-10,high,
+2015,1,sparkling wine,12572,Prosecco,2.16,5.0,2.0,5.0,img292,18.09,C70047,2015-01-06,medium,
+2015,1,sparkling wine,12815,Franciacorta,29.7,30.0,2.0,30.0,img131,16.44,C36364,2015-01-09,medium,
+2015,1,sparkling wine,12998,Schramsberg,38.38,27.0,29.0,56.0,img137,19.0,C45261,2015-01-05,medium,
+2015,1,sparkling wine,14133,Prosecco,2.7,2.0,2.0,2.0,img260,27.96,C23539,2015-01-11,high,
+2015,1,sparkling wine,14176,Prosecco,0.16,6.0,2.0,6.0,img299,17.26,C02873,2015-01-16,medium,
+2015,1,sparkling wine,152315,Prosecco,3.14,1.96,2.0,1.96,img116,23.68,C83835,2015-01-26,high,
+2015,1,sparkling wine,155837,Sekt,6.82,10.0,2.0,10.0,img109,37.12,C73064,2015-01-13,premium,
+2015,1,sparkling wine,16519,Cava,8.29,10.0,1.0,11.0,img119,21.95,C08221,2015-01-24,high,
+2015,1,sparkling wine,166266,Prosecco,0.17,6.0,2.0,6.0,img298,32.84,C67669,2015-01-10,premium,
+2015,1,sparkling wine,17256,Champagne,1.69,5.0,2.0,5.0,img120,28.53,C91487,2015-01-19,high,
+2015,1,sparkling wine,17353,Sekt,38.63,19.0,3.0,22.0,img124,23.01,C15188,2015-01-16,high,
+2015,1,sparkling wine,17914,Cremant,6.71,7.0,2.0,7.0,img267,38.64,C73781,2015-01-09,premium,
+2015,1,sparkling wine,17930,Cava,1.67,1.0,2.0,1.0,img108,24.57,C45911,2015-01-14,high,
+2015,1,sparkling wine,19291,Franciacorta,61.35,57.92,2.0,57.92,img274,16.19,C24769,2015-01-06,medium,
+2015,1,sparkling wine,20290,Brut Rose,0.08,6.0,2.0,6.0,img132,15.67,C42290,2015-01-18,medium,
+2015,1,sparkling wine,236182,Franciacorta,2.05,6.0,2.0,2.0,img307,39.17,C61257,2015-01-04,premium,
+2015,1,sparkling wine,23817,Champagne,0.64,1.0,2.0,1.0,img304,26.26,C81544,2015-01-02,high,
+2015,1,sparkling wine,24074,Franciacorta,7.45,6.0,2.0,6.0,img142,33.17,C90864,2015-01-11,premium,
+2015,1,sparkling wine,26670,Cremant,44.15,34.0,2.0,36.0,img297,33.17,C95933,2015-01-24,premium,

@@ -154,11 +154,6 @@ class User extends Authenticatable
         return $this->role === 'Retailer';
     }
 
-    public function isWholesaler(): bool
-    {
-        return $this->role === 'Wholesaler';
-    }
-
     public function isCustomer(): bool
     {
         return $this->role === 'Customer';

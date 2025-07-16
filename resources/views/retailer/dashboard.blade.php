@@ -1,86 +1,299 @@
-@extends('layouts.app')
-
-@section('title', 'Retailer Dashboard')
-
-@section('navigation')
-    @include('layouts.navigation')
-@endsection
-
-@section('content')
-<div class="wine-theme-bg min-vh-100">
-    <div class="container-fluid py-4">
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="page-header border-bottom pb-3 mb-4 d-flex align-items-center justify-content-between">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retailer Dashboard | TERRAVIN</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <style>
+        :root {
+            --burgundy: #5e0f0f;
+            --light-burgundy: #8b1a1a;
+            --gold: #c8a97e;
+            --cream: #f5f0e6;
+            --light-cream: #f9f5ed;
+            --dark-text: #2a2a2a;
+            --gray: #e1e5e9;
+            --light-gray: #f8f9fa;
+            --shadow-sm: 0 2px 8px rgba(94, 15, 15, 0.08);
+            --shadow-md: 0 4px 20px rgba(94, 15, 15, 0.12);
+            --transition: all 0.3s ease;
+            --border-radius: 12px;
+        }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--light-cream);
+            color: var(--dark-text);
+            line-height: 1.6;
+        }
+        .dashboard {
+            width: 100vw;
+            min-height: 100vh;
+            display: block;
+            margin-top: 70px;
+        }
+        .wine-top-bar {
+            background: linear-gradient(135deg, var(--burgundy) 0%, var(--light-burgundy) 100%);
+            color: white;
+            padding: 0.75rem 0;
+            box-shadow: 0 2px 10px rgba(94, 15, 15, 0.2);
+            position: fixed;
+            width: 100%;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+        }
+        .wine-brand {
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 700;
+            transition: color 0.3s ease;
+            margin-right: 1.5rem;
+        }
+        .wine-brand:hover {
+            color: white;
+            text-decoration: none;
+        }
+        .wine-nav .nav-links {
+            gap: 1.5rem;
+        }
+        .nav-link {
+            color: rgba(255, 255, 255, 0.92);
+            text-decoration: none;
+            padding: 0.5rem 1.1rem;
+            border-radius: 20px;
+            transition: all 0.2s;
+            font-size: 1.05rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: var(--gold);
+            background: rgba(255,255,255,0.08);
+        }
+        .user-profile {
+            margin-top: auto;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .user-avatar-sm {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--burgundy);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        .main-content {
+            padding: 2rem 2.5rem;
+            background-color: var(--light-gray);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--burgundy);
+            font-weight: 600;
+        }
+        .page-subtitle {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .stat-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(94, 15, 15, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--burgundy);
+            font-size: 1.2rem;
+        }
+        .stat-content {
+            flex: 1;
+        }
+        .stat-title {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.3rem;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--burgundy);
+            margin-bottom: 0.2rem;
+        }
+        .stat-change {
+            font-size: 0.75rem;
+            color: #4CAF50;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .stat-change.negative {
+            color: #F44336;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--burgundy);
+            font-weight: 600;
+        }
+        .view-all {
+            font-size: 0.9rem;
+            color: var(--burgundy);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: var(--transition);
+        }
+        .view-all:hover {
+            color: var(--light-burgundy);
+        }
+        .view-all i {
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Wine-themed top nav bar for retailer -->
+    <div class="wine-top-bar">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center justify-content-between" style="min-height: 80px;">
+                <div class="d-flex align-items-center gap-3">
+                    <a class="wine-brand" href="{{ route('retailer.dashboard') }}">
+                        <i class="fas fa-wine-bottle"></i>
+                    </a>
+                    <nav class="wine-nav">
+                        <ul class="nav-links d-flex align-items-center gap-3 mb-0" style="list-style:none;">
+                            <li><a href="{{ route('retailer.dashboard') }}" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                            <li><a href="{{ route('orders.index') }}" class="nav-link"><i class="fas fa-shopping-bag"></i> Orders</a></li>
+                            <li><a href="{{ route('inventory.index') }}" class="nav-link"><i class="fas fa-boxes"></i> Inventory</a></li>
+                            <li><a href="{{ route('reports.index') }}" class="nav-link"><i class="fas fa-chart-line"></i> Reports</a></li>
+                            <li><a href="{{ route('help.index') }}" class="nav-link"><i class="fas fa-question-circle"></i> Help</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="d-flex align-items-center gap-4">
+                    <div class="dropdown">
+                        <a class="dropdown-toggle d-flex align-items-center text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
+                            <div class="profile-photo-placeholder-large rounded-circle d-flex align-items-center justify-content-center me-2" style="border: 6px solid var(--gold); background: linear-gradient(135deg, var(--burgundy) 0%, #8b1a1a 100%); width: 72px; height: 72px; color: #fff; font-size: 2rem;">
+                                <span class="fw-bold">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
+                    </div>
+                            <span class="user-name" style="font-family: 'Montserrat', sans-serif; font-size: 1.15rem; font-weight: 700; letter-spacing: 0.5px; color: #fff;">{{ Auth::user()->name }} <span class="text-gold" style="font-weight: 500;">(Retailer)</span></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="fas fa-user-edit me-2"></i> Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                        </ul>
+                    </div>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="dashboard">
+        <main class="main-content">
+            <div class="header">
+                <div class="greeting">
+                    <div class="user-avatar-sm">{{ substr(Auth::user()->name, 0, 1) }}</div>
                     <div>
-                        <h1 class="page-title mb-0 fw-bold text-burgundy">
-                            <i class="fas fa-tachometer-alt me-2 text-gold"></i>
-                            Retailer Dashboard
-                        </h1>
-                        <span class="text-muted small">Overview of your retail operations</span>
-                    </div>
-                    <div class="header-actions">
-                        <span class="badge bg-gold text-burgundy px-3 py-2">
-                            <i class="fas fa-clock me-1"></i>
-                            {{ now()->format('M d, Y H:i') }}
-                        </span>
+                        <h1 class="page-title">Welcome back, {{ Auth::user()->name }}</h1>
+                        <p class="page-subtitle">Here's what's happening with your retail account today</p>
                     </div>
                 </div>
             </div>
+            <!-- Stats Overview -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-shopping-bag"></i>
+                    </div>
+                    <div class="stat-content">
+                        <p class="stat-title">Pending Orders</p>
+                        <h3 class="stat-value">{{ $pendingOrders }}</h3>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-boxes"></i>
+                    </div>
+                    <div class="stat-content">
+                        <p class="stat-title">Low Inventory</p>
+                        <h3 class="stat-value">{{ $lowInventory }}</h3>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="stat-content">
+                        <p class="stat-title">Notifications</p>
+                        <h3 class="stat-value">{{ $notifications }}</h3>
+                    </div>
+                </div>
+            </div>
+            <!-- Quick Actions -->
+            <div class="section-header">
+                <h2 class="section-title">Quick Actions</h2>
         </div>
-        <!-- Stat Cards -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="card shadow-sm text-center stat-card mb-3">
-                    <div class="card-body">
-                        <i class="fas fa-shopping-bag fa-2x text-gold mb-2"></i>
-                        <h6 class="fw-bold">Pending Orders</h6>
-                        <div class="display-6 fw-bold">{{ $pendingOrders }}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card shadow-sm text-center stat-card mb-3">
-                    <div class="card-body">
-                        <i class="fas fa-boxes fa-2x text-burgundy mb-2"></i>
-                        <h6 class="fw-bold">Low Inventory</h6>
-                        <div class="display-6 fw-bold">{{ $lowInventory }}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card shadow-sm text-center stat-card mb-3">
-                    <div class="card-body">
-                        <i class="fas fa-truck fa-2x text-gold mb-2"></i>
-                        <h6 class="fw-bold">Recent Procurements</h6>
-                        <div class="display-6 fw-bold">{{ $procurements->count() }}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card shadow-sm text-center stat-card mb-3">
-                    <div class="card-body">
-                        <i class="fas fa-bell fa-2x text-burgundy mb-2"></i>
-                        <h6 class="fw-bold">Notifications</h6>
-                        <div class="display-6 fw-bold">{{ $notifications }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Quick Actions -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card shadow-sm mb-3">
-                    <div class="card-body d-flex flex-wrap gap-3 justify-content-between align-items-center">
+            <div class="d-flex flex-wrap gap-3 mb-4">
                         <a href="{{ route('orders.index') }}" class="btn btn-burgundy btn-lg shadow wine-action-btn"><i class="fas fa-shopping-bag me-2"></i> <span class="fw-bold">View Orders</span></a>
                         <a href="{{ route('inventory.index') }}" class="btn btn-gold btn-lg shadow wine-action-btn"><i class="fas fa-boxes me-2"></i> <span class="fw-bold">Inventory</span></a>
-                        <a href="{{ route('procurement.dashboard') }}" class="btn btn-outline-burgundy btn-lg shadow wine-action-btn"><i class="fas fa-truck me-2"></i> <span class="fw-bold">Procurement</span></a>
                         <a href="{{ route('reports.index') }}" class="btn btn-outline-gold btn-lg shadow wine-action-btn"><i class="fas fa-chart-line me-2"></i> <span class="fw-bold">Reports</span></a>
                     </div>
-                </div>
+            <!-- Recent Orders & Top Products -->
+            <div class="section-header">
+                <h2 class="section-title">Recent Orders & Top Low Inventory Products</h2>
             </div>
-        </div>
-        <!-- Recent Orders & Top Products -->
         <div class="row mb-4">
             <div class="col-md-6">
                 <div class="card shadow-sm mb-3">
@@ -121,252 +334,8 @@
                 </div>
             </div>
         </div>
-        <!-- Recent Procurements -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card shadow-sm mb-3">
-                    <div class="card-header bg-white border-bottom">
-                        <h6 class="mb-0 fw-bold text-burgundy"><i class="fas fa-truck text-gold me-2"></i> Recent Procurements</h6>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group mb-0">
-                            @forelse($procurements as $procurement)
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>Procurement #{{ $procurement->id }} - {{ $procurement->status }}</span>
-                                <span class="badge bg-secondary">UGX {{ number_format($procurement->total_amount ?? 0) }}</span>
-                            </li>
-                            @empty
-                            <li class="list-group-item text-muted">No recent procurements</li>
-                            @endforelse
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </main>
     </div>
-</div>
-@endsection
-
-<style>
-:root {
-    --burgundy: #5e0f0f;
-    --gold: #c8a97e;
-    --cream: #f5f0e6;
-    --light-burgundy: #8b1a1a;
-    --dark-gold: #b8945f;
-}
-
-body, .wine-theme-bg {
-    background: linear-gradient(135deg, var(--cream) 0%, #fff 100%);
-    min-height: 100vh;
-}
-
-.card, .stat-card {
-    border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(94, 15, 15, 0.08);
-    background: #fff;
-    border: none;
-}
-
-.page-header {
-    background: linear-gradient(135deg, var(--cream) 0%, #fff 100%);
-    border-radius: 16px;
-    box-shadow: 0 2px 10px rgba(94, 15, 15, 0.08);
-}
-
-.btn-burgundy, .btn-gold, .btn-outline-burgundy, .btn-outline-gold {
-    border-radius: 8px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(94, 15, 15, 0.06);
-    transition: all 0.2s;
-}
-
-.list-group-item {
-    border: none;
-    border-radius: 8px !important;
-    margin-bottom: 0.5rem;
-    background: var(--cream);
-}
-
-.list-group-item:last-child {
-    margin-bottom: 0;
-}
-
-.card-header {
-    background: linear-gradient(135deg, #fff 0%, var(--cream) 100%);
-    border-bottom: 2px solid var(--cream);
-    border-radius: 16px 16px 0 0;
-}
-
-.text-burgundy {
-    color: var(--burgundy) !important;
-}
-
-.text-gold {
-    color: var(--gold) !important;
-}
-
-.bg-burgundy {
-    background-color: var(--burgundy) !important;
-}
-
-.bg-gold {
-    background-color: var(--gold) !important;
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--gold);
-    border-radius: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--cream);
-}
-
-.wine-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.wine-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(94, 15, 15, 0.15) !important;
-}
-
-.icon-circle {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.stat-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.wine-divider {
-    border: none;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    margin: 2rem 0;
-}
-
-.wine-list-item {
-    transition: background-color 0.2s ease;
-    border-radius: 8px;
-    margin-bottom: 0.5rem;
-}
-
-.wine-list-item:hover {
-    background-color: var(--cream);
-}
-
-.stat-item {
-    padding: 1rem;
-    border-radius: 12px;
-    transition: transform 0.2s ease;
-}
-
-.stat-item:hover {
-    transform: scale(1.05);
-}
-
-.header-actions .badge {
-    border-radius: 20px;
-    font-weight: 500;
-}
-
-.wine-action-btn {
-    min-width: 200px;
-    font-size: 1.15rem;
-    border-width: 2px;
-    transition: transform 0.15s, box-shadow 0.15s, background 0.15s, color 0.15s;
-}
-.wine-action-btn:hover, .wine-action-btn:focus {
-    transform: translateY(-2px) scale(1.04);
-    box-shadow: 0 6px 24px rgba(94, 15, 15, 0.13);
-    z-index: 2;
-}
-.btn-burgundy.wine-action-btn {
-    background: var(--burgundy);
-    color: #fff;
-    border-color: var(--burgundy);
-}
-.btn-burgundy.wine-action-btn:hover, .btn-burgundy.wine-action-btn:focus {
-    background: var(--light-burgundy);
-    color: #fff;
-    border-color: var(--light-burgundy);
-}
-.btn-gold.wine-action-btn {
-    background: var(--gold);
-    color: var(--burgundy);
-    border-color: var(--gold);
-}
-.btn-gold.wine-action-btn:hover, .btn-gold.wine-action-btn:focus {
-    background: var(--dark-gold);
-    color: var(--burgundy);
-    border-color: var(--dark-gold);
-}
-.btn-outline-burgundy.wine-action-btn {
-    color: var(--burgundy);
-    border-color: var(--burgundy);
-    background: #fff;
-}
-.btn-outline-burgundy.wine-action-btn:hover, .btn-outline-burgundy.wine-action-btn:focus {
-    background: var(--burgundy);
-    color: #fff;
-    border-color: var(--burgundy);
-}
-.btn-outline-gold.wine-action-btn {
-    color: var(--gold);
-    border-color: var(--gold);
-    background: #fff;
-}
-.btn-outline-gold.wine-action-btn:hover, .btn-outline-gold.wine-action-btn:focus {
-    background: var(--gold);
-    color: var(--burgundy);
-    border-color: var(--gold);
-}
-
-@media (max-width: 768px) {
-    .page-header {
-        flex-direction: column;
-        text-align: center;
-        gap: 1rem;
-    }
-    .header-actions {
-        order: -1;
-    }
-}
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Highlight active nav item
-    const currentPath = window.location.pathname;
-    document.querySelectorAll('.nav-item').forEach(item => {
-        if (item.getAttribute('href') === currentPath) {
-            item.classList.add('active');
-        }
-    });
-    
-    // Simple animations
-    const statCards = document.querySelectorAll('.stat-card');
-    statCards.forEach((card, index) => {
-        card.style.transitionDelay = `${index * 0.1}s`;
-    });
-});
-</script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

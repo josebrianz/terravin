@@ -9,8 +9,11 @@
     <div class="card mx-auto" style="max-width: 600px;">
         <div class="card-body">
             <h4 class="mb-3">Order #{{ $order->id }}</h4>
+            @php
+                $items = is_string($order->items) ? json_decode($order->items, true) : $order->items;
+            @endphp
             <ul class="list-group mb-3 text-start">
-                @foreach($order->items as $item)
+                @foreach($items as $item)
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
                             <strong>{{ $item['wine_name'] }}</strong>

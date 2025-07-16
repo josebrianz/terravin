@@ -19,7 +19,7 @@
         <div class="mb-3">
             <label>Role</label>
             <select name="role" class="form-control" required>
-                @foreach(['wholesaler','company manager','wholesaler','sales manager'] as $role)
+                @foreach(['company manager','sales manager'] as $role)
                     <option value="{{ $role }}" {{ (old('role', $stakeholder->role ?? '') == $role) ? 'selected' : '' }}>{{ ucfirst($role) }}</option>
                 @endforeach
             </select>
