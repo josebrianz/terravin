@@ -257,6 +257,8 @@ Route::post('/stakeholders/{id}/preferences', [App\Http\Controllers\StakeholderC
 
 Route::get('/stakeholders/dashboard', [App\Http\Controllers\StakeholderController::class, 'dashboard'])->name('stakeholders.dashboard');
 
+Route::get('/stakeholders/{id}/reports', [App\Http\Controllers\StakeholderController::class, 'showReports'])->name('stakeholders.reports');
+
 require __DIR__.'/auth.php';
 
 // Analytics Dashboard Routes - Accessible by Admin (add more roles/permissions as needed)
@@ -272,9 +274,8 @@ Route::get('/forecast', [SalesController::class, 'dashboard'])->name('forecast.d
 Route::post('/forecast/predict', [SalesController::class, 'predictCategory'])->name('forecast.predict');
 
 Route::middleware(['auth', 'role:Wholesaler'])->group(function () {
-    Route::get('/wholesaler/dashboard', function () {
-        return view('wholesaler.dashboard');
-    })->name('wholesaler.dashboard');});
+    Route::get('/wholesaler/dashboard', [App\Http\Controllers\WholesalerDashboardController::class, 'index'])->name('wholesaler.dashboard');
+});
 // Logistics Module - Admin Only
 Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/logistics/dashboard', [\App\Http\Controllers\LogisticsDashboardController::class, 'index'])->name('logistics.dashboard');

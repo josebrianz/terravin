@@ -49,7 +49,7 @@
                             <input type="date" class="form-control" id="expiry_date" name="expiry_date" value="{{ old('expiry_date', optional($batch->expiry_date)->format('Y-m-d')) }}">
                         </div>
                         <div class="d-flex justify-content-end">
-                            <a href="{{ route('batches.index') }}" class="btn btn-outline-burgundy me-2">Cancel</a>
+                            {{-- <a href="{{ route('batches.index') }}" class="btn btn-outline-burgundy me-2">Cancel</a> --}}
                             <button type="submit" class="btn btn-gold">Update Batch</button>
                         </div>
                     </form>

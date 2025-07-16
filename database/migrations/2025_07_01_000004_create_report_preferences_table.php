@@ -12,7 +12,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('stakeholder_id')->constrained('stakeholders')->onDelete('cascade');
             $table->enum('frequency', ['daily', 'weekly', 'monthly']);
-            $table->enum('format', ['email', 'pdf', 'excel']);
             $table->json('report_types'); // e.g. ["inventory", "orders"]
             $table->timestamps();
         });

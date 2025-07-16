@@ -1,10 +1,16 @@
 @extends('layout')
 
-@section('title', 'Stakeholder Preferences Dashboard')
+@section('title', 'Stakeholder Preferences Dashboard ')
 
 @section('content')
-<div class="container py-4">
-    <h1 class="mb-4">Stakeholder Preferences Dashboard</h1>
+<nav class="navbar navbar-expand-lg" style="background: #6b1a15; border-radius: 0 0 12px 12px; box-shadow: 0 2px 8px rgba(107,26,21,0.08);">
+  <div class="container-fluid py-2">
+    <a class="navbar-brand fw-bold" href="#" style="color: #bfa14a; font-size: 2rem; letter-spacing: 2px;">Terravin</a>
+  </div>
+</nav>
+<div class="container py-4 wine-theme-bg" style="max-width: 98vw;">
+    <div class="wine-accent-bar"></div>
+    <h1 class="mb-4 fw-bold text-center" style="font-size: 3rem; color: #6b1a15; text-shadow: 2px 2px 8px #e0bcbc; letter-spacing: 2px;">Stakeholder Preferences</h1>
 
     {{-- Success Message --}}
     @if(session('success'))
@@ -12,10 +18,10 @@
     @endif
 
     {{-- List Stakeholders --}}
-    <div class="mb-5">
+    <div class="mb-5 stakeholder-table-card">
         <h3>All Stakeholders</h3>
-        <div style="max-height: 70vh; min-height: 40vh; overflow-y: auto;">
-        <table class="table table-bordered">
+        <div style="max-height: 80vh; min-height: 50vh; overflow-y: auto;">
+        <table id="stakeholders-table" class="table table-bordered table-hover table-lg align-middle" style="font-size: 1.1rem; min-width: 1200px;">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -43,14 +49,6 @@
                                 </select>
                             </div>
                             <div class="mb-2">
-                                <label>Format</label>
-                                <select name="format" class="form-control form-control-sm" required>
-                                    @foreach(['email','pdf','excel'] as $fmt)
-                                        <option value="{{ $fmt }}" {{ (optional($stakeholder->reportPreference)->format == $fmt) ? 'selected' : '' }}>{{ strtoupper($fmt) }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-2">
                                 <label>Report Types</label><br>
                                 @php $selectedTypes = optional($stakeholder->reportPreference)->report_types ?? []; @endphp
                                 @foreach(['inventory','orders','sales & demand','supplier & vendor','financial & profitability'] as $type)
@@ -64,6 +62,8 @@
                     </td>
                     <td>
                         <button class="btn btn-sm btn-primary" onclick="showEditForm({{ $stakeholder->id }}, '{{ $stakeholder->name }}', '{{ $stakeholder->email }}', '{{ $stakeholder->role }}')">Edit</button>
+                        <a href="{{ route('stakeholders.reports', $stakeholder->id) }}" class="btn btn-sm btn-info mt-1">View Report (PDF)</a>
+                        <a href="{{ route('stakeholders.reports', $stakeholder->id) }}?download=1" class="btn btn-sm btn-success mt-1">Download Report (PDF)</a>
                     </td>
                 </tr>
                 @endforeach
@@ -112,6 +112,55 @@
     </div>
 </div>
 
+<style>
+.wine-theme-bg {
+    background: linear-gradient(135deg, #f8f6f3 60%, #fbeee6 100%);
+    border-radius: 18px;
+    box-shadow: 0 2px 16px rgba(107,26,21,0.07);
+    padding-bottom: 2rem;
+}
+.wine-accent-bar {
+    height: 8px;
+    background: linear-gradient(90deg, #6b1a15 60%, #bfa14a 100%);
+    border-radius: 8px 8px 0 0;
+    margin-bottom: 1.5rem;
+}
+.stakeholder-table-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(107,26,21,0.08);
+    padding: 1.5rem 1rem;
+    margin-bottom: 2rem;
+}
+#stakeholders-table thead th {
+    position: sticky;
+    top: 0;
+    background: #f8f9fa;
+    z-index: 2;
+}
+#editStakeholderModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    z-index: 9999;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    min-width: 300px;
+    display: none;
+}
+#modalBackdrop {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 9998;
+    display: none;
+}
+</style>
+<div id="modalBackdrop"></div>
+
 <script>
 function showEditForm(id, name, email, role) {
     document.getElementById('edit_id').value = id;
@@ -119,10 +168,13 @@ function showEditForm(id, name, email, role) {
     document.getElementById('edit_email').value = email;
     document.getElementById('edit_role').value = role;
     document.getElementById('editStakeholderModal').style.display = 'block';
+    document.getElementById('modalBackdrop').style.display = 'block';
     document.getElementById('editStakeholderForm').action = '/stakeholders/' + id;
 }
 function hideEditForm() {
     document.getElementById('editStakeholderModal').style.display = 'none';
+    document.getElementById('modalBackdrop').style.display = 'none';
 }
+document.getElementById('modalBackdrop').onclick = hideEditForm;
 </script>
 @endsection 
