@@ -30,7 +30,7 @@ Route::get('/admin-dashboard', function () {
 
 Route::get('/dashboard', function () {
     return view('admin-dashboard');
-})->middleware(['auth', 'verified', 'role'])->name('dashboard');
+})->name('dashboard');
 
 Route::get('/admin', function () {
     return view('admin-dashboard');
@@ -126,9 +126,7 @@ Route::middleware(['auth', 'role:Retailer'])->group(function () {
 });
 
 // Retailer Wine Catalog Route
-Route::middleware(['auth', 'role:Retailer'])->group(function () {
-    Route::get('/retailer/catalog', [\App\Http\Controllers\RetailerCatalogController::class, 'index'])->name('orders.catalog');
-});
+Route::get('/retailer/catalog', [App\Http\Controllers\RetailerCatalogController::class, 'index'])->name('retailer.catalog');
 
 // Reports Route - Accessible by authenticated users
 Route::middleware('auth')->group(function () {
@@ -276,6 +274,7 @@ Route::get('/workforce/assignments', [App\Http\Controllers\WorkforceDashboardCon
 // Forecast Routes
 Route::get('/forecast', [SalesController::class, 'dashboard'])->name('forecast.dashboard');
 Route::post('/forecast/predict', [SalesController::class, 'predictCategory'])->name('forecast.predict');
+Route::get('/forecast/download', [SalesController::class, 'downloadForecastCsv'])->name('forecast.download');
 
 Route::middleware(['auth', 'role:Wholesaler'])->group(function () {
     Route::get('/wholesaler/dashboard', function () {

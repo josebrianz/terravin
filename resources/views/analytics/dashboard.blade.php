@@ -600,6 +600,21 @@
                 </div>
             </div>
         </div>
+        <div class="col">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-bottom-0">
+                    <h5 class="card-title mb-0 fw-bold">
+                        <i class="fas fa-layer-group me-2"></i> Inventory by Category
+                    </h5>
+                    <p class="text-muted mb-0 mt-1">Current stock by category</p>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <div class="chart-container w-100" style="min-height: 320px;">
+                        <canvas id="inventoryCategoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -932,6 +947,60 @@
                     showDetailModal(
                         'Month: ' + label,
                         `Orders: ${value}`
+                    );
+                }
+            }
+        }
+    });
+
+    // Inventory by Category Chart
+    const inventoryCategoryCtx = document.getElementById('inventoryCategoryChart').getContext('2d');
+    const inventoryCategoryChart = new Chart(inventoryCategoryCtx, {
+        type: 'doughnut',
+        data: {
+            labels: @json($inventoryCategoryData['labels']),
+            datasets: [{
+                data: @json($inventoryCategoryData['data']),
+                backgroundColor: ['#5e0f0f', '#c8a97e', '#f5f0e6', '#b5651d', '#8b0000', '#e6c200', '#a0522d', '#deb887'],
+                borderColor: '#5e0f0f',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(94, 15, 15, 0.9)',
+                    titleColor: '#f5f0e6',
+                    bodyColor: '#f5f0e6',
+                    callbacks: {
+                        label: function(context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percent = ((context.parsed / total) * 100).toFixed(1);
+                            return context.label + ': ' + context.parsed + ' (' + percent + '%)';
+                        }
+                    }
+                }
+            },
+            onClick: function(evt, elements) {
+                if(elements.length > 0) {
+                    const idx = elements[0].index;
+                    const label = this.data.labels[idx];
+                    const value = this.data.datasets[0].data[idx];
+                    const total = this.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                    const percent = ((value / total) * 100).toFixed(1);
+                    showDetailModal(
+                        'Category: ' + label,
+                        `Stock: ${value}<br>Percentage: ${percent}%`
                     );
                 }
             }

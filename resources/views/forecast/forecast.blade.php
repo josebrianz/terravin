@@ -57,9 +57,10 @@
             padding: 0 0 3em 0;
         }
         .dashboard-content {
-            max-width: 900px;
+            /* max-width: 900px; */
+            width: 100%;
             margin: 2.5em auto 0 auto;
-            padding: 0 1em;
+            padding: 0 0.5em;
         }
         .dashboard-cards {
             display: flex;
@@ -107,6 +108,9 @@
             box-shadow: 0 8px 32px rgba(94, 15, 15, 0.10);
             padding: 2.5em 2em 2em 2em;
             border: 1.5px solid var(--gold);
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
         }
         .forecast-header {
             text-align: center;
@@ -175,15 +179,15 @@
             background: linear-gradient(135deg, var(--cream) 60%, #fff 100%);
             border-radius: 14px;
             box-shadow: 0 4px 18px rgba(200, 169, 126, 0.10);
-            padding: 1.5em 1em 1em 1em;
+            padding: 2em 2em 1.5em 2em;
             margin-top: 1.5em;
+            width: 100%;
+            min-width: 0;
+            overflow-x: auto;
         }
         @media (max-width: 1000px) {
-            .dashboard-content { max-width: 98vw; }
-            .dashboard-cards { flex-direction: column; gap: 1em; }
-        }
-        @media (max-width: 700px) {
-            .forecast-section, .forecast-container { padding: 1.2em 0.5em; }
+            .dashboard-content { width: 100vw; max-width: 100vw; }
+            .forecast-section { max-width: 100vw; padding: 1.2em 0.5em; }
             .chart-card { padding: 1em 0.2em 0.5em 0.2em; }
             .dashboard-navbar { flex-direction: column; align-items: flex-start; padding: 1em 1em; }
             .dashboard-logo { font-size: 1.3rem; }
@@ -214,9 +218,12 @@
                 </div>
             </div>
             <div class="forecast-section">
-                <div class="forecast-header">
-                    <h1>Sales Forecast</h1>
-                    <div class="divider"></div>
+                <div class="forecast-header" style="display: flex; align-items: center; justify-content: center; gap: 1em; flex-wrap: wrap;">
+                    <h1 style="margin-bottom: 0;">Sales Forecast</h1>
+                    <a href="{{ route('forecast.download') }}" class="download-btn" style="background: var(--gold); color: var(--burgundy); border: none; border-radius: 8px; padding: 0.6em 1.2em; font-size: 1.05rem; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 0.5em; box-shadow: 0 2px 8px rgba(200,169,126,0.10); transition: background 0.2s, color 0.2s;">
+                        <i class="fa-solid fa-download"></i> Download CSV
+                    </a>
+                    <div class="divider" style="flex-basis: 100%;"></div>
                 </div>
                 <form id="forecast-form">
                     <label for="category">Select Category:</label>
@@ -231,6 +238,11 @@
                 <div id="error-message" class="error" style="display:none;"></div>
                 <div class="chart-card">
                     <canvas id="forecast-chart" width="600" height="300"></canvas>
+                    <div style="display: flex; justify-content: center; margin-top: 1em;">
+                        <a href="#" id="download-forecast-chart" class="download-btn" style="background: var(--gold); color: var(--burgundy); border: none; border-radius: 8px; padding: 0.6em 1.2em; font-size: 1.05rem; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 0.5em; box-shadow: 0 2px 8px rgba(200,169,126,0.10); transition: background 0.2s, color 0.2s;">
+                            <i class="fa-solid fa-image"></i> Download Chart
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -307,6 +319,51 @@
                 errorDiv.textContent = 'An error occurred: ' + err;
                 errorDiv.style.display = 'block';
             });
+        });
+
+        document.getElementById('download-forecast-chart').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (forecastChart) {
+                // Save original options
+                const origBg = forecastChart.options.plugins.legend.labels.color;
+                const origGrid = forecastChart.options.scales.y.grid.color;
+                const origTicks = forecastChart.options.scales.y.ticks.color;
+                // Set light theme for export
+                forecastChart.options.plugins.legend.labels.color = '#222';
+                forecastChart.options.scales.y.grid.color = '#eee';
+                forecastChart.options.scales.y.ticks.color = '#222';
+                forecastChart.options.scales.x.grid.color = '#eee';
+                forecastChart.options.scales.x.ticks.color = '#222';
+                forecastChart.options.plugins.title = { display: false };
+                forecastChart.options.backgroundColor = '#fff';
+                forecastChart.update();
+                // Create a white background for the canvas
+                const canvas = forecastChart.canvas;
+                const ctx = canvas.getContext('2d');
+                const w = canvas.width, h = canvas.height;
+                const temp = ctx.getImageData(0, 0, w, h);
+                ctx.save();
+                ctx.globalCompositeOperation = 'destination-over';
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(0, 0, w, h);
+                ctx.restore();
+                // Download
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = 'forecast_chart.png';
+                link.click();
+                // Restore chart
+                ctx.putImageData(temp, 0, 0);
+                forecastChart.options.plugins.legend.labels.color = origBg;
+                forecastChart.options.scales.y.grid.color = origGrid;
+                forecastChart.options.scales.y.ticks.color = origTicks;
+                forecastChart.options.scales.x.grid.color = origGrid;
+                forecastChart.options.scales.x.ticks.color = origTicks;
+                forecastChart.options.backgroundColor = undefined;
+                forecastChart.update();
+            } else {
+                alert('Please generate a forecast chart first.');
+            }
         });
     </script>
 </body>

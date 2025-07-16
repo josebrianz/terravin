@@ -178,11 +178,9 @@
                             </thead>
                             <tbody>
                                 @forelse($recentProcurements as $procurement)
-                                <tr>
+                                <tr class="clickable-row" data-href="{{ route('procurement.show', $procurement) }}">
                                     <td>
-                                        <a href="{{ route('procurement.show', $procurement) }}" class="text-burgundy fw-bold" title="View order details">
-                                            {{ $procurement->po_number }}
-                                        </a>
+                                        {{ $procurement->po_number }}
                                     </td>
                                     <td>{{ $procurement->item_name }}</td>
                                     <td>{{ $procurement->wholesaler_name }}</td>
@@ -376,12 +374,12 @@
 
 .table th {
     border-color: var(--gold);
-    opacity: 0.3;
+    opacity: 1;
 }
 
 .table td {
     border-color: var(--gold);
-    opacity: 0.1;
+    opacity: 1;
 }
 
 .badge.bg-warning {
@@ -405,4 +403,13 @@
     background-color: #dc3545 !important;
 }
 </style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.clickable-row').forEach(function(row) {
+        row.addEventListener('click', function() {
+            window.location = this.dataset.href;
+        });
+    });
+});
+</script>
 @endsection 
