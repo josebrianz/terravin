@@ -37,7 +37,7 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ route('inventory.store') }}">
+                    <form method="POST" action="{{ route('inventory.store') }}" enctype="multipart/form-data">
                         @csrf
 
                         @include('inventory.form', ['item' => null])

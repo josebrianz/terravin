@@ -31,9 +31,11 @@
                     <div class="col-md-7">
                         <nav class="wine-nav">
                             <ul class="nav-links">
-                                <li><a href="{{ route('dashboard') }}" class="nav-link">
-                                    <i class="fas fa-tachometer-alt"></i> Dashboard
-                                </a></li>
+                                <li>
+                                    <a href="/dashboard" class="nav-link">
+                                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                                    </a>
+                                </li>
                                 @permission('manage_inventory')
                                 <li><a href="{{ route('inventory.index') }}" class="nav-link">
                                     <i class="fas fa-boxes"></i> Inventory

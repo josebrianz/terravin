@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->enum('role', ['wholesaler', 'company manager', 'sales manager']);
+            $table->enum('role', ['company manager', 'sales manager']);
             $table->timestamps();
         });
     }

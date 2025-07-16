@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Stakeholder;
 use App\Models\ReportPreference;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class StakeholderController extends Controller
 {
@@ -24,7 +25,7 @@ class StakeholderController extends Controller
         $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:stakeholders,email',
-            'role' => 'required|in:wholesaler,company manager,wholesaler,sales manager',
+            'role' => 'required|in:company manager,sales manager',
         ]);
         $stakeholder = Stakeholder::create($request->only('name', 'email', 'role'));
         return redirect()->route('stakeholders.index')->with('success', 'Stakeholder created!');
@@ -42,7 +43,7 @@ class StakeholderController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:stakeholders,email,' . $stakeholder->id,
-            'role' => 'required|in:wholesaler,company manager,wholesaler,sales manager',
+            'role' => 'required|in:company manager,sales manager',
         ]);
         $stakeholder->update($request->only('name', 'email', 'role'));
         return redirect()->route('stakeholders.index')->with('success', 'Stakeholder updated!');
@@ -68,16 +69,14 @@ class StakeholderController extends Controller
         $stakeholder = Stakeholder::findOrFail($id);
         $request->validate([
             'frequency' => 'required|in:daily,weekly,monthly',
-            'format' => 'required|in:email,pdf,excel',
             'report_types' => 'required|array',
         ]);
-        $data = $request->only('frequency', 'format', 'report_types');
+        $data = $request->only('frequency', 'report_types');
         $data['report_types'] = array_values($data['report_types']); // ensure array
         $stakeholder->reportPreference()->updateOrCreate(
             [],
             [
                 'frequency' => $data['frequency'],
-                'format' => $data['format'],
                 'report_types' => $data['report_types'],
             ]
         );
@@ -88,5 +87,17 @@ class StakeholderController extends Controller
     {
         $stakeholders = Stakeholder::with('reportPreference')->get();
         return view('stakeholders.dashboard', compact('stakeholders'));
+    }
+
+    public function showReports($id)
+    {
+        $stakeholder = \App\Models\Stakeholder::findOrFail($id);
+        $reportData = \App\Services\ReportService::generateForStakeholder($stakeholder);
+        $pdf = Pdf::loadView('stakeholders.reports_pdf', compact('stakeholder', 'reportData'));
+        $filename = 'report_' . $stakeholder->id . '.pdf';
+        if (request()->query('download')) {
+            return $pdf->download($filename);
+        }
+        return $pdf->stream($filename);
     }
 }

@@ -14,8 +14,8 @@ class ChatController extends Controller
     {
         $user = Auth::user();
         if ($user->role === 'Customer') {
-            $users = User::where('role', 'Wholesaler')->get();
-        } elseif ($user->role === 'Wholesaler') {
+            $users = User::where('role', 'Supplier')->get();
+        } elseif ($user->role === 'Supplier') {
             $users = User::where('role', 'Customer')->get();
         } else {
             abort(403, 'Only suppliers and customers can use chat.');
@@ -29,8 +29,8 @@ class ChatController extends Controller
         $user = Auth::user();
         $other = User::findOrFail($userId);
         // Only allow supplier-customer chat
-        if (!in_array($user->role, ['Customer', 'Wholesaler']) ||
-            !in_array($other->role, ['Customer', 'Wholesaler']) ||
+        if (!in_array($user->role, ['Customer', 'Supplier']) ||
+            !in_array($other->role, ['Customer', 'Supplier']) ||
             $user->role === $other->role) {
             abort(403, 'Chat only allowed between suppliers and customers.');
         }
@@ -47,8 +47,8 @@ class ChatController extends Controller
     {
         $user = Auth::user();
         $other = User::findOrFail($userId);
-        if (!in_array($user->role, ['Customer', 'Wholesaler']) ||
-            !in_array($other->role, ['Customer', 'Wholesaler']) ||
+        if (!in_array($user->role, ['Customer', 'Supplier']) ||
+            !in_array($other->role, ['Customer', 'Supplier']) ||
             $user->role === $other->role) {
             abort(403, 'Chat only allowed between suppliers and customers.');
         }

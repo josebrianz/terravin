@@ -69,7 +69,7 @@
                                     </div>
                                     <div class="col-md-2 mb-2">
                                         <label class="form-label">Subtotal</label>
-                                        <input type="text" class="form-control subtotal-input" value="UGX {{ number_format($item['quantity'] * $item['unit_price'], 0) }}" readonly>
+                                        <input type="text" class="form-control subtotal-input" value="{{ format_usd($item['quantity'] * $item['unit_price']) }}" readonly>
                                     </div>
                                     <div class="col-md-2 mb-2">
                                         <label class="form-label">&nbsp;</label>

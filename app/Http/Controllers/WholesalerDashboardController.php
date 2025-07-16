@@ -12,9 +12,8 @@ class WholesalerDashboardController extends Controller
 {
     public function index()
     {
-        // Inventory & Catalog
-        $stockLevel = Inventory::sum('quantity');
-        $catalogCount = Inventory::count();
+        $stockLevel = \App\Models\Inventory::sum('quantity');
+        $catalogCount = \App\Models\Inventory::count();
         $trackedBatches = \App\Models\Batch::count();
 
         // Orders

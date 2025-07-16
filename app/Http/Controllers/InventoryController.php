@@ -27,13 +27,21 @@ class InventoryController extends Controller
             'name'  => 'required|string|max:255',
             'sku'  => 'required|string|max:255|unique:inventories',
             'quantity'   => 'required|integer|min:0',
-            'price'      => 'required|numeric|min:0',
+            'unit_price'      => 'required|numeric|min:0',
             'location'   => 'nullable|string|max:255',
+            'images.*'   => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
+
+        $imagePaths = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $imagePaths[] = $image->store('inventory_images', 'public');
+            }
+        }
+        $validated['images'] = $imagePaths;
 
         Inventory::create($validated);
         
-
         return redirect()->route('inventory.index')->with('success', 'Item added successfully!');
     }
 
@@ -48,11 +56,22 @@ class InventoryController extends Controller
     {
         $validated = $request->validate([
             'name'  => 'required|string|max:255',
-            'sku'  => 'required|string|max:255|unique:inventories,item_code,' . $inventory->id,
+            'sku'  => 'required|string|max:255|unique:inventories,sku,' . $inventory->id,
             'quantity'   => 'required|integer|min:0',
-            'price'      => 'required|numeric|min:0',
+            'unit_price'      => 'required|numeric|min:0',
             'location'   => 'nullable|string|max:255',
+            'images.*'   => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
+
+        if ($request->hasFile('images')) {
+            $imagePaths = [];
+            foreach ($request->file('images') as $image) {
+                $imagePaths[] = $image->store('inventory_images', 'public');
+            }
+            $validated['images'] = $imagePaths;
+        } else {
+            $validated['images'] = $inventory->images ?? [];
+        }
 
         $inventory->update($validated);
 

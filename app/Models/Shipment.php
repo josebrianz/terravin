@@ -31,6 +31,7 @@ class Shipment extends Model
 
     protected $casts = [
         'shipping_cost' => 'decimal:2',
+        'estimated_delivery_date' => 'datetime',
     ];
 
     // Relationships

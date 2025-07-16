@@ -15,12 +15,14 @@ class Inventory extends Model
         'unit_price',
         'category',
         'location',
-        'is_active'
+        'is_active',
+        'images' // Add images to fillable
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
-        'unit_price' => 'decimal:2'
+        'unit_price' => 'decimal:2',
+        'images' => 'array' // Cast images as array
     ];
 
     public function isOutOfStock()
@@ -46,7 +48,7 @@ class Inventory extends Model
 
     public function getFormattedPrice()
     {
-        return 'UGX ' . number_format($this->unit_price, 0);
+        return '$' . number_format($this->unit_price, 0);
     }
 
     public function batches()

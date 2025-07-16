@@ -117,26 +117,6 @@ class Role extends Model
                     'delete_orders',
                 ]
             ],
-            'Wholesaler' => [
-                'description' => 'Wholesaler access for order fulfillment and shipment management',
-                'permissions' => [
-                    'view_orders',
-                    'update_order_status',
-                    'view_inventory',
-                    'manage_shipments',
-                    'track_shipments',
-                    'update_shipment_status',
-                    'view_customer_info',
-                    'create_shipment_reports',
-                    // Add procurement permissions for wholesalers
-                    'view_procurement',
-                    'create_procurement',
-                    'edit_procurement',
-                    'delete_procurement',
-                    'approve_procurement',
-                    'update_procurement_status',
-                ]
-            ],
             'Customer' => [
                 'description' => 'Basic customer access for order management',
                 'permissions' => [

@@ -52,7 +52,6 @@
                         <i class="fas fa-barcode fa-2x text-gold mb-2"></i>
                         <h6 class="fw-bold">Batch/Lot Tracking</h6>
                         <div class="display-6 fw-bold">{{ number_format($trackedBatches) }}</div>
-                        <a href="{{ route('batches.index') }}" class="btn btn-outline-burgundy btn-sm mt-2">Track Batches</a>
                         <div class="mt-3 text-start">
                             <ul class="list-group mb-0">
                                 @php $latestBatches = \App\Models\Batch::with('product')->latest()->take(3)->get(); @endphp
@@ -132,7 +131,7 @@
                             <li class="list-group-item">Promo: <span class="badge bg-info">{{ $promo }}</span></li>
                             <li class="list-group-item">Custom Pricing: <span class="badge bg-secondary">{{ $customPricing }}</span></li>
                         </ul>
-                        <a href="{{ route('pricing.index') }}" class="btn btn-outline-burgundy btn-sm mt-2">Manage Pricing</a>
+                        {{-- <a href="{{ route('pricing.index') }}" class="btn btn-outline-burgundy btn-sm mt-2">Manage Pricing</a> --}}
                     </div>
                 </div>
             </div>
@@ -169,7 +168,7 @@
                             <li class="list-group-item">Credit Terms: <span class="badge bg-info">{{ $creditTerms }}</span></li>
                             <li class="list-group-item">Last Payment: <span class="badge bg-success">UGX {{ number_format($lastPayment) }}</span></li>
                         </ul>
-                        <a href="{{ route('financial-reports.index') }}" class="btn btn-burgundy btn-sm mt-2">View Financial Reports</a>
+                        {{-- <a href="{{ route('financial-reports.index') }}" class="btn btn-burgundy btn-sm mt-2">View Financial Reports</a> --}}
                     </div>
                 </div>
             </div>
@@ -221,7 +220,7 @@
                         <h6 class="mb-0 fw-bold text-burgundy"><i class="fas fa-file-alt text-gold me-2"></i> Compliance & Documentation</h6>
                     </div>
                     <div class="card-body">
-                        <a href="{{ route('compliance-documents.index') }}" class="btn btn-outline-gold btn-sm mb-3">Manage Documents</a>
+                        {{-- <a href="{{ route('compliance-documents.index') }}" class="btn btn-outline-gold btn-sm mb-3">Manage Documents</a> --}}
                         <ul class="list-group mb-0">
                             @php $latestDocs = \App\Models\ComplianceDocument::latest()->take(3)->get(); @endphp
                             @forelse($latestDocs as $doc)

@@ -53,7 +53,7 @@
                             <input type="date" class="form-control" id="expiry_date" name="expiry_date" value="{{ old('expiry_date') }}">
                         </div>
                         <div class="d-flex justify-content-end">
-                            <a href="{{ route('compliance-documents.index') }}" class="btn btn-outline-burgundy me-2">Cancel</a>
+                            {{-- <a href="{{ route('compliance-documents.index') }}" class="btn btn-outline-burgundy me-2">Cancel</a> --}}
                             <button type="submit" class="btn btn-gold">Upload</button>
                         </div>
                     </form>

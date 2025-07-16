@@ -107,7 +107,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('logistics.dashboard') }}">
+                            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true" style="pointer-events: none; opacity: 0.6;">
                                 <i class="fas fa-truck"></i> Logistics
                             </a>
                         </li>

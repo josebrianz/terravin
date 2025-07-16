@@ -37,7 +37,7 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ route('inventory.update', $item->id) }}">
+                    <form method="POST" action="{{ route('inventory.update', $item->id) }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 

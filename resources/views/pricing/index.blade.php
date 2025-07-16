@@ -23,23 +23,23 @@
                 <tbody>
                     <tr>
                         <td>Chateau Rouge</td>
-                        <td>UGX 20,000</td>
+                        <td>{{ format_usd(20000) }}</td>
                         <td>10% for 100+</td>
-                        <td>UGX 18,000</td>
+                        <td>{{ format_usd(18000) }}</td>
                         <td><a href="#" class="btn btn-sm btn-outline-burgundy">Edit</a></td>
                     </tr>
                     <tr>
                         <td>Vintner's Reserve</td>
-                        <td>UGX 25,000</td>
+                        <td>{{ format_usd(25000) }}</td>
                         <td>8% for 50+</td>
-                        <td>UGX 23,000</td>
+                        <td>{{ format_usd(23000) }}</td>
                         <td><a href="#" class="btn btn-sm btn-outline-burgundy">Edit</a></td>
                     </tr>
                     <tr>
                         <td>Golden Barrel</td>
-                        <td>UGX 15,000</td>
+                        <td>{{ format_usd(15000) }}</td>
                         <td>5% for 200+</td>
-                        <td>UGX 14,000</td>
+                        <td>{{ format_usd(14000) }}</td>
                         <td><a href="#" class="btn btn-sm btn-outline-burgundy">Edit</a></td>
                     </tr>
                 </tbody>
