@@ -30,7 +30,7 @@ Route::get('/admin-dashboard', function () {
 
 Route::get('/dashboard', function () {
     return view('admin-dashboard');
-})->middleware(['auth', 'verified', 'role'])->name('dashboard');
+})->name('dashboard');
 
 Route::get('/admin', function () {
     return view('admin-dashboard');
@@ -54,14 +54,17 @@ Route::middleware(['auth', 'role:Admin,Retailer,Vendor,Wholesaler'])->group(func
     Route::post('/procurement/{procurement}/mark-as-received', [ProcurementController::class, 'markAsReceived'])->name('procurement.markAsReceived');
 });
 
-// Order Management Routes - Accessible by Admin, Vendor, Retailer, Wholesaler
-Route::middleware(['auth', 'role:Admin,Vendor,Retailer,Wholesaler'])->group(function () {
+// Order Management Routes - Accessible by Admin, Vendor, Retailer, Customer
+Route::middleware(['auth', 'role:Admin,Vendor,Retailer,Customer'])->group(function () {
     Route::resource('orders', OrderController::class);
     Route::post('/orders/place', [OrderController::class, 'store'])->name('orders.place');
-    Route::get('/orders/pending', [OrderController::class, 'pending'])->name('orders.pending');
+    // Route::get('/orders/pending', [OrderController::class, 'pending'])->name('orders.pending'); // moved out for debugging
     Route::get('/catalog', [OrderController::class, 'catalog'])->name('orders.catalog');
     Route::get('/orders/confirmation/{order}', [App\Http\Controllers\OrderController::class, 'confirmation'])->name('orders.confirmation');
 });
+
+// Debug: Make /orders/pending public for troubleshooting
+Route::get('/orders/pending', [OrderController::class, 'pending'])->name('orders.pending');
 
 // Profile Routes - Accessible by all authenticated users
 Route::middleware('auth')->group(function () {
@@ -123,9 +126,7 @@ Route::middleware(['auth', 'role:Retailer'])->group(function () {
 });
 
 // Retailer Wine Catalog Route
-Route::middleware(['auth', 'role:Retailer'])->group(function () {
-    Route::get('/retailer/catalog', [\App\Http\Controllers\RetailerCatalogController::class, 'index'])->name('orders.catalog');
-});
+Route::get('/retailer/catalog', [App\Http\Controllers\RetailerCatalogController::class, 'index'])->name('retailer.catalog');
 
 // Reports Route - Accessible by authenticated users
 Route::middleware('auth')->group(function () {
@@ -308,9 +309,9 @@ Route::middleware(['auth', 'role:Vendor'])->group(function () {
 });
 
 // Wholesaler Dashboard Route - Accessible only by Wholesaler role
-Route::middleware(['auth', 'role:Wholesaler'])->group(function () {
-    Route::get('/wholesaler/dashboard', [App\Http\Controllers\WholesalerDashboardController::class, 'index'])->name('wholesaler.dashboard');
-});
+// Route::middleware(['auth', 'role:Wholesaler'])->group(function () {
+//     Route::get('/wholesaler/dashboard', [App\Http\Controllers\WholesalerDashboardController::class, 'index'])->name('wholesaler.dashboard');
+// });
 
 // Batch Management Routes - Accessible by all authenticated users
 Route::middleware(['auth'])->group(function () {
@@ -375,10 +376,8 @@ Route::get('/workforce/assignments', [App\Http\Controllers\WorkforceDashboardCon
 // Forecast Routes
 Route::get('/forecast', [SalesController::class, 'dashboard'])->name('forecast.dashboard');
 Route::post('/forecast/predict', [SalesController::class, 'predictCategory'])->name('forecast.predict');
+Route::get('/forecast/download', [SalesController::class, 'downloadForecastCsv'])->name('forecast.download');
 
-Route::middleware(['auth', 'role:Wholesaler'])->group(function () {
-    Route::get('/wholesaler/dashboard', [App\Http\Controllers\WholesalerDashboardController::class, 'index'])->name('wholesaler.dashboard');
-});
 // Logistics Module - Admin Only
 Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/logistics/dashboard', [\App\Http\Controllers\LogisticsDashboardController::class, 'index'])->name('logistics.dashboard');

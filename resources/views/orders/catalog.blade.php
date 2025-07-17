@@ -766,10 +766,16 @@ body {
             <!-- Modern Category Navigation -->
             <nav class="category-nav">
                 <div class="category-scroller">
+                    <a href="#all-wines" class="category-pill all-wines-pill active">All Wines</a>
+                    @php $addedCategories = []; @endphp
                     @foreach($categories as $category => $wines)
-                    <a href="#{{ Str::slug($category) }}" class="category-pill {{ $loop->first ? 'active' : '' }}">
-                        {{ $category }} <span class="badge">{{ count($wines) }}</span>
-                    </a>
+                        @php $slug = Str::slug($category); @endphp
+                        @if(!isset($addedCategories[$slug]))
+                            <a href="#{{ $slug }}" class="category-pill{{ $slug === 'red-wine' ? ' red-wine-pill' : '' }}{{ $slug === 'white-wine' ? ' white-wine-pill' : '' }}">
+                                {{ $category }}
+                            </a>
+                            @php $addedCategories[$slug] = true; @endphp
+                        @endif
                     @endforeach
                 </div>
             </nav>
@@ -791,7 +797,7 @@ body {
                             <!-- Wine Image with Floating Badges -->
                             <div class="wine-image-container">
                                 @if(!empty($wine->images) && is_array($wine->images) && count($wine->images) > 0)
-                                    <img src="{{ asset('storage/' . $wine->images[0]) }}" alt="{{ $wine->name }}" class="wine-image">
+                                    <img src="{{ asset('wine_images/' . $wine->images[0]) }}" alt="{{ $wine->name }}" class="wine-image">
                                 @else
                                     <div class="wine-image-placeholder">
                                         <i class="fas fa-wine-bottle"></i>
@@ -867,31 +873,35 @@ body {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Smooth scroll for category navigation
     const categoryLinks = document.querySelectorAll('.category-pill');
-    
+    const categorySections = document.querySelectorAll('.category-section');
+    const allWinesBtn = document.querySelector('.all-wines-pill');
+
     categoryLinks.forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
-            
-            // Remove active class from all links
             categoryLinks.forEach(l => l.classList.remove('active'));
-            
-            // Add active class to clicked link
             this.classList.add('active');
-            
-            // Scroll to section
-            const targetId = this.getAttribute('href');
-            const targetSection = document.querySelector(targetId);
-            
-            if (targetSection) {
-                window.scrollTo({
+            if (this.classList.contains('all-wines-pill')) {
+                // Show all sections
+                categorySections.forEach(section => section.style.display = '');
+            } else {
+                // Hide all, show only selected
+                categorySections.forEach(section => section.style.display = 'none');
+                const targetId = this.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                if (targetSection) {
+                    targetSection.style.display = '';
+                    window.scrollTo({
                         top: targetSection.offsetTop - 120,
-                    behavior: 'smooth'
-                });
+                        behavior: 'smooth'
+                    });
+                }
             }
         });
     });
+    // On page load, show all
+    categorySections.forEach(section => section.style.display = '');
     
     // Quick view button functionality
     const quickViewButtons = document.querySelectorAll('.btn-quick-view');

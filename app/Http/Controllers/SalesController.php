@@ -135,4 +135,15 @@ class SalesController extends Controller
         }
         return response()->json($results);
     }
+
+    public function downloadForecastCsv()
+    {
+        $file = storage_path('MachineLearning/forecast_5_months_per_category.csv');
+        if (!file_exists($file)) {
+            abort(404, 'Forecast CSV not found.');
+        }
+        return response()->download($file, 'forecast_5_months_per_category.csv', [
+            'Content-Type' => 'text/csv',
+        ]);
+    }
 }

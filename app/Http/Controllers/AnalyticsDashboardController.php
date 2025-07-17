@@ -111,10 +111,13 @@ class AnalyticsDashboardController extends Controller
             'revenue' => array_map(fn($i) => $monthlyData[$i + 1]->revenue ?? 0, array_keys($months)),
         ];
 
-        // Customer Segments (example data - replace with real segmentation if available)
+        // Customer Segments (real data from users table)
+        $customerSegments = User::select('role', DB::raw('count(*) as count'))
+            ->groupBy('role')
+            ->get();
         $customerSegmentsData = [
-            'labels' => ['Retail', 'Wholesale', 'Online'],
-            'data' => [60, 25, 15], // Placeholder data
+            'labels' => $customerSegments->pluck('role')->toArray(),
+            'data' => $customerSegments->pluck('count')->toArray(),
         ];
 
         // Top 5 Products Sold
@@ -145,11 +148,23 @@ class AnalyticsDashboardController extends Controller
             'data' => array_map(fn($i) => $monthlyOrders[$i + 1]->count ?? 0, array_keys($months)),
         ];
 
+        // Inventory by Category
+        $inventoryByCategory = DB::table('inventories')
+            ->select('category', DB::raw('SUM(quantity) as total_quantity'))
+            ->groupBy('category')
+            ->orderByDesc('total_quantity')
+            ->get();
+        $inventoryCategoryData = [
+            'labels' => $inventoryByCategory->pluck('category')->toArray(),
+            'data' => $inventoryByCategory->pluck('total_quantity')->toArray(),
+        ];
+
         return [
             'salesRevenueData' => $salesRevenueData,
             'customerSegmentsData' => $customerSegmentsData,
             'topProductsData' => $topProductsData,
             'monthlyOrdersData' => $monthlyOrdersData,
+            'inventoryCategoryData' => $inventoryCategoryData,
         ];
     }
 

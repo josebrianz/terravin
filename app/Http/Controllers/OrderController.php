@@ -165,7 +165,7 @@ class OrderController extends Controller
             ->with('user')
             ->latest()
             ->paginate(10);
-        return view('orders.pending', compact('orders'));
+        return view('orders.index', compact('orders'));
     }
 
     /**

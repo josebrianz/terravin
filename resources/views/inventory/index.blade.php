@@ -69,7 +69,7 @@
                                 </td>
                                 <td>
                                     @if(!empty($item->images) && is_array($item->images) && count($item->images) > 0)
-                                        <img src="{{ asset('storage/' . $item->images[0]) }}" alt="Image" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #ccc;">
+                                        <img src="{{ asset('wine_images/' . $item->images[0]) }}" alt="Image" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #ccc;">
                                     @else
                                         <span class="text-muted">No Image</span>
                                     @endif
