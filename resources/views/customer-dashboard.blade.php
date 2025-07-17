@@ -914,8 +914,11 @@
                     $wines = $winesQuery->inRandomOrder()->take(4)->get();
                 @endphp
                 @forelse($wines as $wine)
+                @php
+                    $imgPath = ($wine->images && count($wine->images) > 0) ? $wine->images[0] : null;
+                @endphp
                 <div class="wine-card">
-                    <div class="wine-image" style="background-image: url('{{ $wine->images && count($wine->images) > 0 ? asset('storage/' . $wine->images[0]) : 'https://via.placeholder.com/300x200?text=Wine' }}');">
+                    <div class="wine-image" style="background-image: url('{{ $imgPath ? (Str::startsWith($imgPath, 'inventory_images/') ? asset('storage/' . $imgPath) : asset('wine_images/' . $imgPath)) : 'https://via.placeholder.com/300x200?text=Wine' }}');">
                         <span class="wine-badge">Limited</span>
                     </div>
                     <div class="wine-details">

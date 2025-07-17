@@ -797,7 +797,12 @@ body {
                             <!-- Wine Image with Floating Badges -->
                             <div class="wine-image-container">
                                 @if(!empty($wine->images) && is_array($wine->images) && count($wine->images) > 0)
-                                    <img src="{{ asset('wine_images/' . $wine->images[0]) }}" alt="{{ $wine->name }}" class="wine-image">
+                                    @php $imgPath = $wine->images[0]; @endphp
+                                    @if(Str::startsWith($imgPath, 'inventory_images/'))
+                                        <img src="{{ asset('storage/' . $imgPath) }}" alt="{{ $wine->name }}" class="wine-image">
+                                    @else
+                                        <img src="{{ asset('wine_images/' . $imgPath) }}" alt="{{ $wine->name }}" class="wine-image">
+                                    @endif
                                 @else
                                     <div class="wine-image-placeholder">
                                         <i class="fas fa-wine-bottle"></i>

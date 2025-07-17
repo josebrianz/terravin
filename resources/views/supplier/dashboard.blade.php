@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vendor Dashboard | TERRAVIN</title>
+    <title>Supplier Dashboard | TERRAVIN</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -119,30 +119,34 @@
     </style>
 </head>
 <body>
-    <!-- Wine-themed top nav bar for vendor -->
+    <!-- Wine-themed top nav bar for supplier -->
     <div class="wine-top-bar">
         <div class="container-fluid">
             <div class="d-flex align-items-center justify-content-between" style="min-height: 80px;">
                 <div class="d-flex align-items-center gap-3">
-                    <a class="wine-brand" href="{{ url('/vendor/dashboard') }}">
+                    <a class="wine-brand" href="{{ url('/supplier/dashboard') }}">
                         <i class="fas fa-wine-bottle"></i>
                     </a>
                     <nav class="wine-nav">
                         <ul class="nav-links d-flex align-items-center gap-3 mb-0" style="list-style:none;">
-                            <li><a href="{{ url('/vendor/dashboard') }}" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                            <li><a href="{{ url('/vendor/orders') }}" class="nav-link"><i class="fas fa-shopping-bag"></i> Orders</a></li>
-                            <li><a href="{{ url('/vendor/inventory') }}" class="nav-link"><i class="fas fa-boxes"></i> Inventory</a></li>
-                            <li><a href="{{ url('/reports') }}" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a></li>
+                            <li><a href="{{ url('/supplier/dashboard') }}" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                            <li><a href="{{ url('/supplier/raw-materials') }}" class="nav-link"><i class="fas fa-cubes"></i> Raw Materials</a></li>
+                            <li><a href="{{ url('/supplier/orders') }}" class="nav-link"><i class="fas fa-clipboard-list"></i> Orders</a></li>
+                            <li><a href="{{ url('/supplier/reports') }}" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a></li>
                         </ul>
                     </nav>
                 </div>
                 <div class="d-flex align-items-center gap-4">
                     <div class="dropdown">
                         <a class="dropdown-toggle d-flex align-items-center text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
-                            <div class="profile-photo-placeholder-large rounded-circle d-flex align-items-center justify-content-center me-2" style="border: 6px solid var(--gold); background: linear-gradient(135deg, var(--burgundy) 0%, #8b1a1a 100%); width: 72px; height: 72px; color: #fff; font-size: 2rem;">
-                                <span class="fw-bold">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
-                            </div>
-                            <span class="user-name">{{ Auth::user()->name }} <span class="text-gold" style="font-weight: 500;">(Vendor)</span></span>
+                            @if(Auth::user()->profile_photo)
+                                <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}?v={{ time() }}" alt="{{ Auth::user()->name }}" class="profile-photo-large rounded-circle me-2" style="border: 6px solid var(--gold); width: 72px; height: 72px; object-fit: cover;">
+                            @else
+                                <div class="profile-photo-placeholder-large rounded-circle d-flex align-items-center justify-content-center me-2" style="border: 6px solid var(--gold); background: linear-gradient(135deg, var(--burgundy) 0%, #8b1a1a 100%); width: 72px; height: 72px; color: #fff; font-size: 2rem;">
+                                    <span class="fw-bold">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
+                                </div>
+                            @endif
+                            <span class="user-name">{{ Auth::user()->name }} <span class="text-gold" style="font-weight: 500;">(Supplier)</span></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="fas fa-user-edit me-2"></i> Profile</a></li>
@@ -157,21 +161,21 @@
     </div>
     <div class="main-content">
         <div class="container-fluid">
-            <h1 class="page-title mb-4">Vendor Dashboard</h1>
+            <h1 class="page-title mb-4">Supplier Dashboard</h1>
             <div class="dashboard-section">
-                <div class="section-title"><i class="fas fa-shopping-bag me-2"></i>Orders</div>
-                <p>View, confirm, update, and track orders assigned to you as a vendor.</p>
-                <a href="{{ url('/vendor/orders') }}" class="btn btn-burgundy">Manage Orders</a>
+                <div class="section-title"><i class="fas fa-cubes me-2"></i>Raw Materials in Stock</div>
+                <p>View and manage your current raw material inventory, including quantities and categories.</p>
+                <a href="{{ url('/supplier/raw-materials') }}" class="btn btn-burgundy">View Raw Materials</a>
             </div>
             <div class="dashboard-section">
-                <div class="section-title"><i class="fas fa-boxes me-2"></i>Inventory</div>
-                <p>View and manage your inventory, update stock levels, and add new products.</p>
-                <a href="{{ url('/vendor/inventory') }}" class="btn btn-burgundy">View Inventory</a>
+                <div class="section-title"><i class="fas fa-clipboard-list me-2"></i>Raw Material Orders</div>
+                <p>See orders from the company for raw materials, track order status, and manage deliveries.</p>
+                <a href="{{ url('/supplier/orders') }}" class="btn btn-burgundy">View Orders</a>
             </div>
             <div class="dashboard-section">
-                <div class="section-title"><i class="fas fa-chart-line me-2"></i>Analytics</div>
-                <p>View sales analytics, performance reports, and demand forecasts to optimize your operations.</p>
-                <a href="{{ url('/reports') }}" class="btn btn-burgundy">View Analytics</a>
+                <div class="section-title"><i class="fas fa-chart-bar me-2"></i>Reports & Analytics</div>
+                <p>Analyze supply trends, order history, and performance metrics to optimize your supply operations.</p>
+                <a href="{{ url('/supplier/reports') }}" class="btn btn-burgundy">View Reports</a>
             </div>
         </div>
     </div>

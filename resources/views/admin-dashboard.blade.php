@@ -22,9 +22,6 @@
                             Chat
                         </a>
                     @endif
-                    <a href="{{ route('help.index') }}" class="btn btn-burgundy me-2" title="Help & Support">
-                        <i class="fas fa-question-circle me-1"></i> Help & Support
-                    </a>
                     <span class="badge bg-gold text-burgundy px-3 py-2">
                         <i class="fas fa-clock me-1"></i>
                         {{ now()->format('M d, Y H:i') }}
@@ -99,10 +96,6 @@
                     <h5 class="card-title fw-bold text-burgundy">Wine Logistics</h5>
                     <p class="card-text text-muted small">Manage and track all wine shipments and deliveries.</p>
                     <div class="d-grid gap-2">
-
-                        <a href="#" class="btn btn-burgundy shadow-sm disabled" title="Logistics dashboard is disabled" tabindex="-1" aria-disabled="true" style="pointer-events: none; opacity: 0.6;">
-                            <i class="fas fa-truck"></i> Logistics
-
                         <a href="{{ route('logistics.dashboard') }}" class="btn btn-burgundy shadow-sm" title="Go to logistics dashboard">
                             <i class="fas fa-truck"></i> Logistics Dashboard
                         </a>
@@ -170,9 +163,6 @@
                         <div class="d-grid gap-2">
                             <a href="{{ route('orders.index') }}" class="btn btn-gold shadow-sm" title="View all orders">
                                 <i class="fas fa-list"></i> All Orders
-                            </a>
-                            <a href="{{ route('orders.pending') }}" class="btn btn-outline-burgundy" title="View pending orders">
-                                <i class="fas fa-clock"></i> Pending Orders
                             </a>
                         </div>
                     </div>

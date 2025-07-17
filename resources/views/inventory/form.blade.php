@@ -43,7 +43,11 @@
         <div class="mt-2">
             <div class="d-flex flex-wrap gap-3">
                 @foreach($item->images as $img)
-                    <img src="{{ asset('storage/' . $img) }}" alt="Image" style="width: 140px; height: 140px; object-fit: cover; border-radius: 10px; border: 2px solid #800020; box-shadow: 0 4px 16px rgba(128,0,32,0.15); transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 8px 24px rgba(128,0,32,0.25)';" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 16px rgba(128,0,32,0.15)';">
+                    @if(Str::startsWith($img, 'inventory_images/'))
+                        <img src="{{ asset('storage/' . $img) }}" alt="Image" style="width: 140px; height: 140px; object-fit: cover; border-radius: 10px; border: 2px solid #800020; box-shadow: 0 4px 16px rgba(128,0,32,0.15); transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 8px 24px rgba(128,0,32,0.25)';" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 16px rgba(128,0,32,0.15)';">
+                    @else
+                        <img src="{{ asset('wine_images/' . $img) }}" alt="Image" style="width: 140px; height: 140px; object-fit: cover; border-radius: 10px; border: 2px solid #800020; box-shadow: 0 4px 16px rgba(128,0,32,0.15); transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 8px 24px rgba(128,0,32,0.25)';" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 16px rgba(128,0,32,0.15)';">
+                    @endif
                 @endforeach
             </div>
         </div>

@@ -35,34 +35,38 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'string', 'in:Vendor,Wholesaler,Retailer'],
+            'role' => ['required', 'string', 'in:Vendor,Supplier,Retailer,Customer'],
         ]);
 
-        // Create user with Customer role initially
+        // If registering as Customer, create and redirect directly
+        if ($request->role === 'Customer') {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => 'Customer',
+            ]);
+            event(new Registered($user));
+            Auth::login($user);
+            return redirect()->route('customer.dashboard');
+        }
+
+        // For all other roles, create as Customer and request upgrade
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'Customer', // Default to Customer role
+            'role' => 'Customer',
         ]);
-
-        // Create role approval request
         RoleApprovalRequest::create([
             'user_id' => $user->id,
             'requested_role' => $request->role,
             'status' => 'pending',
         ]);
-
         event(new Registered($user));
-
         Auth::login($user);
-
-        if ($request->role === 'Vendor') {
-            return redirect()->route('vendor.apply');
-}
-
         return redirect()->route('application.status')
-            ->with('success', 'Account created successfully! Your role upgrade request has been submitted and is pending admin approval.');
+            ->with('success', 'Account created successfully! Your application for the ' . $request->role . ' role is pending admin approval.');
     }
 
     /**

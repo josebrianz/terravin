@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vendor Reports | TERRAVIN</title>
+    <title>Order #{{ $orderId }} | Supplier | TERRAVIN</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -89,7 +89,7 @@
             color: var(--burgundy);
             font-weight: 600;
         }
-        .section-card {
+        .dashboard-section {
             background: white;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-sm);
@@ -103,23 +103,93 @@
             font-weight: 600;
             margin-bottom: 1rem;
         }
+        .order-summary {
+            background: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: 0 6px 32px rgba(94, 15, 15, 0.10);
+            padding: 2rem 1.5rem 2.5rem 1.5rem;
+            border: 2px solid var(--burgundy);
+            margin-top: 2rem;
+        }
+        .order-table {
+            font-size: 1.08rem;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+        th {
+            background: linear-gradient(90deg, var(--burgundy) 60%, var(--gold) 100%);
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            border: none;
+        }
+        td {
+            background: #f9f5ed;
+            color: var(--dark-text);
+            padding: 0.95rem 1.1rem;
+            border: none;
+        }
+        tr:nth-child(even) td {
+            background: #f5e6e6;
+        }
+        .badge-status {
+            font-size: 0.98rem;
+            border-radius: 1rem;
+            padding: 0.4em 1.1em;
+            font-weight: 600;
+        }
+        .badge-pending {
+            background: #fff3e6;
+            color: #b85c38;
+            border: 1.5px solid #c8a97e;
+        }
+        .badge-approved {
+            background: #e6f5e6;
+            color: #2e7d32;
+            border: 1.5px solid #a5d6a7;
+        }
+        .badge-shipped {
+            background: #e6f0f5;
+            color: #1565c0;
+            border: 1.5px solid #90caf9;
+        }
+        .badge-delivered {
+            background: #f5fbe6;
+            color: #7b9b23;
+            border: 1.5px solid #d4e157;
+        }
+        .btn-back {
+            background: var(--burgundy);
+            color: #fff;
+            border-radius: 1.5rem;
+            font-size: 1rem;
+            padding: 0.5em 1.5em;
+            border: none;
+            margin-bottom: 1.5rem;
+            transition: background 0.2s;
+        }
+        .btn-back:hover {
+            background: var(--gold);
+            color: var(--burgundy);
+        }
     </style>
 </head>
 <body>
-    <!-- Wine-themed top nav bar for vendor -->
+    <!-- Wine-themed top nav bar for supplier -->
     <div class="wine-top-bar">
         <div class="container-fluid">
             <div class="d-flex align-items-center justify-content-between" style="min-height: 80px;">
                 <div class="d-flex align-items-center gap-3">
-                    <a class="wine-brand" href="{{ url('/vendor/dashboard') }}">
+                    <a class="wine-brand" href="{{ url('/supplier/dashboard') }}">
                         <i class="fas fa-wine-bottle"></i>
                     </a>
                     <nav class="wine-nav">
                         <ul class="nav-links d-flex align-items-center gap-3 mb-0" style="list-style:none;">
-                            <li><a href="{{ url('/vendor/dashboard') }}" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                            <li><a href="{{ url('/vendor/orders') }}" class="nav-link"><i class="fas fa-shopping-bag"></i> Orders</a></li>
-                            <li><a href="{{ url('/vendor/inventory') }}" class="nav-link"><i class="fas fa-boxes"></i> Inventory</a></li>
-                            <li><a href="{{ url('/reports') }}" class="nav-link active"><i class="fas fa-chart-line"></i> Reports</a></li>
+                            <li><a href="{{ url('/supplier/dashboard') }}" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                            <li><a href="{{ url('/supplier/raw-materials') }}" class="nav-link"><i class="fas fa-cubes"></i> Raw Materials</a></li>
+                            <li><a href="{{ url('/supplier/orders') }}" class="nav-link active"><i class="fas fa-clipboard-list"></i> Orders</a></li>
+                            <li><a href="{{ url('/supplier/reports') }}" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -129,7 +199,7 @@
                             <div class="profile-photo-placeholder-large rounded-circle d-flex align-items-center justify-content-center me-2" style="border: 6px solid var(--gold); background: linear-gradient(135deg, var(--burgundy) 0%, #8b1a1a 100%); width: 72px; height: 72px; color: #fff; font-size: 2rem;">
                                 <span class="fw-bold">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
                             </div>
-                            <span class="user-name">{{ Auth::user()->name }} <span class="text-gold" style="font-weight: 500;">(Vendor)</span></span>
+                            <span class="user-name">{{ Auth::user()->name }} <span class="text-gold" style="font-weight: 500;">(Supplier)</span></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="fas fa-user-edit me-2"></i> Profile</a></li>
@@ -144,74 +214,46 @@
     </div>
     <div class="main-content">
         <div class="container-fluid">
-            <h1 class="page-title mb-4">Vendor Reports Dashboard</h1>
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="section-card">
-                        <div class="section-title"><i class="fas fa-users me-2"></i>Top Retailers</div>
-                        @if(isset($topRetailers) && $topRetailers->count())
-                            <ul class="list-group list-group-flush">
-                                @foreach($topRetailers as $retailer)
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>{{ $retailer->name }} <small class="text-muted">({{ $retailer->email }})</small></span>
-                                        <span class="badge bg-burgundy text-gold">{{ $retailer->orders_count }} orders</span>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @else
-                            <p class="text-muted">No retailer order data yet.</p>
-                        @endif
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="section-card">
-                        <div class="section-title"><i class="fas fa-chart-bar me-2"></i>Sales Summary</div>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>Total Sales</span>
-                                <span class="fw-bold text-burgundy">{{ $totalSales ?? 0 }}</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>Total Revenue</span>
-                                <span class="fw-bold text-burgundy">UGX {{ number_format($totalRevenue ?? 0, 0) }}</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="section-card">
-                        <div class="section-title"><i class="fas fa-boxes me-2"></i>Inventory Stats</div>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>Total Inventory Items</span>
-                                <span class="fw-bold text-burgundy">{{ $totalInventory ?? 0 }}</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>Low Stock Items (&lt; 10)</span>
-                                <span class="fw-bold text-danger">{{ $lowStockCount ?? 0 }}</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="section-card">
-                        <div class="section-title"><i class="fas fa-file-alt me-2"></i>Best-selling Products</div>
-                        @if(isset($bestSellingProducts) && $bestSellingProducts->count())
-                            <ul class="list-group list-group-flush">
-                                @foreach($bestSellingProducts as $product)
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>{{ $product->item_name }}</span>
-                                        <span class="badge bg-gold text-burgundy">{{ $product->total_sold }} sold</span>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @else
-                            <p class="text-muted">No product sales data yet.</p>
-                        @endif
-                    </div>
-                </div>
+            <a href="{{ url('/supplier/orders') }}" class="btn btn-back mb-3"><i class="fas fa-arrow-left"></i> Back to Orders</a>
+            <h1 class="page-title mb-4">Order #{{ $orderId }}</h1>
+            <div class="dashboard-section order-summary">
+                <div class="section-title"><i class="fas fa-clipboard-list me-2"></i>Order Details</div>
+                <table class="table order-table">
+                    <tbody>
+                        <tr>
+                            <th>Order ID</th>
+                            <td>#{{ $orderId }}</td>
+                        </tr>
+                        <tr>
+                            <th>Order Date</th>
+                            <td>2025-07-17</td>
+                        </tr>
+                        <tr>
+                            <th>Status</th>
+                            <td><span class="badge badge-status badge-pending">Pending</span></td>
+                        </tr>
+                        <tr>
+                            <th>Items</th>
+                            <td>Grapes, Yeast</td>
+                        </tr>
+                        <tr>
+                            <th>Quantity</th>
+                            <td>2,000 kg, 20 kg</td>
+                        </tr>
+                        <tr>
+                            <th>Requested By</th>
+                            <td>Admin (Company)</td>
+                        </tr>
+                        <tr>
+                            <th>Delivery Address</th>
+                            <td>123 Winery Lane, Napa Valley, CA</td>
+                        </tr>
+                        <tr>
+                            <th>Notes</th>
+                            <td>Please deliver by end of the month.</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
