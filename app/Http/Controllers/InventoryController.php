@@ -40,6 +40,9 @@ class InventoryController extends Controller
         }
         $validated['images'] = $imagePaths;
 
+        // Always set item_code to sku
+        $validated['item_code'] = $validated['sku'];
+
         Inventory::create($validated);
         
         return redirect()->route('inventory.index')->with('success', 'Item added successfully!');

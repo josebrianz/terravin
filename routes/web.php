@@ -129,9 +129,9 @@ Route::middleware(['auth', 'role:Retailer'])->group(function () {
 Route::get('/retailer/catalog', [App\Http\Controllers\RetailerCatalogController::class, 'index'])->name('retailer.catalog');
 
 // Reports Route - Accessible by authenticated users
-Route::middleware('auth')->group(function () {
-    Route::get('/reports', [App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
-});
+// Route::middleware('auth')->group(function () {
+//     Route::get('/reports', [App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
+// });
 
 
 // Financial Reports Route - Accessible by all authenticated users

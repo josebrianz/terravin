@@ -10,6 +10,7 @@ class Inventory extends Model
         'name',
         'description',
         'sku',
+        'item_code', // Added this line
         'quantity',
         'min_quantity',
         'unit_price',
