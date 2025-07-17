@@ -103,4 +103,4 @@ class RetailerCatalogController extends Controller
         ];
         return view('retailer.catalog', compact('wines'));
     }
-} 
+}

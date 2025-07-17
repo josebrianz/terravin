@@ -42,11 +42,15 @@ class ImportWineImagesCommand extends Command
             $imageBase = strtolower($row[$col['IMAGE']]);
             if (!isset($imageMap[$imageBase])) continue;
             $sku = $row[$col['ITEM CODE']];
-            if (Inventory::where('sku', $sku)->exists()) continue;
+            if (
+                Inventory::where('sku', $sku)->exists() ||
+                Inventory::where('item_code', $sku)->exists()
+            ) continue;
             $inventory = new Inventory([
                 'name' => $row[$col['WINE NAME']],
                 'description' => $row[$col['DESCRIPTION']] ?? '',
                 'sku' => $sku,
+                'item_code' => $sku, // Add this line
                 'quantity' => (int)($row[$col['QUANTITY']] ?? 0),
                 'min_quantity' => 10,
                 'unit_price' => (float)($row[$col['PRICE PER UNIT']] ?? 0),

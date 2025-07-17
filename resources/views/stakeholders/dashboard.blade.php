@@ -8,8 +8,8 @@
     <a class="navbar-brand fw-bold" href="#" style="color: #bfa14a; font-size: 2rem; letter-spacing: 2px;">Terravin</a>
   </div>
 </nav>
-<div class="container py-4 wine-theme-bg" style="max-width: 98vw;">
-    <div class="wine-accent-bar"></div>
+<div class="container-fluid py-4 wine-theme-bg" style="border-radius: 0; box-shadow: none;">
+    <div class="wine-accent-bar" style="margin-bottom: 0;"></div>
     <h1 class="mb-4 fw-bold text-center" style="font-size: 3rem; color: #6b1a15; text-shadow: 2px 2px 8px #e0bcbc; letter-spacing: 2px;">Stakeholder Preferences</h1>
 
     {{-- Success Message --}}
@@ -18,10 +18,8 @@
     @endif
 
     {{-- List Stakeholders --}}
-    <div class="mb-5 stakeholder-table-card">
-        <h3>All Stakeholders</h3>
-        <div style="max-height: 80vh; min-height: 50vh; overflow-y: auto;">
-        <table id="stakeholders-table" class="table table-bordered table-hover table-lg align-middle" style="font-size: 1.1rem; min-width: 1200px;">
+    <div class="table-responsive p-0 m-0" style="border-radius: 0;">
+        <table id="stakeholders-table" class="table table-bordered table-hover table-lg align-middle w-100 m-0" style="font-size: 1.1rem; border-radius: 0;">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -69,7 +67,6 @@
                 @endforeach
             </tbody>
         </table>
-        </div>
     </div>
 
     {{-- Create Stakeholder Form --}}
@@ -115,9 +112,9 @@
 <style>
 .wine-theme-bg {
     background: linear-gradient(135deg, #f8f6f3 60%, #fbeee6 100%);
-    border-radius: 18px;
-    box-shadow: 0 2px 16px rgba(107,26,21,0.07);
-    padding-bottom: 2rem;
+    border-radius: 0;
+    box-shadow: none;
+    padding-bottom: 0;
 }
 .wine-accent-bar {
     height: 8px;
@@ -127,16 +124,19 @@
 }
 .stakeholder-table-card {
     background: #fff;
-    border-radius: 14px;
-    box-shadow: 0 2px 12px rgba(107,26,21,0.08);
-    padding: 1.5rem 1rem;
-    margin-bottom: 2rem;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+    margin-bottom: 0;
 }
 #stakeholders-table thead th {
-    position: sticky;
-    top: 0;
     background: #f8f9fa;
     z-index: 2;
+}
+/* Let table be responsive and content wrap naturally */
+#stakeholders-table th, #stakeholders-table td {
+    word-break: break-word;
+    white-space: normal;
 }
 #editStakeholderModal {
     position: fixed;

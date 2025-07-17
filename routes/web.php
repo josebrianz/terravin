@@ -30,7 +30,7 @@ Route::get('/admin-dashboard', function () {
 
 Route::get('/dashboard', function () {
     return view('admin-dashboard');
-})->middleware(['auth', 'verified', 'role'])->name('dashboard');
+})->name('dashboard');
 
 Route::get('/admin', function () {
     return view('admin-dashboard');
@@ -297,10 +297,14 @@ Route::get('/retailer/checkout', function () {
     return view('retailer.checkout');
 })->middleware(['auth', 'role:Retailer'])->name('retailer.checkout');
 
+// Retailer Wine Catalog Route
+Route::get('/retailer/catalog', [App\Http\Controllers\RetailerCatalogController::class, 'index'])->name('retailer.catalog');
+
+
 // Reports Route - Accessible by authenticated users
-Route::middleware('auth')->group(function () {
-    Route::get('/reports', [App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
-});
+// Route::middleware('auth')->group(function () {
+//     Route::get('/reports', [App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
+// });
 
 
 // Financial Reports Route - Accessible by all authenticated users
@@ -550,6 +554,7 @@ Route::get('/workforce/assignments', [App\Http\Controllers\WorkforceDashboardCon
 // Forecast Routes
 Route::get('/forecast', [SalesController::class, 'dashboard'])->name('forecast.dashboard');
 Route::post('/forecast/predict', [SalesController::class, 'predictCategory'])->name('forecast.predict');
+Route::get('/forecast/download', [SalesController::class, 'downloadForecastCsv'])->name('forecast.download');
 
 // Logistics Module - Admin Only
 Route::middleware(['auth', 'role:Admin'])->group(function () {

@@ -268,6 +268,111 @@
                 </div>
             </div>
         </div>
+<div class="card-body">
+            @if($orders->count() > 0)
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-burgundy fw-bold">Order ID</th>
+                                <th class="text-burgundy fw-bold">Customer</th>
+                                <th class="text-burgundy fw-bold">Items</th>
+                                <th class="text-burgundy fw-bold">Total Amount</th>
+                                <th class="text-burgundy fw-bold">Status</th>
+                                <th class="text-burgundy fw-bold">Date</th>
+                                <th class="text-burgundy fw-bold">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($orders as $order)
+                            <tr class="wine-list-item">
+                                <td>
+                                    <strong class="text-burgundy">#{{ $order->id }}</strong>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong class="text-burgundy">{{ $order->customer_name }}</strong><br>
+                                        <small class="text-muted">{{ $order->customer_email }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if(is_array($order->items))
+                                        @foreach($order->items as $item)
+                                            <div class="small text-burgundy">
+                                                <i class="fas fa-wine-bottle me-1 text-gold"></i>
+                                                {{ $item['wine_name'] }} ({{ $item['quantity'] }})
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <span class="text-muted">No items</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <strong class="text-burgundy">${{ number_format($order->total_amount, 2) }}</strong>
+                                </td>
+                                <td>
+                                    @php
+                                        $statusColors = [
+                                            'pending' => 'badge-warning',
+                                            'processing' => 'badge-primary',
+                                            'shipped' => 'badge-info',
+                                            'delivered' => 'badge-success',
+                                            'cancelled' => 'badge-danger',
+                                        ];
+                                        $badgeClass = $statusColors[$order->status] ?? 'badge-secondary';
+                                    @endphp
+                                    <span class="badge {{ $badgeClass }}" style="font-size:1em;">
+                                        {{ ucfirst($order->status) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{ $order->created_at->format('M d, Y H:i') }}</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="{{ route('orders.show', $order) }}" 
+                                           class="btn btn-outline-burgundy" title="View order details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ route('orders.edit', $order) }}" 
+                                           class="btn btn-outline-gold" title="Edit order">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form action="{{ route('orders.destroy', $order) }}" 
+                                              method="POST" class="d-inline"
+                                              onsubmit="return confirm('Are you sure you want to delete this order?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-outline-danger" title="Delete order">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="d-flex justify-content-center mt-4">
+                    {{ $orders->links() }}
+                </div>
+            @else
+                <div class="text-center py-5">
+                    <div class="icon-circle bg-burgundy mx-auto mb-3">
+                        <i class="fas fa-shopping-cart fa-2x text-gold"></i>
+                    </div>
+                    <h5 class="text-burgundy fw-bold">No orders found</h5>
+                    <p class="text-muted">Start by creating your first wine order.</p>
+                    <a href="{{ route('orders.create') }}" class="btn btn-burgundy">
+                        <i class="fas fa-plus"></i> Create First Order
+                    </a>
+                </div>
+            @endif
+        </div>
+
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

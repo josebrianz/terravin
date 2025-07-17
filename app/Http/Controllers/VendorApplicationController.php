@@ -33,7 +33,7 @@ class VendorApplicationController extends Controller
 
         $path = $request->file('application_pdf')->store('vendor_pdfs', 'public');
 
-    $vendor = Vendor::create([
+        $vendor = Vendor::create([
             'user_id' => Auth::id(),
             'company_name' => $request->company_name,
             'contact_person' => $request->contact_person,
@@ -49,7 +49,7 @@ class VendorApplicationController extends Controller
             'validation_status' => 'pending',
             'application_pdf' => $path,
         ]);
-
+    }
 // Prepare the data and file to send to Java microservice
 $httpClient = new \GuzzleHttp\Client();
 
@@ -64,9 +64,43 @@ try {
                 'name' => 'contactPerson',
                 'contents' => $vendor->contact_person,
             ],
-            // Add other fields similarly...
-
-            // PDF file upload
+            [
+                'name' => 'phone',
+                'contents' => $vendor->phone,
+            ],
+            [
+                'name' => 'yearsInOperation',
+                'contents' => $vendor->years_in_operation,
+            ],
+            [
+                'name' => 'employees',
+                'contents' => $vendor->employees,
+            ],
+            [
+                'name' => 'turnover',
+                'contents' => $vendor->turnover,
+            ],
+            [
+                'name' => 'material',
+                'contents' => $vendor->material,
+            ],
+            [
+                'name' => 'clients',
+                'contents' => $vendor->clients ?? '',
+            ],
+            [
+                'name' => 'certificationOrganic',
+                'contents' => $vendor->certification_organic ? 'true' : 'false',
+            ],
+            [
+                'name' => 'certificationIso',
+                'contents' => $vendor->certification_iso ? 'true' : 'false',
+            ],
+            [
+                'name' => 'regulatoryCompliance',
+                'contents' => 'true', // always required at this point
+            ],
+            // PDF file upload (certificates)
             [
                 'name' => 'applicationPdf',
                 'contents' => fopen(storage_path('app/public/' . $vendor->application_pdf), 'r'),
@@ -78,17 +112,41 @@ try {
         ],
     ]);
 
-    // You can handle $response if needed
+    $data = json_decode($response->getBody()->getContents(), true);
+
+    if ($data['status'] === 'approved') {
+        $summaryPdfPath = $this->generateVendorSummaryPdf($vendor);
+
+        \Mail::to('admin@example.com')->send(
+            new \App\Mail\VendorApprovalMail($vendor, $summaryPdfPath)
+        );
+
+        \App\Models\RoleApprovalRequest::create([
+            'user_id' => Auth::id(),
+            'requested_role' => 'Vendor',
+            'status' => 'pending',
+            'notes' => 'Auto-added after microservice approval',
+        ]);
+
+        return redirect()->route('vendor.waiting')->with('message',
+            'Application approved by system. Scheduled visit on ' . ($data['scheduledVisitDate'] ?? 'TBD')
+        );
+    } else {
+        return redirect()->back()->withErrors(['Your application was not approved by the system.']);
+    }
+
 } catch (\Exception $e) {
-    \Log::error('Error sending vendor validation request: ' . $e->getMessage());
-    // Optionally notify user/admin or retry logic
+    \Log::error('Error contacting vendor validation server: ' . $e->getMessage());
+    return redirect()->back()->withErrors(['There was a system error during validation. Please try again.']);
 }
 
-        return redirect()->route('vendor.waiting')->with('message', 'Application submitted successfully! Please wait for validation.');
-    }
+private function generateVendorSummaryPdf($vendor) 
+{
+    $pdf = \PDF::loadView('pdf.vendor_summary', ['vendor' => $vendor]);
+    $filePath = 'vendor_summaries/summary_' . $vendor->id . '.pdf';
+    Storage::disk('public')->put($filePath, $pdf->output());
 
-    public function waiting()
-    {
-        return view('vendor.waiting');
-    }
+    return storage_path('app/public/' . $filePath);
+}
+
 }

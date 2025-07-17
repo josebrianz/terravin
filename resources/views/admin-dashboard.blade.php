@@ -133,8 +133,8 @@
             <div class="card h-100 shadow-sm border-0 wine-card">
                 <div class="card-body text-center">
                     <div class="mb-3">
-                        <div class="icon-circle bg-burgundy">
-                            <i class="fas fa-user-tie fa-2x text-gold"></i>
+                        <div class="icon-circle bg-gold">
+                            <i class="fas fa-user-tie fa-2x text-burgundy"></i>
                         </div>
                     </div>
                     <h5 class="card-title fw-bold text-burgundy">Stakeholder Preferences and Reports</h5>
@@ -142,6 +142,26 @@
                     <div class="d-grid gap-2">
                         <a href="{{ route('stakeholders.dashboard') }}" class="btn btn-burgundy shadow-sm" title="Go to stakeholder preferences dashboard">
                             <i class="fas fa-user-tie"></i>  Preferences and Reports
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+        @if(auth()->user()->role === 'Admin')
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm border-0 wine-card">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <div class="icon-circle bg-gold">
+                            <i class="fas fa-chart-line fa-2x text-burgundy"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title fw-bold text-burgundy">Analytics Dashboard</h5>
+                    <p class="card-text text-muted small">View business insights, sales trends, and performance analytics.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ route('analytics.dashboard') }}" class="btn btn-gold shadow-sm" title="Go to analytics dashboard">
+                            <i class="fas fa-chart-line"></i> Analytics Dashboard
                         </a>
                     </div>
                 </div>
@@ -170,30 +190,7 @@
             </a>
         </div>
         <!-- Order Analytics/Reports Module -->
-        <div class="col-lg-4 col-md-6">
-            <div class="card h-100 shadow-sm border-0 wine-card">
-                <div class="card-body text-center">
-                    <div class="mb-3">
-                        <div class="icon-circle bg-gold">
-                            <i class="fas fa-chart-line fa-2x text-burgundy"></i>
-                        </div>
-                    </div>
-                    <h5 class="card-title fw-bold text-burgundy">Order Analytics & Reports</h5>
-                    <p class="card-text text-muted small">View sales reports, order trends, and export analytics for business insights.</p>
-                    <div class="d-grid gap-2">
-                        <a href="{{ route('reports.index') }}" class="btn btn-burgundy shadow-sm" title="View sales reports">
-                            <i class="fas fa-chart-bar"></i> Sales Report
-                        </a>
-                        <a href="{{ route('orders.index') }}?status=delivered" class="btn btn-outline-gold" title="View delivered orders">
-                            <i class="fas fa-truck"></i> Delivered Orders
-                        </a>
-                        <a href="{{ route('admin.orders.export') }}?format=csv" class="btn btn-outline-secondary" title="Export Order Analytics">
-                            <i class="fas fa-file-csv"></i> Export Analytics (CSV)
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- Card for Order Analytics & Reports removed -->
         <!-- Users Management Module -->
         @if(auth()->user()->role === 'Admin')
         <div class="col-lg-4 col-md-6">
@@ -392,7 +389,7 @@
                         <div class="list-group-item d-flex justify-content-between align-items-center border-0 wine-list-item">
                             <div>
                                 <h6 class="mb-1 fw-semibold text-burgundy">{{ $procurement->item_name }}</h6>
-                                <span class="text-muted small">{{ $procurement->po_number }} - {{ $procurement->supplier_name }}</span>
+                                <span class="small">{{ $procurement->po_number }} - {{ $procurement->supplier_name }}</span>
                             </div>
                             <span class="badge {{ $procurement->status_badge_class }}">
                                 {{ ucfirst($procurement->status) }}
@@ -416,7 +413,7 @@
                         <div class="list-group-item d-flex justify-content-between align-items-center border-0 wine-list-item">
                             <div>
                                 <h6 class="mb-1 fw-semibold text-burgundy">{{ $inventory->item_name }}</h6>
-                                <span class="text-muted small">Current Stock: {{ $inventory->quantity }}</span>
+                                <span class="small">Current Stock: {{ $inventory->quantity }}</span>
                             </div>
                             <span class="badge bg-danger">Low Stock</span>
                         </div>
