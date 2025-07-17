@@ -79,7 +79,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    @if($order->items)
+                                    @if(is_array($order->items))
                                         @foreach($order->items as $item)
                                             <div class="small text-burgundy">
                                                 <i class="fas fa-wine-bottle me-1 text-gold"></i>
@@ -91,7 +91,7 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <strong class="text-burgundy">{{ format_usd($order->total_amount) }}</strong>
+                                    <strong class="text-burgundy">${{ number_format($order->total_amount, 2) }}</strong>
                                 </td>
                                 <td>
                                     @php
