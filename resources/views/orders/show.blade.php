@@ -73,7 +73,7 @@
                     </div>
                     <div class="mb-3">
                         <strong class="text-burgundy">Total Amount:</strong> 
-                        <span class="text-dark fw-bold">{{ format_usd($order->total_amount) }}</span>
+                        <span class="text-dark fw-bold">${{ number_format($order->total_amount, 2) }}</span>
                     </div>
                     <div class="mb-3">
                         <strong class="text-burgundy">Created At:</strong> 
@@ -121,10 +121,10 @@
                                             <span class="badge bg-burgundy text-gold">{{ $item['quantity'] }}</span>
                                         </td>
                                         <td>
-                                            <span class="text-dark">{{ format_usd($item['unit_price']) }}</span>
+                                            <span class="text-dark">${{ number_format($item['unit_price'], 2) }}</span>
                                         </td>
                                         <td>
-                                            <strong class="text-burgundy">{{ format_usd($item['quantity'] * $item['unit_price']) }}</strong>
+                                            <strong class="text-burgundy">${{ number_format($item['quantity'] * $item['unit_price'], 2) }}</strong>
                                         </td>
                                     </tr>
                                     @endforeach

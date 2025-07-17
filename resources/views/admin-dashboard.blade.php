@@ -100,7 +100,6 @@
                     <p class="card-text text-muted small">Manage and track all wine shipments and deliveries.</p>
                     <div class="d-grid gap-2">
 
-
                         <a href="{{ route('logistics.dashboard') }}" class="btn btn-burgundy shadow-sm" title="Go to logistics dashboard">
                             <i class="fas fa-truck"></i> Logistics Dashboard
                         </a>
