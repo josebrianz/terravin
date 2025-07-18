@@ -831,7 +831,7 @@
                             {{ $wine->description ?? 'A premium selection with rich flavors and elegant finish. Perfect for special occasions.' }}
                         </p>
                         <div class="wine-footer">
-                            <span class="wine-price">{{ format_usd($wine->unit_price) }}</span>
+                            <span class="wine-price">{{ 'UGX ' . number_format($wine->unit_price, 0) }}</span>
                             <button class="add-to-cart">
                                 <i class="fas fa-plus"></i> Add to Cart
                             </button>

@@ -196,7 +196,7 @@
                                                 <span class="text-muted">No items</span>
                                             @endif
                                         </td>
-                                        <td><strong class="text-burgundy">{{ format_usd($order->total_amount) }}</strong></td>
+                                        <td><strong class="text-burgundy">{{ 'UGX ' . number_format($order->total_amount, 0) }}</strong></td>
                                         <td>
                                             @php
                                                 $statusColors = [
