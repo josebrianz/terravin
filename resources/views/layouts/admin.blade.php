@@ -77,6 +77,11 @@
                                     @endif
                                 </a></li>
                                 @endrole
+                                <li>
+                                    <a href="{{ route('forecast.dashboard') }}" class="nav-link">
+                                        <i class="fas fa-chart-line"></i> Forecast
+                                    </a>
+                                </li>
                             </ul>
                         </nav>
                     </div>

@@ -91,9 +91,6 @@
                     <a href="{{ route('retailer.dashboard') }}" class="d-flex align-items-center fw-bold" style="color:#f8e7d1;">
                         <i class="fas fa-compass me-2"></i> Dashboard
                     </a>
-                    <a href="{{ route('help.index') }}" class="d-flex align-items-center fw-bold" style="color:#f8e7d1;">
-                        <i class="fas fa-question-circle me-2"></i> Help
-                    </a>
                 </div>
                 <div class="flex items-center justify-end gap-6" style="flex:1;">
                     <!-- Modern Cart Icon -->
@@ -178,14 +175,6 @@
                             <x-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')">
                                 {{ __('Profile') }}
                             </x-nav-link>
-                            <x-nav-link :href="route('help.index')" :active="request()->routeIs('help.index')">
-                                {{ __('Help') }}
-                            </x-nav-link>
-                            @if(Auth::user() && Auth::user()->hasRole('Customer'))
-                                <x-nav-link :href="route('customer.products')" :active="request()->routeIs('customer.products')">
-                                    {{ __('Products') }}
-                                </x-nav-link>
-                            @endif
                         @elseif(Auth::user() && Auth::user()->hasRole('Admin'))
                             <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                                 {{ __('Dashboard') }}
@@ -268,9 +257,6 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')">
                     {{ __('Profile') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('help.index')" :active="request()->routeIs('help.index')">
-                    {{ __('Help') }}
                 </x-responsive-nav-link>
                 @if(Auth::user() && Auth::user()->hasRole('Customer'))
                     <x-responsive-nav-link :href="route('customer.products')" :active="request()->routeIs('customer.products')">

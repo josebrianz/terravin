@@ -44,9 +44,15 @@ class OrderController extends Controller
             ->orderBy('category')
             ->orderBy('name')
             ->get();
-        
+
+        // Merge 'Red Wine' and 'red wine' into a single category
+        foreach ($wines as $wine) {
+            if (strtolower($wine->category) === 'red wine') {
+                $wine->category = 'Red Wine';
+            }
+        }
         $categories = $wines->groupBy('category');
-        
+
         return view('orders.catalog', compact('wines', 'categories'));
     }
 

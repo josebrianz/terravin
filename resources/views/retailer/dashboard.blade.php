@@ -215,13 +215,23 @@
                         <ul class="nav-links d-flex align-items-center gap-3 mb-0" style="list-style:none;">
                             <li><a href="{{ route('retailer.dashboard') }}" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                             <li><a href="{{ route('orders.index') }}" class="nav-link"><i class="fas fa-shopping-bag"></i> Orders</a></li>
-                            <li><a href="{{ route('inventory.index') }}" class="nav-link"><i class="fas fa-boxes"></i> Inventory</a></li>
-                            <li><a href="{{ route('reports.index') }}" class="nav-link"><i class="fas fa-chart-line"></i> Reports</a></li>
-                            <li><a href="{{ route('help.index') }}" class="nav-link"><i class="fas fa-question-circle"></i> Help</a></li>
+                            <li><a href="{{ route('retailer.inventory') }}" class="nav-link"><i class="fas fa-boxes"></i> Inventory</a></li>
+                            <li><a href="{{ route('retailer.catalog') }}" class="nav-link"><i class="fas fa-store"></i> Product Catalog</a></li>
                         </ul>
                     </nav>
                 </div>
                 <div class="d-flex align-items-center gap-4">
+                    <a href="{{ route('retailer.cart') }}" class="btn btn-outline-light position-relative">
+                        <i class="fas fa-shopping-cart"></i>
+                        @php
+                            $cartCount = count(session()->get('retailer_cart', []));
+                        @endphp
+                        @if($cartCount > 0)
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ $cartCount }}
+                            </span>
+                        @endif
+                    </a>
                     <div class="dropdown">
                         <a class="dropdown-toggle d-flex align-items-center text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
                             <div class="profile-photo-placeholder-large rounded-circle d-flex align-items-center justify-content-center me-2" style="border: 6px solid var(--gold); background: linear-gradient(135deg, var(--burgundy) 0%, #8b1a1a 100%); width: 72px; height: 72px; color: #fff; font-size: 2rem;">
@@ -244,7 +254,7 @@
         <main class="main-content">
             <div class="header">
                 <div class="greeting">
-                    <div class="user-avatar-sm">{{ substr(Auth::user()->name, 0, 1) }}</div>
+                    <!-- Remove the user-avatar-sm circle -->
                     <div>
                         <h1 class="page-title">Welcome back, {{ Auth::user()->name }}</h1>
                         <p class="page-subtitle">Here's what's happening with your retail account today</p>
@@ -287,8 +297,7 @@
         </div>
             <div class="d-flex flex-wrap gap-3 mb-4">
                         <a href="{{ route('orders.index') }}" class="btn btn-burgundy btn-lg shadow wine-action-btn"><i class="fas fa-shopping-bag me-2"></i> <span class="fw-bold">View Orders</span></a>
-                        <a href="{{ route('inventory.index') }}" class="btn btn-gold btn-lg shadow wine-action-btn"><i class="fas fa-boxes me-2"></i> <span class="fw-bold">Inventory</span></a>
-                        <a href="{{ route('reports.index') }}" class="btn btn-outline-gold btn-lg shadow wine-action-btn"><i class="fas fa-chart-line me-2"></i> <span class="fw-bold">Reports</span></a>
+                        <a href="{{ route('retailer.inventory') }}" class="btn btn-gold btn-lg shadow wine-action-btn"><i class="fas fa-boxes me-2"></i> <span class="fw-bold">Inventory</span></a>
                     </div>
             <!-- Recent Orders & Top Products -->
             <div class="section-header">

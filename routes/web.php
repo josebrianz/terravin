@@ -123,15 +123,188 @@ Route::get('/vendor/waiting', [VendorApplicationController::class, 'waiting'])->
 // Retailer Dashboard Route
 Route::middleware(['auth', 'role:Retailer'])->group(function () {
     Route::get('/retailer/dashboard', [\App\Http\Controllers\RetailerDashboardController::class, 'index'])->name('retailer.dashboard');
+    Route::get('/retailer/inventory', [\App\Http\Controllers\RetailerInventoryController::class, 'index'])->name('retailer.inventory');
 });
+
+  // Retailer Product Catalog Route
+  Route::get('/retailer/catalog', function () {
+      // Get all available products from vendors/wholesalers
+      $products = \App\Models\Inventory::where('is_active', true)
+          ->where('quantity', '>', 0)
+          ->orderBy('name')
+          ->get();
+      
+      // Get unique categories
+      $categories = \App\Models\Inventory::where('is_active', true)
+          ->where('quantity', '>', 0)
+          ->distinct()
+          ->pluck('category')
+          ->filter()
+          ->values();
+      
+          // Get vendors (users with Wholesaler role)
+    $vendors = \App\Models\User::where('role', 'Wholesaler')->get();
+      
+      return view('retailer.catalog', compact('products', 'categories', 'vendors'));
+  })->name('retailer.catalog')->middleware(['auth', 'role:Retailer']);
+
+// Cart functionality for retailers
+Route::post('/retailer/cart/add', function (\Illuminate\Http\Request $request) {
+    $request->validate([
+        'wine_id' => 'required|exists:inventories,id',
+        'quantity' => 'required|integer|min:1'
+    ]);
+    
+    // Add to cart (you can implement this using session or database)
+    $cart = session()->get('retailer_cart', []);
+    $productId = $request->wine_id;
+    
+    if (isset($cart[$productId])) {
+        $cart[$productId] += $request->quantity;
+    } else {
+        $cart[$productId] = $request->quantity;
+    }
+    
+    session()->put('retailer_cart', $cart);
+    
+    return response()->json(['success' => true]);
+})->middleware(['auth', 'role:Retailer']);
+
+Route::post('/retailer/cart/update', function (\Illuminate\Http\Request $request) {
+    $request->validate([
+        'wine_id' => 'required|exists:inventories,id',
+        'quantity' => 'required|integer|min:1'
+    ]);
+    $cart = session()->get('retailer_cart', []);
+    $productId = $request->wine_id;
+    if (isset($cart[$productId])) {
+        $cart[$productId] = $request->quantity;
+        session()->put('retailer_cart', $cart);
+
+        // Calculate new subtotal and total
+        $product = \App\Models\Inventory::find($productId);
+        $subtotal = $product ? $product->unit_price * $cart[$productId] : 0;
+
+        $total = 0;
+        foreach ($cart as $pid => $qty) {
+            $p = \App\Models\Inventory::find($pid);
+            if ($p) $total += $p->unit_price * $qty;
+        }
+
+        return response()->json([
+            'success' => true,
+            'subtotal' => number_format($subtotal, 2),
+            'total' => number_format($total, 2),
+            'quantity' => $cart[$productId]
+        ]);
+    }
+    return response()->json(['success' => false, 'message' => 'Item not found in cart']);
+})->middleware(['auth', 'role:Retailer']);
+
+Route::get('/retailer/cart', function () {
+    $cart = session()->get('retailer_cart', []);
+    $cartItems = [];
+    $total = 0;
+    
+    foreach ($cart as $productId => $quantity) {
+        $product = \App\Models\Inventory::find($productId);
+        if ($product) {
+            $cartItems[] = [
+                'product' => $product,
+                'quantity' => $quantity,
+                'subtotal' => $product->unit_price * $quantity
+            ];
+            $total += $product->unit_price * $quantity;
+        }
+    }
+    
+    return view('retailer.cart', compact('cartItems', 'total'));
+})->name('retailer.cart')->middleware(['auth', 'role:Retailer']);
+
+Route::post('/retailer/cart/remove', function (\Illuminate\Http\Request $request) {
+    $request->validate([
+        'wine_id' => 'required|exists:inventories,id'
+    ]);
+    
+    $cart = session()->get('retailer_cart', []);
+    $productId = $request->wine_id;
+    
+    if (isset($cart[$productId])) {
+        unset($cart[$productId]);
+        session()->put('retailer_cart', $cart);
+    }
+    
+    return response()->json(['success' => true]);
+})->middleware(['auth', 'role:Retailer']);
+
+Route::post('/retailer/cart/clear', function () {
+    session()->forget('retailer_cart');
+    return response()->json(['success' => true]);
+})->middleware(['auth', 'role:Retailer']);
+
+Route::post('/retailer/checkout', function (\Illuminate\Http\Request $request) {
+    $cart = session()->get('retailer_cart', []);
+    if (empty($cart)) {
+        return redirect()->back()->with('error', 'Cart is empty');
+    }
+    try {
+        \DB::beginTransaction();
+        // Create the order
+        $order = \App\Models\Order::create([
+            'user_id' => auth()->id(),
+            'customer_name' => auth()->user()->name,
+            'customer_email' => auth()->user()->email,
+            'customer_phone' => '',
+            'status' => 'pending',
+            'total_amount' => 0,
+            'payment_method' => $request->input('payment_method', 'Cash on Delivery'),
+            'shipping_address' => $request->input('shipping_address', ''),
+            'notes' => $request->input('notes', null),
+        ]);
+        $totalAmount = 0;
+        // Create order items
+        foreach ($cart as $productId => $quantity) {
+            $product = \App\Models\Inventory::find($productId);
+            if ($product && $product->quantity >= $quantity) {
+                \App\Models\OrderItem::create([
+                    'order_id' => $order->id,
+                    'inventory_id' => $productId,
+                    'item_name' => $product->name,
+                    'quantity' => $quantity,
+                    'unit_price' => $product->unit_price,
+                    'total_price' => $product->unit_price * $quantity,
+                    'subtotal' => $product->unit_price * $quantity,
+                ]);
+                $totalAmount += $product->unit_price * $quantity;
+                // Update inventory quantity
+                $product->decrement('quantity', $quantity);
+            }
+        }
+        // Update order total
+        $order->update(['total_amount' => $totalAmount]);
+        // Clear the cart
+        session()->forget('retailer_cart');
+        \DB::commit();
+        return redirect()->route('orders.index')->with('success', 'Order placed successfully!');
+    } catch (\Exception $e) {
+        \DB::rollback();
+        return redirect()->back()->with('error', 'Error placing order: ' . $e->getMessage());
+    }
+})->middleware(['auth', 'role:Retailer']);
+
+Route::get('/retailer/checkout', function () {
+    // You can customize this view as needed
+    return view('retailer.checkout');
+})->middleware(['auth', 'role:Retailer'])->name('retailer.checkout');
 
 // Retailer Wine Catalog Route
 Route::get('/retailer/catalog', [App\Http\Controllers\RetailerCatalogController::class, 'index'])->name('retailer.catalog');
 
+
 // Reports Route - Accessible by authenticated users
-Route::middleware('auth')->group(function () {
-    Route::get('/reports', [App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
-});
+// Route::middleware('auth')->group(function () {
+//     Route::get('/reports', [App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
+// });
 
 
 // Financial Reports Route - Accessible by all authenticated users
@@ -288,6 +461,11 @@ Route::middleware(['auth', 'role:Vendor'])->group(function () {
     Route::resource('vendor/orders', App\Http\Controllers\VendorOrderController::class)->names('vendor.orders');
 });
 
+// Vendor Order Management Routes - Accessible by Vendor only
+Route::middleware(['auth', 'role:Vendor'])->group(function () {
+    Route::get('/vendor/orders', [\App\Http\Controllers\VendorOrderController::class, 'index'])->name('vendor.orders.index');
+});
+
 // Vendor Finance Route - Accessible only by Vendor role
 Route::middleware(['auth', 'role:Vendor'])->group(function () {
     Route::get('/vendor/finance', [App\Http\Controllers\VendorFinanceController::class, 'index'])->name('vendor.finance');
@@ -384,4 +562,50 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/shipments', [\App\Http\Controllers\LogisticsDashboardController::class, 'shipmentsIndex'])->name('shipments.index');
     Route::resource('shipments', \App\Http\Controllers\LogisticsDashboardController::class)->except(['index']); // index handled by dashboard
 }); 
+
+Route::get('/retailer/help', function () {
+    return view('help.retailer');
+})->name('help.retailer'); 
+
+// Vendor Inventory Management Route - Accessible by Vendor only
+Route::middleware(['auth', 'role:Vendor'])->group(function () {
+    Route::get('/vendor/inventory', [\App\Http\Controllers\VendorInventoryController::class, 'index'])->name('vendor.inventory.index');
+}); 
+
+// Supplier Dashboard Route - Accessible only by Supplier role
+Route::middleware(['auth', 'role:Supplier'])->group(function () {
+    Route::get('/supplier/dashboard', function () {
+        return view('supplier.dashboard');
+    })->name('supplier.dashboard');
+}); 
+
+// Supplier Raw Materials Route - Accessible only by Supplier role
+Route::middleware(['auth', 'role:Supplier'])->group(function () {
+    Route::get('/supplier/raw-materials', function () {
+        return view('supplier.raw-materials');
+    })->name('supplier.raw-materials');
+}); 
+
+// Supplier Orders Route - Accessible only by Supplier role
+Route::middleware(['auth', 'role:Supplier'])->group(function () {
+    Route::get('/supplier/orders', function () {
+        return view('supplier.orders');
+    })->name('supplier.orders');
+}); 
+
+// Supplier Order Details Route - Accessible only by Supplier role
+Route::middleware(['auth', 'role:Supplier'])->group(function () {
+    Route::get('/supplier/orders/{order}', function ($order) {
+        return view('supplier.orders-show', ['orderId' => $order]);
+    })->name('supplier.orders.show');
+}); 
+
+// Supplier Reports Route - Accessible only by Supplier role
+use App\Http\Controllers\SupplierReportController;
+Route::middleware(['auth', 'role:Supplier'])->group(function () {
+    Route::get('/supplier/reports', [SupplierReportController::class, 'index'])->name('supplier.reports');
+}); 
+
+// Supplier Reports API Route - returns live data as JSON for AJAX polling
+Route::middleware(['auth:sanctum', 'role:Supplier'])->get('/api/supplier/reports', [App\Http\Controllers\SupplierReportController::class, 'apiIndex']);
 

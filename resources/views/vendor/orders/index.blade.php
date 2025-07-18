@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vendor Reports | TERRAVIN</title>
+    <title>Retailer Orders | TERRAVIN</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -89,20 +89,21 @@
             color: var(--burgundy);
             font-weight: 600;
         }
-        .section-card {
-            background: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-sm);
-            padding: 1.5rem 2rem;
-            margin-bottom: 2rem;
+        .order-table th, .order-table td {
+            vertical-align: middle;
         }
-        .section-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.3rem;
+        .order-table th {
             color: var(--burgundy);
-            font-weight: 600;
-            margin-bottom: 1rem;
+            font-weight: 700;
         }
+        .order-table td {
+            color: var(--dark-text);
+        }
+        .badge-warning { background: #ffc107; color: #222; }
+        .badge-success { background: #28a745; color: #fff; }
+        .badge-danger { background: #dc3545; color: #fff; }
+        .badge-info { background: #17a2b8; color: #fff; }
+        .badge-secondary { background: #6c757d; color: #fff; }
     </style>
 </head>
 <body>
@@ -117,9 +118,9 @@
                     <nav class="wine-nav">
                         <ul class="nav-links d-flex align-items-center gap-3 mb-0" style="list-style:none;">
                             <li><a href="{{ url('/vendor/dashboard') }}" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                            <li><a href="{{ url('/vendor/orders') }}" class="nav-link"><i class="fas fa-shopping-bag"></i> Orders</a></li>
+                            <li><a href="{{ url('/vendor/orders') }}" class="nav-link active"><i class="fas fa-shopping-bag"></i> Retailer Orders</a></li>
                             <li><a href="{{ url('/vendor/inventory') }}" class="nav-link"><i class="fas fa-boxes"></i> Inventory</a></li>
-                            <li><a href="{{ url('/reports') }}" class="nav-link active"><i class="fas fa-chart-line"></i> Reports</a></li>
+                            <li><a href="{{ url('/reports') }}" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -144,73 +145,73 @@
     </div>
     <div class="main-content">
         <div class="container-fluid">
-            <h1 class="page-title mb-4">Vendor Reports Dashboard</h1>
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="section-card">
-                        <div class="section-title"><i class="fas fa-users me-2"></i>Top Retailers</div>
-                        @if(isset($topRetailers) && $topRetailers->count())
-                            <ul class="list-group list-group-flush">
-                                @foreach($topRetailers as $retailer)
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>{{ $retailer->name }} <small class="text-muted">({{ $retailer->email }})</small></span>
-                                        <span class="badge bg-burgundy text-gold">{{ $retailer->orders_count }} orders</span>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @else
-                            <p class="text-muted">No retailer order data yet.</p>
-                        @endif
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="section-card">
-                        <div class="section-title"><i class="fas fa-chart-bar me-2"></i>Sales Summary</div>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>Total Sales</span>
-                                <span class="fw-bold text-burgundy">{{ $totalSales ?? 0 }}</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>Total Revenue</span>
-                                <span class="fw-bold text-burgundy">UGX {{ number_format($totalRevenue ?? 0, 0) }}</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="page-title mb-0">Orders from Retailers</h1>
+                <span class="badge bg-gold text-burgundy px-3 py-2">
+                    <i class="fas fa-clock me-1"></i>
+                    {{ now()->format('M d, Y H:i') }}
+                </span>
             </div>
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="section-card">
-                        <div class="section-title"><i class="fas fa-boxes me-2"></i>Inventory Stats</div>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>Total Inventory Items</span>
-                                <span class="fw-bold text-burgundy">{{ $totalInventory ?? 0 }}</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>Low Stock Items (&lt; 10)</span>
-                                <span class="fw-bold text-danger">{{ $lowStockCount ?? 0 }}</span>
-                            </li>
-                        </ul>
-                    </div>
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom-0">
+                    <h5 class="card-title mb-0 fw-bold text-burgundy">
+                        <i class="fas fa-list text-gold me-2"></i> Retailer Order List
+                    </h5>
                 </div>
-                <div class="col-md-6">
-                    <div class="section-card">
-                        <div class="section-title"><i class="fas fa-file-alt me-2"></i>Best-selling Products</div>
-                        @if(isset($bestSellingProducts) && $bestSellingProducts->count())
-                            <ul class="list-group list-group-flush">
-                                @foreach($bestSellingProducts as $product)
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>{{ $product->item_name }}</span>
-                                        <span class="badge bg-gold text-burgundy">{{ $product->total_sold }} sold</span>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @else
-                            <p class="text-muted">No product sales data yet.</p>
-                        @endif
-                    </div>
+                <div class="card-body">
+                    @if($orders->count() > 0)
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0 order-table">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Retailer</th>
+                                        <th>Items</th>
+                                        <th>Total Amount</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($orders as $order)
+                                    <tr>
+                                        <td><strong class="text-burgundy">#{{ $order->id }}</strong></td>
+                                        <td>
+                                            <div>
+                                                <strong class="text-burgundy">{{ $order->customer_name }}</strong><br>
+                                                <small class="text-muted">{{ $order->customer_email }}</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @if($order->orderItems && $order->orderItems->count() > 0)
+                                                @foreach($order->orderItems as $item)
+                                                    <div class="small text-burgundy d-flex align-items-center">
+                                                        <i class="fas fa-wine-bottle me-1 text-gold"></i>
+                                                        {{ $item->item_name ?? $item->wine_name ?? 'Wine' }} x {{ $item->quantity }}
+                                                    </div>
+                                                @endforeach
+                                            @else
+                                                <span class="text-muted">No items</span>
+                                            @endif
+                                        </td>
+                                        <td><span class="fw-bold">UGX {{ number_format($order->total_amount, 0) }}</span></td>
+                                        <td><span class="badge {{ $order->status_badge }}">{{ ucfirst($order->status) }}</span></td>
+                                        <td>{{ $order->created_at->format('M d, Y H:i') }}</td>
+                                        <td>
+                                            <a href="{{ route('orders.show', $order->id) }}" class="btn btn-sm btn-outline-burgundy"><i class="fas fa-eye"></i> View</a>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-3">
+                            {{ $orders->links() }}
+                        </div>
+                    @else
+                        <div class="alert alert-info">No orders from retailers found.</div>
+                    @endif
                 </div>
             </div>
         </div>

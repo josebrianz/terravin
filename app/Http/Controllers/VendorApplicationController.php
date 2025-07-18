@@ -10,26 +10,28 @@ use Illuminate\Support\Facades\Auth;
 class VendorApplicationController extends Controller
 {
     public function create()
-{
-    return view('vendor.apply');
-}
+    {
+        return view('vendor.apply');
+    }
 
     public function submit(Request $request)
     {
-        $request->validate([
+            $request->validate([
             'company_name' => 'required|string|max:255',
             'contact_person' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
+            'email' => 'required|email',
             'years_in_operation' => 'required|integer|min:0',
             'employees' => 'required|integer|min:1',
             'turnover' => 'required|numeric|min:0',
             'material' => 'required|string',
             'clients' => 'nullable|string',
-            'certification_organic' => 'nullable|boolean',
-            'certification_iso' => 'nullable|boolean',
+            'certification_organic' => 'required|in:true,false',
+            'certification_iso' => 'required|in:true,false',
             'regulatory_compliance' => 'required|accepted',
             'application_pdf' => 'required|mimes:pdf|max:2048',
         ]);
+
 
         $path = $request->file('application_pdf')->store('vendor_pdfs', 'public');
 
@@ -49,104 +51,68 @@ class VendorApplicationController extends Controller
             'validation_status' => 'pending',
             'application_pdf' => $path,
         ]);
-    }
-// Prepare the data and file to send to Java microservice
-$httpClient = new \GuzzleHttp\Client();
 
-try {
-    $response = $httpClient->post('http://localhost:8080/api/validate', [
-        'multipart' => [
-            [
-                'name' => 'companyName',
-                'contents' => $vendor->company_name,
-            ],
-            [
-                'name' => 'contactPerson',
-                'contents' => $vendor->contact_person,
-            ],
-            [
-                'name' => 'phone',
-                'contents' => $vendor->phone,
-            ],
-            [
-                'name' => 'yearsInOperation',
-                'contents' => $vendor->years_in_operation,
-            ],
-            [
-                'name' => 'employees',
-                'contents' => $vendor->employees,
-            ],
-            [
-                'name' => 'turnover',
-                'contents' => $vendor->turnover,
-            ],
-            [
-                'name' => 'material',
-                'contents' => $vendor->material,
-            ],
-            [
-                'name' => 'clients',
-                'contents' => $vendor->clients ?? '',
-            ],
-            [
-                'name' => 'certificationOrganic',
-                'contents' => $vendor->certification_organic ? 'true' : 'false',
-            ],
-            [
-                'name' => 'certificationIso',
-                'contents' => $vendor->certification_iso ? 'true' : 'false',
-            ],
-            [
-                'name' => 'regulatoryCompliance',
-                'contents' => 'true', // always required at this point
-            ],
-            // PDF file upload (certificates)
-            [
-                'name' => 'applicationPdf',
-                'contents' => fopen(storage_path('app/public/' . $vendor->application_pdf), 'r'),
-                'filename' => basename($vendor->application_pdf),
-                'headers'  => [
-                    'Content-Type' => 'application/pdf'
-                ]
-            ],
-        ],
-    ]);
+        // 🧠 THIS is now correctly placed inside the function
+        $httpClient = new \GuzzleHttp\Client();
 
-    $data = json_decode($response->getBody()->getContents(), true);
+        try {
+            $response = $httpClient->post('http://localhost:8082/api/validate', [
+                'multipart' => [
+                    ['name' => 'companyName', 'contents' => $vendor->company_name],
+                    ['name' => 'contactPerson', 'contents' => $vendor->contact_person],
+                    ['name' => 'phone', 'contents' => $vendor->phone],
+                    ['name' => 'yearsInOperation', 'contents' => $vendor->years_in_operation],
+                    ['name' => 'employees', 'contents' => $vendor->employees],
+                    ['name' => 'turnover', 'contents' => $vendor->turnover],
+                    ['name' => 'material', 'contents' => $vendor->material],
+                    ['name' => 'clients', 'contents' => $vendor->clients ?? ''],
+                    ['name' => 'certificationOrganic', 'contents' => $vendor->certification_organic ? 'true' : 'false'],
+                    ['name' => 'certificationIso', 'contents' => $vendor->certification_iso ? 'true' : 'false'],
+                    ['name' => 'regulatoryCompliance', 'contents' => 'true'],
+                    [
+                        'name' => 'applicationPdf',
+                        'contents' => fopen(storage_path('app/public/' . $vendor->application_pdf), 'r'),
+                        'filename' => basename($vendor->application_pdf),
+                        'headers'  => ['Content-Type' => 'application/pdf']
+                    ],
+                ],
+            ]);
 
-    if ($data['status'] === 'approved') {
-        $summaryPdfPath = $this->generateVendorSummaryPdf($vendor);
+            $data = json_decode($response->getBody()->getContents(), true);
 
-        \Mail::to('admin@example.com')->send(
-            new \App\Mail\VendorApprovalMail($vendor, $summaryPdfPath)
-        );
+            if ($data['status'] === 'approved') {
+                $summaryPdfPath = $this->generateVendorSummaryPdf($vendor);
 
-        \App\Models\RoleApprovalRequest::create([
-            'user_id' => Auth::id(),
-            'requested_role' => 'Vendor',
-            'status' => 'pending',
-            'notes' => 'Auto-added after microservice approval',
-        ]);
+                \Mail::to('admin@example.com')->send(
+                    new \App\Mail\VendorApprovalMail($vendor, $summaryPdfPath)
+                );
 
-        return redirect()->route('vendor.waiting')->with('message',
-            'Application approved by system. Scheduled visit on ' . ($data['scheduledVisitDate'] ?? 'TBD')
-        );
-    } else {
-        return redirect()->back()->withErrors(['Your application was not approved by the system.']);
+                \App\Models\RoleApprovalRequest::create([
+                    'user_id' => Auth::id(),
+                    'requested_role' => 'Vendor',
+                    'status' => 'pending',
+                    'notes' => 'Auto-added after microservice approval',
+                ]);
+
+                return redirect()->route('vendor.waiting')->with('message',
+                    'Application approved by system. Scheduled visit on ' . ($data['scheduledVisitDate'] ?? 'TBD')
+                );
+            } else {
+                return redirect()->back()->withErrors(['Your application was not approved by the system.']);
+            }
+
+        } catch (\Exception $e) {
+            \Log::error('Error contacting vendor validation server: ' . $e->getMessage());
+            return redirect()->back()->withErrors(['There was a system error during validation. Please try again.']);
+        }
     }
 
-} catch (\Exception $e) {
-    \Log::error('Error contacting vendor validation server: ' . $e->getMessage());
-    return redirect()->back()->withErrors(['There was a system error during validation. Please try again.']);
-}
+    private function generateVendorSummaryPdf($vendor) 
+    {
+        $pdf = \PDF::loadView('pdf.vendor_summary', ['vendor' => $vendor]);
+        $filePath = 'vendor_summaries/summary_' . $vendor->id . '.pdf';
+        Storage::disk('public')->put($filePath, $pdf->output());
 
-private function generateVendorSummaryPdf($vendor) 
-{
-    $pdf = \PDF::loadView('pdf.vendor_summary', ['vendor' => $vendor]);
-    $filePath = 'vendor_summaries/summary_' . $vendor->id . '.pdf';
-    Storage::disk('public')->put($filePath, $pdf->output());
-
-    return storage_path('app/public/' . $filePath);
-}
-
+        return storage_path('app/public/' . $filePath);
+    }
 }

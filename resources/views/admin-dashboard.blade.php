@@ -22,9 +22,6 @@
                             Chat
                         </a>
                     @endif
-                    <a href="{{ route('help.index') }}" class="btn btn-burgundy me-2" title="Help & Support">
-                        <i class="fas fa-question-circle me-1"></i> Help & Support
-                    </a>
                     <span class="badge bg-gold text-burgundy px-3 py-2">
                         <i class="fas fa-clock me-1"></i>
                         {{ now()->format('M d, Y H:i') }}
@@ -99,7 +96,6 @@
                     <h5 class="card-title fw-bold text-burgundy">Wine Logistics</h5>
                     <p class="card-text text-muted small">Manage and track all wine shipments and deliveries.</p>
                     <div class="d-grid gap-2">
-
                         <a href="{{ route('logistics.dashboard') }}" class="btn btn-burgundy shadow-sm" title="Go to logistics dashboard">
                             <i class="fas fa-truck"></i> Logistics Dashboard
                         </a>
@@ -188,39 +184,13 @@
                             <a href="{{ route('orders.index') }}" class="btn btn-gold shadow-sm" title="View all orders">
                                 <i class="fas fa-list"></i> All Orders
                             </a>
-                            <a href="{{ route('orders.pending') }}" class="btn btn-outline-burgundy" title="View pending orders">
-                                <i class="fas fa-clock"></i> Pending Orders
-                            </a>
                         </div>
                     </div>
                 </div>
             </a>
         </div>
         <!-- Order Analytics/Reports Module -->
-        <div class="col-lg-4 col-md-6">
-            <div class="card h-100 shadow-sm border-0 wine-card">
-                <div class="card-body text-center">
-                    <div class="mb-3">
-                        <div class="icon-circle bg-gold">
-                            <i class="fas fa-chart-line fa-2x text-burgundy"></i>
-                        </div>
-                    </div>
-                    <h5 class="card-title fw-bold text-burgundy">Order Analytics & Reports</h5>
-                    <p class="card-text text-muted small">View sales reports, order trends, and export analytics for business insights.</p>
-                    <div class="d-grid gap-2">
-                        <a href="{{ route('reports.index') }}" class="btn btn-burgundy shadow-sm" title="View sales reports">
-                            <i class="fas fa-chart-bar"></i> Sales Report
-                        </a>
-                        <a href="{{ route('orders.index') }}?status=delivered" class="btn btn-outline-gold" title="View delivered orders">
-                            <i class="fas fa-truck"></i> Delivered Orders
-                        </a>
-                        <a href="{{ route('admin.orders.export') }}?format=csv" class="btn btn-outline-secondary" title="Export Order Analytics">
-                            <i class="fas fa-file-csv"></i> Export Analytics (CSV)
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- Card for Order Analytics & Reports removed -->
         <!-- Users Management Module -->
         @if(auth()->user()->role === 'Admin')
         <div class="col-lg-4 col-md-6">

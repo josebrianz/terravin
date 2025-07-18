@@ -65,11 +65,18 @@
                             @foreach($items as $item)
                             <tr class="wine-list-item">
                                 <td>
-                                    <span class="badge bg-burgundy text-gold">{{ $loop->iteration }}</span>
+                                    <span class="badge bg-burgundy text-gold">{{ ($items->firstItem() ?? 0) + $loop->index }}</span>
                                 </td>
                                 <td>
-                                    @if(!empty($item->images) && is_array($item->images) && count($item->images) > 0)
-                                        <img src="{{ asset('wine_images/' . $item->images[0]) }}" alt="Image" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #ccc;">
+                                    @php
+                                        $imgPath = is_array($item->images) ? ($item->images[0] ?? null) : $item->images;
+                                    @endphp
+                                    @if($imgPath)
+                                        @if(Str::startsWith($imgPath, 'inventory_images/'))
+                                            <img src="{{ asset('storage/' . $imgPath) }}" alt="Image" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #ccc;">
+                                        @else
+                                            <img src="{{ asset('wine_images/' . $imgPath) }}" alt="Image" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #ccc;">
+                                        @endif
                                     @else
                                         <span class="text-muted">No Image</span>
                                     @endif
