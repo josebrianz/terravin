@@ -18,6 +18,7 @@ use App\Http\Controllers\SalesController;
 use Illuminate\Http\Request;
 use App\Models\Workforce;
 use App\Models\SupplyCentre;
+use App\Http\Controllers\VendorController;
 
 
 Route::get('/', function () {
@@ -118,11 +119,13 @@ Route::patch('/chat/message/{id}', [\App\Http\Controllers\ChatController::class,
 
 Route::get('/vendor/apply', [VendorApplicationController::class, 'create'])->name('vendor.apply');
 
-Route::post('/vendor/submit', [VendorApplicationController::class, 'submit'])->name('vendor.submit');
-Route::get('/vendor/waiting', [VendorApplicationController::class, 'waiting'])->name('vendor.waiting'); 
+Route::get('/vendor/apply',[VendorApplicationController::class,'create'])->name('vendor.apply');
+Route::post('/vendor/submit',[VendorApplicationController::class,'submit'])->name('vendor.submit');
+Route::get('/vendor/waiting',[VendorApplicationController::class,'waiting'])->name('vendor.waiting');
 //Route::view('/vendor/apply', 'vendor.apply');
 //Route::post('/vendor/submit', [VendorFormController::class, 'submit']);
-
+Route::get('/vendor/apply', [VendorController::class, 'showApplicationForm'])->name('vendor.apply');
+Route::post('/vendor/apply', [VendorController::class, 'submitVendorApplication'])->name('vendor.submit');
 // Retailer Dashboard Route
 Route::middleware(['auth', 'role:Retailer'])->group(function () {
     Route::get('/retailer/dashboard', [\App\Http\Controllers\RetailerDashboardController::class, 'index'])->name('retailer.dashboard');
