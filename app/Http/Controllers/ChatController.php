@@ -2,64 +2,125 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ChatMessage;
 use App\Models\User;
+use App\Models\ChatMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Events\MessageSent;
 
 class ChatController extends Controller
 {
-    // List all users you can chat with (suppliers for customers, customers for suppliers)
+    // Show user list
     public function index()
     {
-        $user = Auth::user();
-        if ($user->role === 'Customer') {
-            $users = User::where('role', 'Supplier')->get();
-        } elseif ($user->role === 'Supplier') {
-            $users = User::where('role', 'Customer')->get();
-        } else {
-            abort(403, 'Only suppliers and customers can use chat.');
-        }
+        $users = User::where('id', '!=', Auth::id())->get()->map(function($user) {
+            $latestMessage = \App\Models\ChatMessage::where(function($q) use ($user) {
+                $q->where('sender_id', Auth::id())->where('receiver_id', $user->id);
+            })->orWhere(function($q) use ($user) {
+                $q->where('sender_id', $user->id)->where('receiver_id', Auth::id());
+            })->orderByDesc('created_at')->first();
+            $unreadCount = \App\Models\ChatMessage::where('sender_id', $user->id)
+                ->where('receiver_id', Auth::id())
+                ->whereNull('read_at')
+                ->count();
+            $user->latestMessage = $latestMessage;
+            $user->latestTime = $latestMessage ? $latestMessage->created_at->format('H:i A') : '';
+            $user->unreadCount = $unreadCount;
+            return $user;
+        });
         return view('chat.index', compact('users'));
     }
 
-    // Show chat with a specific user
+    // Show conversation with a user
     public function show($userId)
     {
-        $user = Auth::user();
         $other = User::findOrFail($userId);
-        // Only allow supplier-customer chat
-        if (!in_array($user->role, ['Customer', 'Supplier']) ||
-            !in_array($other->role, ['Customer', 'Supplier']) ||
-            $user->role === $other->role) {
-            abort(403, 'Chat only allowed between suppliers and customers.');
+        $users = User::where('id', '!=', Auth::id())->get()->map(function($user) {
+            $latestMessage = \App\Models\ChatMessage::where(function($q) use ($user) {
+                $q->where('sender_id', Auth::id())->where('receiver_id', $user->id);
+            })->orWhere(function($q) use ($user) {
+                $q->where('sender_id', $user->id)->where('receiver_id', Auth::id());
+            })->orderByDesc('created_at')->first();
+            $unreadCount = \App\Models\ChatMessage::where('sender_id', $user->id)
+                ->where('receiver_id', Auth::id())
+                ->whereNull('read_at')
+                ->count();
+            $user->latestMessage = $latestMessage;
+            $user->latestTime = $latestMessage ? $latestMessage->created_at->format('H:i A') : '';
+            $user->unreadCount = $unreadCount;
+            return $user;
+        });
+        $messages = ChatMessage::where(function($q) use ($userId) {
+                $q->where('sender_id', Auth::id())->where('receiver_id', $userId);
+            })->orWhere(function($q) use ($userId) {
+                $q->where('sender_id', $userId)->where('receiver_id', Auth::id());
+            })->orderBy('created_at')->get();
+        if (request()->ajax() || request()->wantsJson()) {
+            $html = view('chat._conversation', compact('other', 'users', 'messages'))->render();
+            return response()->json(['success' => true, 'html' => $html]);
         }
-        $messages = ChatMessage::where(function($q) use ($user, $other) {
-            $q->where('sender_id', $user->id)->where('receiver_id', $other->id);
-        })->orWhere(function($q) use ($user, $other) {
-            $q->where('sender_id', $other->id)->where('receiver_id', $user->id);
-        })->orderBy('created_at')->get();
-        return view('chat.show', compact('other', 'messages'));
+        return view('chat.show', compact('other', 'users', 'messages'));
     }
 
     // Send a message
     public function store(Request $request, $userId)
     {
-        $user = Auth::user();
-        $other = User::findOrFail($userId);
-        if (!in_array($user->role, ['Customer', 'Supplier']) ||
-            !in_array($other->role, ['Customer', 'Supplier']) ||
-            $user->role === $other->role) {
-            abort(403, 'Chat only allowed between suppliers and customers.');
-        }
         $request->validate([
             'message' => 'required|string|max:2000',
+            'attachment' => 'nullable|file|mimes:jpeg,png,jpg,gif,pdf,doc,docx|max:5120',
         ]);
-        ChatMessage::create([
-            'sender_id' => $user->id,
-            'receiver_id' => $other->id,
+
+        $attachmentPath = null;
+        $attachmentType = null;
+        if ($request->hasFile('attachment')) {
+            $file = $request->file('attachment');
+            $attachmentPath = $file->store('chat_attachments', 'public');
+            $attachmentType = $file->getClientMimeType();
+        }
+
+        // Only require message if no file is attached
+        if (!$request->filled('message') && !$attachmentPath) {
+            return response()->json(['success' => false, 'error' => 'Message or attachment required.'], 422);
+        }
+
+        $message = ChatMessage::create([
+            'sender_id' => Auth::id(),
+            'receiver_id' => $userId,
             'message' => $request->message,
+            'attachment_path' => $attachmentPath,
+            'attachment_type' => $attachmentType,
         ]);
-        return redirect()->route('chat.show', $other->id);
+        // Broadcast the event
+        event(new MessageSent($message, Auth::user(), $userId));
+        if ($request->ajax() || $request->wantsJson()) {
+            $message->load('sender');
+            $html = view('chat._message', compact('message'))->render();
+            return response()->json(['success' => true, 'html' => $html]);
+        }
+        return redirect()->route('chat.show', $userId);
+    }
+
+    public function deleteMessage($id)
+    {
+        $message = ChatMessage::findOrFail($id);
+        if ($message->sender_id !== auth()->id()) {
+            abort(403);
+        }
+        $message->delete();
+        // Optionally broadcast a MessageDeleted event for real-time removal
+        return response()->json(['success' => true]);
+    }
+
+    public function editMessage(Request $request, $id)
+    {
+        $request->validate(['message' => 'required|string|max:2000']);
+        $message = ChatMessage::findOrFail($id);
+        if ($message->sender_id !== auth()->id()) {
+            abort(403);
+        }
+        $message->message = $request->message;
+        $message->save();
+        // Optionally broadcast a MessageEdited event for real-time update
+        return response()->json(['success' => true, 'message' => $message->message]);
     }
 }

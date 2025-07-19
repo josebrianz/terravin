@@ -108,10 +108,13 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
 
 // Chat routes (only for wholesalers and customers)
 Route::middleware(['auth'])->group(function () {
-    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index')->middleware('role:Wholesaler,Customer');
-    Route::get('/chat/{user}', [ChatController::class, 'show'])->name('chat.show')->middleware('role:Wholesaler,Customer');
-    Route::post('/chat/{user}', [ChatController::class, 'store'])->name('chat.store')->middleware('role:Wholesaler,Customer');
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index')->middleware('role:Admin,Wholesaler,Customer');
+    Route::get('/chat/{user}', [ChatController::class, 'show'])->name('chat.show')->middleware('role:Admin,Wholesaler,Customer');
+    Route::post('/chat/{user}', [ChatController::class, 'store'])->name('chat.store')->middleware('role:Admin,Wholesaler,Customer');
 });
+
+Route::delete('/chat/message/{id}', [\App\Http\Controllers\ChatController::class, 'deleteMessage'])->middleware('auth');
+Route::patch('/chat/message/{id}', [\App\Http\Controllers\ChatController::class, 'editMessage'])->middleware('auth');
 
 Route::get('/vendor/apply', [VendorApplicationController::class, 'create'])->name('vendor.apply');
 
