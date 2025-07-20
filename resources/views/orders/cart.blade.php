@@ -68,7 +68,7 @@
                             <div class="col-md-2 text-center">
                                 <div class="price-display">
                                     <span class="price-currency">UGX</span>
-                                    <span class="price-amount">{{ format_usd($item['price']) }}</span>
+                                    <span class="price-amount">{{ 'UGX ' . number_format($item['price'], 0) }}</span>
                                 </div>
                             </div>
                             <div class="col-md-2 text-center">
@@ -77,7 +77,7 @@
                             <div class="col-md-2 text-end">
                                 <div class="subtotal-display">
                                     <span class="price-currency">UGX</span>
-                                    <span class="price-amount">{{ format_usd($item['price'] * $item['quantity']) }}</span>
+                                    <span class="price-amount">{{ 'UGX ' . number_format($item['price'] * $item['quantity'], 0) }}</span>
                                 </div>
                                 <form action="{{ route('orders.remove-from-cart', $inventoryId) }}" method="POST" class="mt-2">
                                     @csrf
@@ -114,7 +114,7 @@
                     
                     <div class="summary-item d-flex justify-content-between mb-2">
                         <span class="text-muted">Items ({{ $totalItems }})</span>
-                        <span class="fw-bold">{{ format_usd($subtotal) }}</span>
+                        <span class="fw-bold">{{ 'UGX ' . number_format($subtotal, 0) }}</span>
                     </div>
                     
                     <div class="summary-item d-flex justify-content-between mb-2">
@@ -126,7 +126,7 @@
                     
                     <div class="summary-item d-flex justify-content-between mb-3">
                         <span class="fw-bold text-burgundy">Total</span>
-                        <span class="fw-bold text-burgundy fs-5">{{ format_usd($subtotal) }}</span>
+                        <span class="fw-bold text-burgundy fs-5">{{ 'UGX ' . number_format($subtotal, 0) }}</span>
                     </div>
                     
                     <a href="{{ route('orders.checkout') }}" class="btn btn-burgundy w-100">

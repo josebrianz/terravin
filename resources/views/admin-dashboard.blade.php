@@ -22,6 +22,12 @@
                             Chat
                         </a>
                     @endif
+                    @if(auth()->user()->role === 'Admin')
+                        <a href="{{ route('chat.index') }}" class="btn btn-burgundy me-2">
+                            <i class="fas fa-comments me-1"></i>
+                            Chat
+                        </a>
+                    @endif
                     <span class="badge bg-gold text-burgundy px-3 py-2">
                         <i class="fas fa-clock me-1"></i>
                         {{ now()->format('M d, Y H:i') }}

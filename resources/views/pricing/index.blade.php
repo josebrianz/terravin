@@ -23,23 +23,23 @@
                 <tbody>
                     <tr>
                         <td>Chateau Rouge</td>
-                        <td>{{ format_usd(20000) }}</td>
+                        <td>{{ 'UGX ' . number_format(20000, 0) }}</td>
                         <td>10% for 100+</td>
-                        <td>{{ format_usd(18000) }}</td>
+                        <td>{{ 'UGX ' . number_format(18000, 0) }}</td>
                         <td><a href="#" class="btn btn-sm btn-outline-burgundy">Edit</a></td>
                     </tr>
                     <tr>
                         <td>Vintner's Reserve</td>
-                        <td>{{ format_usd(25000) }}</td>
+                        <td>{{ 'UGX ' . number_format(25000, 0) }}</td>
                         <td>8% for 50+</td>
-                        <td>{{ format_usd(23000) }}</td>
+                        <td>{{ 'UGX ' . number_format(23000, 0) }}</td>
                         <td><a href="#" class="btn btn-sm btn-outline-burgundy">Edit</a></td>
                     </tr>
                     <tr>
                         <td>Golden Barrel</td>
-                        <td>{{ format_usd(15000) }}</td>
+                        <td>{{ 'UGX ' . number_format(15000, 0) }}</td>
                         <td>5% for 200+</td>
-                        <td>{{ format_usd(14000) }}</td>
+                        <td>{{ 'UGX ' . number_format(14000, 0) }}</td>
                         <td><a href="#" class="btn btn-sm btn-outline-burgundy">Edit</a></td>
                     </tr>
                 </tbody>
