@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retailer Orders | TERRAVIN</title>
+    <title>Orders from Retailers | TERRAVIN</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -83,27 +83,6 @@
             background-color: var(--light-gray);
             margin-top: 90px;
         }
-        .page-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            color: var(--burgundy);
-            font-weight: 600;
-        }
-        .order-table th, .order-table td {
-            vertical-align: middle;
-        }
-        .order-table th {
-            color: var(--burgundy);
-            font-weight: 700;
-        }
-        .order-table td {
-            color: var(--dark-text);
-        }
-        .badge-warning { background: #ffc107; color: #222; }
-        .badge-success { background: #28a745; color: #fff; }
-        .badge-danger { background: #dc3545; color: #fff; }
-        .badge-info { background: #17a2b8; color: #fff; }
-        .badge-secondary { background: #6c757d; color: #fff; }
     </style>
 </head>
 <body>
@@ -118,9 +97,10 @@
                     <nav class="wine-nav">
                         <ul class="nav-links d-flex align-items-center gap-3 mb-0" style="list-style:none;">
                             <li><a href="{{ url('/vendor/dashboard') }}" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                            <li><a href="{{ url('/vendor/orders') }}" class="nav-link active"><i class="fas fa-shopping-bag"></i> Retailer Orders</a></li>
+                            <li><a href="{{ url('/vendor/orders') }}" class="nav-link active"><i class="fas fa-shopping-bag"></i> Orders</a></li>
                             <li><a href="{{ url('/vendor/inventory') }}" class="nav-link"><i class="fas fa-boxes"></i> Inventory</a></li>
                             <li><a href="{{ url('/reports') }}" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a></li>
+                            <li><a href="{{ url('/vendor/bulk-order') }}" class="nav-link"><i class="fas fa-wine-bottle"></i> Bulk Order</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -145,73 +125,213 @@
     </div>
     <div class="main-content">
         <div class="container-fluid">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="page-title mb-0">Orders from Retailers</h1>
-                <span class="badge bg-gold text-burgundy px-3 py-2">
-                    <i class="fas fa-clock me-1"></i>
-                    {{ now()->format('M d, Y H:i') }}
-                </span>
-            </div>
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-white border-bottom-0">
-                    <h5 class="card-title mb-0 fw-bold text-burgundy">
-                        <i class="fas fa-list text-gold me-2"></i> Retailer Order List
-                    </h5>
-                </div>
-                <div class="card-body">
-                    @if($orders->count() > 0)
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0 order-table">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Order ID</th>
-                                        <th>Retailer</th>
-                                        <th>Items</th>
-                                        <th>Total Amount</th>
-                                        <th>Status</th>
-                                        <th>Date</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($orders as $order)
-                                    <tr>
-                                        <td><strong class="text-burgundy">#{{ $order->id }}</strong></td>
-                                        <td>
-                                            <div>
-                                                <strong class="text-burgundy">{{ $order->customer_name }}</strong><br>
-                                                <small class="text-muted">{{ $order->customer_email }}</small>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            @if($order->orderItems && $order->orderItems->count() > 0)
-                                                @foreach($order->orderItems as $item)
-                                                    <div class="small text-burgundy d-flex align-items-center">
-                                                        <i class="fas fa-wine-bottle me-1 text-gold"></i>
-                                                        {{ $item->item_name ?? $item->wine_name ?? 'Wine' }} x {{ $item->quantity }}
-                                                    </div>
-                                                @endforeach
-                                            @else
-                                                <span class="text-muted">No items</span>
-                                            @endif
-                                        </td>
-                                        <td><span class="fw-bold">UGX {{ number_format($order->total_amount, 0) }}</span></td>
-                                        <td><span class="badge {{ $order->status_badge }}">{{ ucfirst($order->status) }}</span></td>
-                                        <td>{{ $order->created_at->format('M d, Y H:i') }}</td>
-                                        <td>
-                                            <a href="{{ route('orders.show', $order->id) }}" class="btn btn-sm btn-outline-burgundy"><i class="fas fa-eye"></i> View</a>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+            <!-- Page Header -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="page-header border-bottom pb-3 mb-4 d-flex align-items-center justify-content-between">
+                        <div>
+                            <h1 class="page-title mb-0 fw-bold text-burgundy">
+                                <i class="fas fa-truck-loading me-2 text-gold"></i>
+                                Orders from Retailers
+                            </h1>
+                            <span class="text-muted small">Manage and track all orders placed by retailers to you (the vendor).</span>
                         </div>
-                        <div class="mt-3">
+                        <div class="header-actions">
+                            <span class="badge" style="background: var(--burgundy); color: var(--gold); border-radius: 1.5rem; padding: 0.8em 1.5em; font-size: 1.1em; box-shadow: 0 2px 8px rgba(94,15,15,0.10);">
+                                <i class="fas fa-calendar-alt me-2"></i>{{ now()->format('M d, Y H:i') }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Statistics Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-xl-3 col-md-6">
+                    <div class="card wine-card shadow-sm border-0">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <div class="icon-circle bg-burgundy">
+                                    <i class="fas fa-truck-loading fa-2x text-gold"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-burgundy fw-bold mb-1">{{ number_format($orders->total()) }}</h3>
+                            <p class="text-muted small mb-0">Total Retailer Orders</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card wine-card shadow-sm border-0">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <div class="icon-circle bg-warning">
+                                    <i class="fas fa-clock fa-2x text-white"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-burgundy fw-bold mb-1">{{ number_format($orders->where('status', 'pending')->count()) }}</h3>
+                            <p class="text-muted small mb-0">Pending Retailer Orders</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card wine-card shadow-sm border-0">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <div class="icon-circle bg-success">
+                                    <i class="fas fa-check-circle fa-2x text-white"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-burgundy fw-bold mb-1">{{ number_format($orders->where('status', 'delivered')->count()) }}</h3>
+                            <p class="text-muted small mb-0">Delivered Retailer Orders</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card wine-card shadow-sm border-0">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <div class="icon-circle bg-gold">
+                                    <i class="fas fa-dollar-sign fa-2x text-burgundy"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-burgundy fw-bold mb-1">${{ number_format($orders->sum('total_amount'), 2) }}</h3>
+                            <p class="text-muted small mb-0">Total Retailer Revenue</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Filters and Search -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card wine-card shadow-sm border-0">
+                        <div class="card-header bg-white border-bottom-0">
+                            <h5 class="card-title mb-0 fw-bold text-burgundy">
+                                <i class="fas fa-filter text-gold me-2"></i> Filters & Search
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="GET" class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Status</label>
+                                    <select name="status" class="form-select">
+                                        <option value="">All Statuses</option>
+                                        <option value="pending" @if(request('status')=='pending') selected @endif>Pending</option>
+                                        <option value="processing" @if(request('status')=='processing') selected @endif>Processing</option>
+                                        <option value="shipped" @if(request('status')=='shipped') selected @endif>Shipped</option>
+                                        <option value="delivered" @if(request('status')=='delivered') selected @endif>Delivered</option>
+                                        <option value="cancelled" @if(request('status')=='cancelled') selected @endif>Cancelled</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Retailer Name</label>
+                                    <input type="text" name="customer_name" class="form-control" value="{{ request('customer_name') }}" placeholder="Search by retailer name">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Retailer Email</label>
+                                    <input type="email" name="customer_email" class="form-control" value="{{ request('customer_email') }}" placeholder="Search by retailer email">
+                                </div>
+                                <div class="col-12">
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-burgundy">
+                                            <i class="fas fa-search me-1"></i> Apply Filters
+                                        </button>
+                                        <a href="{{ url('/vendor/orders') }}" class="btn btn-outline-burgundy">
+                                            <i class="fas fa-times me-1"></i> Clear Filters
+                                        </a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Main Content -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card wine-card shadow-sm border-0">
+                        <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0 fw-bold text-burgundy">
+                                <i class="fas fa-list text-gold me-2"></i> Retailer Orders ({{ $orders->total() }})
+                            </h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Order ID</th>
+                                            <th>Retailer</th>
+                                            <th>Email</th>
+                                            <th>Items</th>
+                                            <th>Total</th>
+                                            <th>Status</th>
+                                            <th>Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($orders as $order)
+                                        <tr>
+                                            <td><span class="fw-bold text-burgundy">#{{ $order->id }}</span></td>
+                                            <td>{{ $order->customer_name }}</td>
+                                            <td><small class="text-muted">{{ $order->customer_email }}</small></td>
+                                            <td>
+                                                @php
+                                                    $items = is_array($order->items) ? $order->items : json_decode($order->items, true);
+                                                    $itemCount = is_array($items) ? count($items) : 0;
+                                                @endphp
+                                                <span class="badge bg-light text-dark">{{ $itemCount }} items</span>
+                                            </td>
+                                            <td><span class="fw-bold text-success">${{ number_format($order->total_amount, 2) }}</span></td>
+                                            <td>
+                                                @switch($order->status)
+                                                    @case('pending')
+                                                        <span class="badge bg-warning text-dark">Pending</span>
+                                                        @break
+                                                    @case('processing')
+                                                        <span class="badge bg-info text-white">Processing</span>
+                                                        @break
+                                                    @case('shipped')
+                                                        <span class="badge bg-primary text-white">Shipped</span>
+                                                        @break
+                                                    @case('delivered')
+                                                        <span class="badge bg-success text-white">Delivered</span>
+                                                        @break
+                                                    @case('cancelled')
+                                                        <span class="badge bg-danger text-white">Cancelled</span>
+                                                        @break
+                                                    @default
+                                                        <span class="badge bg-secondary text-white">{{ ucfirst($order->status) }}</span>
+                                                @endswitch
+                                            </td>
+                                            <td>
+                                                <span class="badge" style="background: var(--burgundy); color: var(--gold); border-radius: 1rem; padding: 0.5em 1em; font-size: 0.95em;">
+                                                    <i class="fas fa-calendar-alt me-1"></i>{{ $order->created_at->format('M d, Y') }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm" role="group">
+                                                    <a href="{{ route('vendor.orders.show', $order) }}" class="btn btn-outline-burgundy" title="View Details">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="{{ route('vendor.orders.edit', $order) }}" class="btn btn-outline-gold" title="Edit Order">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        @empty
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted">No orders from retailers found.</td>
+                                        </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white py-3">
                             {{ $orders->links() }}
                         </div>
-                    @else
-                        <div class="alert alert-info">No orders from retailers found.</div>
-                    @endif
+                    </div>
                 </div>
             </div>
         </div>

@@ -9,6 +9,11 @@
   </div>
 </nav>
 <div class="container-fluid py-4 wine-theme-bg" style="border-radius: 0; box-shadow: none;">
+    <div class="mb-3 d-flex justify-content-end">
+        <a href="/dashboard" class="btn btn-burgundy" style="background: #6b1a15; color: #fff; font-weight: 600; border-radius: 8px; padding: 0.6rem 2rem;">
+            <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+        </a>
+    </div>
     <div class="wine-accent-bar" style="margin-bottom: 0;"></div>
     <h1 class="mb-4 fw-bold text-center" style="font-size: 3rem; color: #6b1a15; text-shadow: 2px 2px 8px #e0bcbc; letter-spacing: 2px;">Stakeholder Preferences</h1>
 

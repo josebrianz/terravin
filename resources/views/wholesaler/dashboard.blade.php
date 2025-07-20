@@ -242,6 +242,7 @@
         </div>
     </div>
 </div>
+@include('components.chat-widget')
 @endsection
 
 @section('scripts')

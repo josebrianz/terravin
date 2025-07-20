@@ -89,6 +89,15 @@ class Role extends Model
                     'manage_notifications'
                 ]
             ],
+            'Supplier' => [
+                'description' => 'Supplier access for managing own raw materials and fulfilling procurement requests',
+                'permissions' => [
+                    'manage_own_raw_materials',
+                    'view_own_procurement_requests',
+                    'fulfill_procurement_requests',
+                    'view_own_orders',
+                ]
+            ],
             'Vendor' => [
                 'description' => 'Vendor access for order management and inventory viewing',
                 'permissions' => [

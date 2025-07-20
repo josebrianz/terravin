@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class CartItem extends Model
 {
-    protected $fillable = ['user_id', 'wine_id', 'quantity'];
+    protected $fillable = ['user_id', 'inventory_id', 'quantity'];
 
-    public function wine()
+    public function inventory()
     {
-        return $this->belongsTo(\App\Models\Inventory::class, 'wine_id');
+        return $this->belongsTo(\App\Models\Inventory::class, 'inventory_id');
     }
 }

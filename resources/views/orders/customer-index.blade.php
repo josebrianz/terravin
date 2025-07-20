@@ -247,7 +247,7 @@
                     <div>
                         <h1 class="section-title"><i class="fas fa-history"></i> My Order History</h1>
                     </div>
-        </div>
+                </div>
             </div>
             <div class="container">
                 @if($orders->count() > 0)

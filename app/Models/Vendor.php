@@ -14,6 +14,7 @@ class Vendor extends Model
         'company_name',
         'contact_person',
         'phone',
+        'contact_email',
         'years_in_operation',
         'employees',
         'turnover',

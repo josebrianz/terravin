@@ -137,7 +137,6 @@
                             <li><a href="{{ route('retailer.dashboard') }}" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                             <li><a href="{{ route('orders.index') }}" class="nav-link"><i class="fas fa-shopping-bag"></i> Orders</a></li>
                             <li><a href="{{ route('inventory.index') }}" class="nav-link"><i class="fas fa-boxes"></i> Inventory</a></li>
-                            <li><a href="{{ route('reports.index') }}" class="nav-link"><i class="fas fa-chart-line"></i> Reports</a></li>
                             <li><a href="{{ route('retailer.catalog') }}" class="nav-link"><i class="fas fa-store"></i> Product Catalog</a></li>
                         </ul>
                     </nav>
@@ -262,9 +261,9 @@
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
-                                    body: JSON.stringify({
-                    wine_id: productId
-                })
+                    body: JSON.stringify({
+                        wine_id: productId
+                    })
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -292,7 +291,34 @@
                 });
             }
         }
-        
+
+        function updateQuantity(productId, newQty) {
+            if (newQty < 1) return;
+            fetch('/retailer/cart/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    wine_id: productId,
+                    quantity: newQty
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Option 1: Reload page for simplicity
+                    location.reload();
+                    // Option 2: Update DOM (uncomment below to update without reload)
+                    /*
+                    document.querySelector(`input.cart-qty-input[data-product-id='${productId}']`).value = data.quantity;
+                    document.querySelector(`.cart-item-subtotal[data-product-id='${productId}']`).textContent = '$' + data.subtotal;
+                    document.querySelector('.h5.text-burgundy').textContent = '$' + data.total;
+                    */
+                }
+            });
+        }
     </script>
 </body>
 </html> 

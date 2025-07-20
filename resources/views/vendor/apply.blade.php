@@ -63,6 +63,7 @@
 
             <div class="col-md-12">
                 <div class="form-check mb-2">
+                    <input type="hidden" name="regulatory_compliance" value="false">
                     <input class="form-check-input" type="checkbox" name="regulatory_compliance" value="true" {{ old('regulatory_compliance') ? 'checked' : '' }} required>
                     <label class="form-check-label">I comply with industry regulations.</label>
                 </div>

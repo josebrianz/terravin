@@ -176,7 +176,7 @@
         @endif
         <!-- Order Processing Module -->
         <div class="col-lg-4 col-md-6">
-            <a href="{{ route('orders.index') }}" style="text-decoration: none; color: inherit;">
+            <a href="{{ route('admin.orders.index') }}" style="text-decoration: none; color: inherit;">
                 <div class="card h-100 shadow-sm border-0 wine-card" style="cursor:pointer;">
                     <div class="card-body text-center">
                         <div class="mb-3">
@@ -187,7 +187,7 @@
                         <h5 class="card-title fw-bold text-burgundy">Order Processing</h5>
                         <p class="card-text text-muted small">Manage customer orders, track order status, and process wine sales transactions.</p>
                         <div class="d-grid gap-2">
-                            <a href="{{ route('orders.index') }}" class="btn btn-gold shadow-sm" title="View all orders">
+                            <a href="{{ route('admin.orders.index') }}" class="btn btn-gold shadow-sm" title="View all orders">
                                 <i class="fas fa-list"></i> All Orders
                             </a>
                         </div>
@@ -276,7 +276,9 @@
                                 <div class="stat-icon bg-gold">
                                     <i class="fas fa-clock fa-2x text-burgundy"></i>
                                 </div>
-                                <h4 class="text-burgundy fw-bold mt-2">{{ \App\Models\Procurement::pending()->count() }}</h4>
+                                <h4 class="text-burgundy fw-bold mt-2">
+                                    {{ \App\Models\Order::whereHas('user', function($q) { $q->where('role', 'Vendor'); })->where('status', 'pending')->count() }}
+                                </h4>
                                 <span class="text-muted small">Pending Approvals</span>
                             </div>
                         </div>
@@ -315,7 +317,9 @@
                                 <div class="stat-icon bg-burgundy">
                                     <i class="fas fa-shopping-cart fa-2x text-gold"></i>
                                 </div>
-                                <h4 class="text-burgundy fw-bold mt-2">{{ \App\Models\Order::count() }}</h4>
+                                <h4 class="text-burgundy fw-bold mt-2">
+                                    {{ \App\Models\Order::whereHas('user', function($q) { $q->where('role', 'Vendor'); })->count() }}
+                                </h4>
                                 <span class="text-muted small">Total Orders</span>
                             </div>
                         </div>
@@ -415,20 +419,40 @@
                 </div>
                 <div class="card-body">
                     <div class="list-group list-group-flush">
-                        @foreach(\App\Models\Inventory::where('quantity', '<', 10)->take(5)->get() as $inventory)
+                        @php
+                            $lowStockItems = \App\Models\Inventory::where('is_active', true)
+                                ->where(function($query) {
+                                    $query->where('quantity', '<=', \DB::raw('min_quantity'))
+                                          ->orWhere('quantity', '<', 5);
+                                })
+                                ->orderBy('quantity', 'asc')
+                                ->take(5)
+                                ->get();
+                        @endphp
+                        
+                        @foreach($lowStockItems as $inventory)
                         <div class="list-group-item d-flex justify-content-between align-items-center border-0 wine-list-item">
                             <div>
-                                <h6 class="mb-1 fw-semibold text-burgundy">{{ $inventory->item_name }}</h6>
-                                <span class="small">Current Stock: {{ $inventory->quantity }}</span>
+                                <h6 class="mb-1 fw-semibold text-burgundy">{{ $inventory->name }}</h6>
+                                <span class="small text-muted">
+                                    Current Stock: {{ $inventory->quantity }}
+                                    @if($inventory->min_quantity)
+                                        (Min: {{ $inventory->min_quantity }})
+                                    @endif
+                                </span>
                             </div>
-                            <span class="badge bg-danger">Low Stock</span>
+                            <span class="badge {{ $inventory->quantity == 0 ? 'bg-danger' : 'bg-warning' }}">
+                                {{ $inventory->quantity == 0 ? 'Out of Stock' : 'Low Stock' }}
+                            </span>
                         </div>
                         @endforeach
-                        @if(\App\Models\Inventory::where('quantity', '<', 10)->count() == 0)
+                        
+                        @if($lowStockItems->count() == 0)
                         <div class="list-group-item text-center text-muted border-0 wine-list-item">
-                            <i class="fas fa-check-circle text-success"></i> All wine items are well stocked
+                            <i class="fas fa-check-circle text-success me-2"></i> All inventory items are well stocked
                         </div>
                         @endif
+                    </div>
                     </div>
                 </div>
             </div>
@@ -638,4 +662,5 @@
 }
 </style>
 @endpush
+@include('components.chat-widget')
 @endsection 

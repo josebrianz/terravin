@@ -132,7 +132,7 @@
                     <nav class="wine-nav">
                         <ul class="nav-links d-flex align-items-center gap-3 mb-0" style="list-style:none;">
                             <li><a href="{{ route('retailer.dashboard') }}" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                            <li><a href="{{ route('orders.index') }}" class="nav-link"><i class="fas fa-shopping-bag"></i> Orders</a></li>
+                            <li><a href="{{ route('retailer.orders') }}" class="nav-link"><i class="fas fa-shopping-bag"></i> Orders</a></li>
                             <li><a href="{{ route('retailer.inventory') }}" class="nav-link active"><i class="fas fa-boxes"></i> Inventory</a></li>
                             <li><a href="{{ route('retailer.catalog') }}" class="nav-link"><i class="fas fa-store"></i> Product Catalog</a></li>
                         </ul>

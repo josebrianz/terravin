@@ -15,6 +15,9 @@
                     
                 </div>
                 <div class="header-actions">
+                    <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-burgundy me-2" title="Back to main dashboard">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                    </a>
                     <form method="POST" action="{{ route('workforce.autoassign') }}" class="d-inline">
                         @csrf
                         <button type="submit" class="btn btn-success" title="Auto-assign available workforce to empty supply centres">

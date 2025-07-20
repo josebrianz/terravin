@@ -1,3 +1,9 @@
+@php
+    $favoriteIds = [];
+    if (auth()->check() && auth()->user()->role === 'Customer') {
+        $favoriteIds = \App\Models\Favorite::where('customer_id', auth()->id())->pluck('inventory_id')->toArray();
+    }
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -741,25 +747,16 @@ body {
                         <a href="{{ route('orders.create') }}" class="btn btn-primary px-4">
                             <i class="fas fa-shopping-cart me-2"></i>New Order
                         </a>
+
                     </div>
                 </div>
             </header>
             
             <!-- Modern Search and Filter -->
             <div class="search-filter-container">
-                <div class="search-container">
-                    <input type="text" placeholder="Search wines, regions, vintages..." class="search-input">
-                </div>
-                <div class="filter-btn-group">
-                    <button class="filter-btn active">
-                        <i class="fas fa-filter"></i> All Wines
-                    </button>
-                    <button class="filter-btn">
-                        <i class="fas fa-star"></i> Premium
-                    </button>
-                    <button class="filter-btn">
-                        <i class="fas fa-fire"></i> Trending
-                    </button>
+                <div class="search-container" style="position:relative;">
+                    <input type="text" placeholder="Search wines, regions, vintages..." class="search-input" id="catalog-search-input" autocomplete="off">
+                    <ul id="catalog-search-suggestions" style="display:none; position:absolute; top:110%; left:0; width:100%; background:#fff; z-index:1001; border-radius: 0 0 12px 12px; box-shadow: 0 4px 18px rgba(200,169,126,0.13); padding:0; margin:0; list-style:none; border:1px solid var(--secondary); max-height:320px; overflow-y:auto;"></ul>
                 </div>
             </div>
             
@@ -777,6 +774,9 @@ body {
                             @php $addedCategories[$slug] = true; @endphp
                         @endif
                     @endforeach
+                    <a href="{{ route('customer.recommendations') }}" class="category-pill recommended-pill" style="background: var(--gold); color: var(--primary); font-weight: 700;">
+                        <i class="fas fa-magic me-1"></i> Recommended For You
+                    </a>
                 </div>
             </nav>
             
@@ -819,7 +819,12 @@ body {
                             
                             <!-- Wine Details -->
                             <div class="wine-details">
-                                <h3 class="wine-name">{{ $wine->name }}</h3>
+                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                    <h3 class="wine-name">{{ $wine->name }}</h3>
+                                    <button class="favorite-btn" data-wine-id="{{ $wine->id }}" aria-label="Add to favorites" style="background:none;border:none;outline:none;cursor:pointer;padding:0;margin-left:0.5rem;">
+                                        <i class="fa-heart {{ in_array($wine->id, $favoriteIds) ? 'fas' : 'far' }}" style="color:#c8a97e;font-size:1.4rem;"></i>
+                                    </button>
+                                </div>
                                 <p class="wine-description">{{ Str::limit($wine->description, 120) }}</p>
                                 
                                 <div class="wine-meta">
@@ -844,11 +849,8 @@ body {
                             </div>
                             
                             <!-- Wine Actions -->
-                            <div class="wine-actions">
-                                <button class="btn btn-wine btn-wine-outline btn-quick-view">
-                                    <i class="fas fa-eye"></i> View
-                                </button>
-                                <button class="btn btn-wine btn-wine-primary btn-add-to-cart" data-wine-id="{{ $wine->id }}">
+                            <div class="wine-actions" style="display: flex; justify-content: center; align-items: center;">
+                                <button class="btn btn-wine btn-wine-primary btn-add-to-cart" data-inventory-id="{{ $wine->id }}">
                                     <i class="fas fa-cart-plus"></i> Add to Cart
                                 </button>
                             </div>
@@ -884,25 +886,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
     categoryLinks.forEach(link => {
         link.addEventListener('click', function(e) {
-            e.preventDefault();
-            categoryLinks.forEach(l => l.classList.remove('active'));
-            this.classList.add('active');
-            if (this.classList.contains('all-wines-pill')) {
-                // Show all sections
-                categorySections.forEach(section => section.style.display = '');
-            } else {
-                // Hide all, show only selected
-                categorySections.forEach(section => section.style.display = 'none');
-                const targetId = this.getAttribute('href');
-                const targetSection = document.querySelector(targetId);
-                if (targetSection) {
-                    targetSection.style.display = '';
-                    window.scrollTo({
-                        top: targetSection.offsetTop - 120,
-                        behavior: 'smooth'
-                    });
+            // Only prevent default for category filter pills, not the recommended button
+            if (!this.classList.contains('recommended-pill')) {
+                e.preventDefault();
+                categoryLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                if (this.classList.contains('all-wines-pill')) {
+                    // Show all sections
+                    categorySections.forEach(section => section.style.display = '');
+                } else {
+                    // Hide all, show only selected
+                    categorySections.forEach(section => section.style.display = 'none');
+                    const targetId = this.getAttribute('href');
+                    const targetSection = document.querySelector(targetId);
+                    if (targetSection) {
+                        targetSection.style.display = '';
+                        window.scrollTo({
+                            top: targetSection.offsetTop - 120,
+                            behavior: 'smooth'
+                        });
+                    }
                 }
             }
+            // Otherwise, let the link work as normal (for recommended-pill)
         });
     });
     // On page load, show all
@@ -923,14 +929,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const addToCartButtons = document.querySelectorAll('.btn-add-to-cart');
     addToCartButtons.forEach(button => {
         button.addEventListener('click', function() {
-            const wineId = this.getAttribute('data-wine-id');
+            const inventoryId = this.getAttribute('data-inventory-id');
             fetch('/cart/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                 },
-                body: JSON.stringify({ wine_id: wineId, quantity: 1 })
+                body: JSON.stringify({ inventory_id: inventoryId, quantity: 1 })
             })
             .then(res => res.json())
             .then(data => {
@@ -992,6 +998,105 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 300);
         }, 3000);
     }
+
+    const searchInput = document.getElementById('catalog-search-input');
+    const suggestionsBox = document.getElementById('catalog-search-suggestions');
+    let debounceTimeout;
+    if (searchInput && suggestionsBox) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(debounceTimeout);
+            const q = this.value.trim();
+            if (q.length < 2) {
+                suggestionsBox.style.display = 'none';
+                suggestionsBox.innerHTML = '';
+                return;
+            }
+            debounceTimeout = setTimeout(() => {
+                fetch(`/api/catalog/search?q=${encodeURIComponent(q)}`)
+                    .then(res => res.json())
+                    .then(items => {
+                        if (!items.length) {
+                            suggestionsBox.innerHTML = '<li style="padding:0.7rem 1rem;color:#888;">No matches found</li>';
+                            suggestionsBox.style.display = 'block';
+                            return;
+                        }
+                        suggestionsBox.innerHTML = items.map(item =>
+                            `<li style="display:flex;align-items:center;gap:0.7rem;padding:0.6rem 1rem;cursor:pointer;border-bottom:1px solid #f5f0e6;transition:background 0.18s;" onmouseover="this.style.background='#f5f0e6'" onmouseout="this.style.background='#fff'" data-name="${item.name}">
+                                <img src="${item.image || 'https://via.placeholder.com/40x40?text=Wine'}" alt="${item.name}" style="width:40px;height:40px;object-fit:cover;border-radius:8px;border:1.5px solid var(--secondary);">
+                                <span style="color:#5e0f0f;font-weight:600;">${item.name}</span>
+                            </li>`
+                        ).join('');
+                        suggestionsBox.style.display = 'block';
+                        // Add click listeners
+                        Array.from(suggestionsBox.children).forEach(li => {
+                            li.addEventListener('mousedown', function(e) {
+                                e.preventDefault();
+                                searchInput.value = this.getAttribute('data-name');
+                                suggestionsBox.style.display = 'none';
+                                // Submit the form if inside a form
+                                let form = searchInput.closest('form');
+                                if (form) form.submit();
+                            });
+                        });
+                    });
+            }, 180);
+        });
+        // Hide suggestions on blur (with delay for click)
+        searchInput.addEventListener('blur', function() {
+            setTimeout(() => { suggestionsBox.style.display = 'none'; }, 180);
+        });
+        searchInput.addEventListener('focus', function() {
+            if (suggestionsBox.innerHTML.trim()) suggestionsBox.style.display = 'block';
+        });
+    }
+
+    // Favorite button AJAX (event delegation)
+    document.body.addEventListener('click', function(e) {
+        if (e.target.closest('.favorite-btn')) {
+            e.preventDefault();
+            const btn = e.target.closest('.favorite-btn');
+            const wineId = btn.getAttribute('data-wine-id');
+            const icon = btn.querySelector('i');
+            const isFavorited = icon.classList.contains('fas') && !icon.classList.contains('far');
+            if (!isFavorited) {
+                // Add to favorites
+                fetch('/customer/favorites', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ inventory_id: wineId })
+                }).then(res => res.json()).then(data => {
+                    if (data.success) {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                        icon.style.color = '#c8a97e';
+                    } else {
+                        alert('Could not add to favorites.');
+                    }
+                }).catch(() => alert('Could not add to favorites.'));
+            } else {
+                // Remove from favorites
+                fetch('/customer/favorites', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ inventory_id: wineId })
+                }).then(res => res.json()).then(data => {
+                    if (data.success) {
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                        icon.style.color = '#c8a97e';
+                    } else {
+                        alert('Could not remove from favorites.');
+                    }
+                }).catch(() => alert('Could not remove from favorites.'));
+            }
+        }
+    });
 });
 
 // Add notification styles dynamically

@@ -3,179 +3,126 @@
 @section('title', 'Create New Wine Supply Request')
 
 @section('content')
-<div class="container-fluid">
-    <!-- Page Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="page-header border-bottom pb-3 mb-4 d-flex align-items-center justify-content-between">
-                <div>
-                    <h1 class="page-title mb-0 fw-bold text-burgundy">
-                        <i class="fas fa-plus me-2 text-gold"></i>
-                        Create New Wine Supply Request
-                    </h1>
-                    <span class="text-muted small">Fill in the details to request a new wine supply item</span>
-                </div>
-                <div class="header-actions">
-                    <a href="{{ route('procurement.dashboard') }}" class="btn btn-burgundy shadow-sm" title="Back to Dashboard">
-                        <i class="fas fa-arrow-left"></i> Back to Dashboard
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row justify-content-center">
-        <div class="col-lg-10 col-xl-8">
+<div class="container-fluid d-flex justify-content-center align-items-center min-vh-100" style="background: #f9f5f0;">
+    <div class="row w-100 justify-content-center">
+        <div class="col-12 col-lg-10 col-xl-8">
             <div class="card wine-card shadow-sm border-0">
+                <div class="card-header bg-burgundy text-white">
+                    <h3 class="mb-0"><i class="fas fa-wine-bottle me-2"></i> Create New Supply Request</h3>
+                </div>
                 <div class="card-body">
                     <form action="{{ route('procurement.store') }}" method="POST">
                         @csrf
                         
+                        <!-- Main Card with Sections -->
+                        <div class="card mb-4 border-0 shadow-sm">
+                            <div class="card-header">
+                                <h5 class="mb-0 text-burgundy"><i class="fas fa-wine-glass-alt me-2"></i>Wine Supply Details</h5>
+                            </div>
+                            <div class="card-body">
                         <div class="row">
-                            <!-- Supply Item Information -->
                             <div class="col-md-6">
-                                <h6 class="text-primary mb-3">Wine Supply Item Information</h6>
-                                
-                                <div class="mb-3">
-                                    <label for="item_name" class="form-label">Supply Item Name *</label>
-                                    <input type="text" class="form-control @error('item_name') is-invalid @enderror" 
-                                           id="item_name" name="item_name" value="{{ old('item_name') }}" 
-                                           placeholder="e.g., French Oak Barrels, Wine Bottles, Corks" required>
+                                        <!-- Supplier Selection -->
+                                        <div class="mb-4">
+                                            <label for="supplier_id" class="form-label fw-bold">Supplier *</label>
+                                            <select name="supplier_id" id="supplier_id" class="form-select form-select-lg" required>
+                                                <option value="">Select a supplier...</option>
+                                                @foreach($suppliers as $supplier)
+                                                    <option value="{{ $supplier->id }}" data-email="{{ $supplier->email }}">{{ $supplier->name }} ({{ $supplier->email }})</option>
+                                                @endforeach
+                                            </select>
+                                            <div class="mt-2 text-muted" id="supplier-email-display"></div>
+                                        </div>
+                                        <!-- Raw Material Selection (filtered by supplier) -->
+                                        <div class="mb-4">
+                                            <label for="item_name" class="form-label fw-bold">Raw Material *</label>
+                                            <select name="item_name" id="item_name" class="form-select form-select-lg" required disabled>
+                                                <option value="">Select a supplier first...</option>
+                                            </select>
                                     @error('item_name')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
                                 </div>
                                 
-                                <div class="mb-3">
-                                    <label for="description" class="form-label">Description</label>
+                                        <div class="mb-4">
+                                            <label for="description" class="form-label fw-bold">Description</label>
                                     <textarea class="form-control @error('description') is-invalid @enderror" 
                                               id="description" name="description" rows="3" 
-                                              placeholder="Detailed description of the wine supply item...">{{ old('description') }}</textarea>
+                                                      placeholder="Enter any special instructions or details about this material...">{{ old('description') }}</textarea>
                                     @error('description')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
+                                        </div>
                                 </div>
                                 
-                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="text-burgundy mb-3 fw-bold">Order Information</h6>
+                                        <div class="row g-3">
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="quantity" class="form-label">Quantity *</label>
+                                                    <label for="quantity" class="form-label fw-bold">Quantity *</label>
+                                                    <div class="input-group input-group-lg">
                                             <input type="number" class="form-control @error('quantity') is-invalid @enderror" 
                                                    id="quantity" name="quantity" value="{{ old('quantity') }}" min="1" 
-                                                   placeholder="Number of units" required>
+                                                               placeholder="0" required>
+                                                        <span class="input-group-text bg-white" id="quantity-unit">unit</span>
+                                                    </div>
                                             @error('quantity')
-                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                        <div class="invalid-feedback d-block">{{ $message }}</div>
                                             @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="unit_price" class="form-label">Unit Price (UGX) *</label>
+                                                    <label for="unit_price" class="form-label fw-bold">Unit Price ($) *</label>
+                                                    <div class="input-group input-group-lg">
+                                                        <span class="input-group-text bg-white">$</span>
                                             <input type="number" class="form-control @error('unit_price') is-invalid @enderror" 
                                                    id="unit_price" name="unit_price" value="{{ old('unit_price') }}" 
-                                                   step="0.01" min="0" placeholder="Price per unit" required>
+                                                               step="0.01" min="0" placeholder="0.00" required>
+                                                    </div>
                                             @error('unit_price')
-                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                        <div class="invalid-feedback d-block">{{ $message }}</div>
                                             @enderror
                                         </div>
                                     </div>
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <label for="total_amount" class="form-label">Total Amount</label>
-                                    <input type="text" class="form-control" id="total_amount" readonly>
+                                            <label for="total_amount" class="form-label fw-bold">Total Amount</label>
+                                            <div class="input-group input-group-lg">
+                                                <span class="input-group-text bg-white">$</span>
+                                                <input type="text" class="form-control fw-bold text-success" id="total_amount" readonly>
                                 </div>
                             </div>
-                            
-                            <!-- Wholesaler Information -->
-                            <div class="col-md-6">
-                                <h6 class="text-primary mb-3">Wine Supply Wholesaler Information</h6>
-                                
-                                <div class="mb-3">
-                                    <label for="wholesaler_name" class="form-label">Wholesaler Name *</label>
-                                    <input type="text" class="form-control @error('wholesaler_name') is-invalid @enderror" 
-                                           id="wholesaler_name" name="wholesaler_name" value="{{ old('wholesaler_name') }}" 
-                                           placeholder="e.g., Wine Barrel Co., Premium Cork Wholesalers" required>
-                                    @error('wholesaler_name')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                </div>
                                 </div>
                                 
+                                <!-- Date Fields -->
+                                <div class="row mt-3 g-3">
+                                    <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label for="wholesaler_email" class="form-label">Wholesaler Email</label>
-                                    <input type="email" class="form-control @error('wholesaler_email') is-invalid @enderror" 
-                                           id="wholesaler_email" name="wholesaler_email" value="{{ old('wholesaler_email') }}" 
-                                           placeholder="contact@wholesaler.com">
-                                    @error('wholesaler_email')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label for="wholesaler_phone" class="form-label">Wholesaler Phone</label>
-                                    <input type="text" class="form-control @error('wholesaler_phone') is-invalid @enderror" 
-                                           id="wholesaler_phone" name="wholesaler_phone" value="{{ old('wholesaler_phone') }}" 
-                                           placeholder="+1-555-123-4567">
-                                    @error('wholesaler_phone')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label for="expected_delivery" class="form-label">Expected Delivery Date</label>
-                                    <input type="date" class="form-control @error('expected_delivery') is-invalid @enderror" 
-                                           id="expected_delivery" name="expected_delivery" value="{{ old('expected_delivery') }}">
-                                    @error('expected_delivery')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label for="notes" class="form-label">Notes</label>
-                                    <textarea class="form-control @error('notes') is-invalid @enderror" 
-                                              id="notes" name="notes" rows="3" 
-                                              placeholder="Additional notes about this wine supply request...">{{ old('notes') }}</textarea>
-                                    @error('notes')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Supply Categories Help -->
-                        <div class="row mt-4">
-                            <div class="col-12">
-                                <div class="alert alert-info">
-                                    <h6><i class="fas fa-info-circle"></i> Common Wine Supply Categories:</h6>
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <strong>Barrels & Aging:</strong><br>
-                                            <small>Oak barrels, aging equipment</small>
+                                            <label for="order_date" class="form-label fw-bold">Order Date</label>
+                                            <input type="date" class="form-control form-control-lg" id="order_date" name="order_date" value="{{ old('order_date') }}">
                                         </div>
-                                        <div class="col-md-3">
-                                            <strong>Bottling:</strong><br>
-                                            <small>Bottles, corks, capsules, labels</small>
                                         </div>
-                                        <div class="col-md-3">
-                                            <strong>Equipment:</strong><br>
-                                            <small>Crushers, presses, pumps, filters</small>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <strong>Storage:</strong><br>
-                                            <small>Racks, tanks, temperature control</small>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label for="expected_delivery_date" class="form-label fw-bold">Expected Delivery</label>
+                                            <input type="date" class="form-control form-control-lg" id="expected_delivery_date" name="expected_delivery_date" value="{{ old('expected_delivery_date') }}">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
-                        <hr>
-                        
-                        <div class="d-flex justify-content-between">
-                            <a href="{{ route('procurement.index') }}" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left"></i> Back to Supply Orders
+                        <!-- Form Actions -->
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <a href="{{ route('procurement.index') }}" class="btn btn-outline-burgundy btn-lg">
+                                <i class="fas fa-arrow-left me-2"></i> Cancel
                             </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Create Supply Request
+                            <button type="submit" class="btn btn-burgundy btn-lg px-4">
+                                <i class="fas fa-save me-2"></i> Submit Request
                             </button>
                         </div>
                     </form>
@@ -188,22 +135,98 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const suppliers = @json($suppliers);
+    const rawMaterials = @json($rawMaterials);
+    const supplierSelect = document.getElementById('supplier_id');
+    const supplierEmailDisplay = document.getElementById('supplier-email-display');
+    const itemNameSelect = document.getElementById('item_name');
     const quantityInput = document.getElementById('quantity');
     const unitPriceInput = document.getElementById('unit_price');
     const totalAmountInput = document.getElementById('total_amount');
+    const quantityUnit = document.getElementById('quantity-unit');
+
+    // Helper: Filter materials by supplier
+    function getMaterialsForSupplier(supplierId) {
+        return rawMaterials.filter(m => m.user_id == supplierId);
+    }
+
+    // When supplier changes, update email display and material dropdown
+    supplierSelect.addEventListener('change', function() {
+        const selected = this.options[this.selectedIndex];
+        const supplierId = this.value;
+        const email = selected.getAttribute('data-email') || '';
+        supplierEmailDisplay.textContent = email ? `Email: ${email}` : '';
+        // Update material dropdown
+        itemNameSelect.innerHTML = '';
+        if (!supplierId) {
+            itemNameSelect.disabled = true;
+            itemNameSelect.innerHTML = '<option value="">Select a supplier first...</option>';
+            unitPriceInput.value = '';
+            quantityUnit.textContent = 'unit';
+            return;
+        }
+        const materials = getMaterialsForSupplier(supplierId);
+        if (materials.length === 0) {
+            itemNameSelect.disabled = true;
+            itemNameSelect.innerHTML = '<option value="">No materials for this supplier</option>';
+            unitPriceInput.value = '';
+            quantityUnit.textContent = 'unit';
+            return;
+        }
+        itemNameSelect.disabled = false;
+        itemNameSelect.innerHTML = '<option value="">Select a raw material...</option>' +
+            materials.map(m => `<option value="${m.name}" data-unit-price="${m.unit_price}" data-stock-level="${m.stock_level}">${m.name}</option>`).join('');
+        // Reset price/unit
+        unitPriceInput.value = '';
+        quantityUnit.textContent = 'unit';
+    });
+
+    // When material changes, update price/unit
+    itemNameSelect.addEventListener('change', function() {
+        const selected = this.options[this.selectedIndex];
+        const price = selected.getAttribute('data-unit-price') || '';
+        const stockLevel = selected.getAttribute('data-stock-level') || '';
+        
+        // Set unit price - if no price from material, allow manual entry
+        if (price && price !== '0' && price !== '0.00') {
+        unitPriceInput.value = price;
+        } else {
+            unitPriceInput.value = '';
+            unitPriceInput.placeholder = 'Enter unit price...';
+        }
+        
+        console.log('Selected material:', selected.value);
+        console.log('Unit price:', price);
+        console.log('Stock level:', stockLevel);
+        
+        // Extract unit from stockLevel
+        let unit = 'unit';
+        if (stockLevel) {
+            const match = stockLevel.match(/([a-zA-Z]+)/);
+            if (match) unit = match[1];
+        }
+        quantityUnit.textContent = unit;
+        calculateTotal();
+    });
     
     function calculateTotal() {
         const quantity = parseFloat(quantityInput.value) || 0;
         const unitPrice = parseFloat(unitPriceInput.value) || 0;
         const total = quantity * unitPrice;
-        totalAmountInput.value = 'UGX ' + total.toFixed(0);
+        console.log('Quantity:', quantity);
+        console.log('Unit Price:', unitPrice);
+        console.log('Total:', total);
+        totalAmountInput.value = total.toFixed(2);
     }
     
     quantityInput.addEventListener('input', calculateTotal);
     unitPriceInput.addEventListener('input', calculateTotal);
     
-    // Calculate initial total
-    calculateTotal();
+    // Initial state
+    itemNameSelect.disabled = true;
+    unitPriceInput.value = '';
+    quantityUnit.textContent = 'unit';
+    supplierEmailDisplay.textContent = '';
 });
 </script>
 @endpush
@@ -211,90 +234,133 @@ document.addEventListener('DOMContentLoaded', function() {
 @push('styles')
 <style>
 :root {
-    --burgundy: #5e0f0f;
-    --gold: #c8a97e;
-    --cream: #f5f0e6;
+    --burgundy: #6a0f1a;
     --light-burgundy: #8b1a1a;
+    --dark-burgundy: #4a0a12;
+    --gold: #c8a97e;
+    --light-gold: #e5d7bf;
+    --cream: #f9f5f0;
     --dark-gold: #b8945f;
 }
 
-.wine-card {
-    background: var(--cream);
-    border-radius: 16px;
-    border: 1px solid var(--gold);
-    box-shadow: 0 4px 24px rgba(94, 15, 15, 0.07);
+body {
+    background-color: var(--cream);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.card-body {
-    background: var(--cream);
-    border-radius: 16px;
+.bg-burgundy {
+    background-color: var(--burgundy) !important;
 }
 
-.form-label {
-    color: var(--burgundy);
-    font-weight: 600;
-}
-
-input.form-control, textarea.form-control, select.form-control {
-    border: 1px solid var(--gold);
-    border-radius: 8px;
-    background: #fff8f3;
-    color: var(--burgundy);
-}
-input.form-control:focus, textarea.form-control:focus, select.form-control:focus {
-    border-color: var(--burgundy);
-    box-shadow: 0 0 0 2px var(--gold);
-    background: #fff8f3;
-    color: var(--burgundy);
+.text-burgundy {
+    color: var(--burgundy) !important;
 }
 
 .btn-burgundy {
-    background: var(--burgundy);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: background 0.2s;
+    background-color: var(--burgundy) !important;
+    color: white !important;
+    border-color: var(--burgundy) !important;
 }
+
+.btn-outline-burgundy {
+    color: var(--burgundy) !important;
+    border-color: var(--burgundy) !important;
+    background-color: transparent !important;
+}
+
 .btn-burgundy:hover, .btn-burgundy:focus {
-    background: var(--light-burgundy);
-    color: #fff;
+    background-color: var(--dark-burgundy) !important;
+    border-color: var(--dark-burgundy) !important;
+    color: var(--light-gold) !important;
 }
 
-.btn-primary {
-    background: var(--gold);
-    color: var(--burgundy);
+.btn-outline-burgundy:hover, .btn-outline-burgundy:focus {
+    background-color: var(--burgundy) !important;
+    color: white !important;
+}
+
+.wine-card {
+    max-width: 1600px;
+    width: 100%;
+    margin: 0 auto;
+    border-radius: 16px;
+    overflow: hidden;
     border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: background 0.2s;
-}
-.btn-primary:hover, .btn-primary:focus {
-    background: var(--dark-gold);
-    color: #fff;
 }
 
-.btn-secondary {
-    background: #fff;
-    color: var(--burgundy);
-    border: 1px solid var(--gold);
-    border-radius: 8px;
-    font-weight: 600;
-    transition: background 0.2s;
-}
-.btn-secondary:hover, .btn-secondary:focus {
-    background: var(--gold);
-    color: #fff;
+.card-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
 }
 
-.alert-info {
-    background: #f8f5f0;
+.form-control, .form-select {
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    transition: all 0.3s;
+}
+
+.form-control:focus, .form-select:focus {
     border-color: var(--gold);
-    color: var(--burgundy);
+    box-shadow: 0 0 0 0.25rem rgba(200, 169, 126, 0.25);
 }
 
-.page-header, .card-title, .header-actions {
-    color: var(--burgundy);
+.form-control-lg, .form-select-lg {
+    padding: 1rem 1.25rem;
+    font-size: 1.05rem;
+}
+
+.input-group-text {
+    background-color: white;
+    border: 1px solid #ddd;
+}
+
+label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #555;
+}
+
+.fw-bold {
+    color: var(--dark-burgundy);
+}
+
+.invalid-feedback {
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+.bg-light {
+    background-color: var(--light-gold) !important;
+}
+
+.rounded {
+    border-radius: 10px !important;
+}
+
+.shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
+.container-fluid.d-flex {
+    min-height: 100vh;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.col-12.col-lg-10.col-xl-8 {
+    max-width: 1600px;
+    width: 98vw;
+}
+
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1.25rem;
+    }
+    
+    .btn-lg {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+    }
 }
 </style>
 @endpush

@@ -197,9 +197,13 @@
                 <div class="d-flex align-items-center gap-4">
                     <div class="dropdown">
                         <a class="dropdown-toggle d-flex align-items-center text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
+                            @if(Auth::user()->profile_photo)
+                                <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}?v={{ time() }}" alt="{{ Auth::user()->name }}" class="profile-photo-large rounded-circle me-2" style="border: 6px solid var(--gold); width: 72px; height: 72px; object-fit: cover;">
+                            @else
                             <div class="profile-photo-placeholder-large rounded-circle d-flex align-items-center justify-content-center me-2" style="border: 6px solid var(--gold); background: linear-gradient(135deg, var(--burgundy) 0%, #8b1a1a 100%); width: 72px; height: 72px; color: #fff; font-size: 2rem;">
                                 <span class="fw-bold">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
                             </div>
+                            @endif
                             <span class="user-name">{{ Auth::user()->name }} <span class="text-gold" style="font-weight: 500;">(Supplier)</span></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
@@ -231,136 +235,168 @@
                                         <th>Category</th>
                                         <th>Typical Use</th>
                                         <th>Stock Level</th>
+                                        <th>Unit Price ($)</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td><input type="text" name="materials[0][name]" class="form-control" value="Grapes" required></td>
-                                        <td><input type="text" name="materials[0][category]" class="form-control" value="Fruit" required></td>
-                                        <td><input type="text" name="materials[0][use]" class="form-control" value="Main ingredient for wine" required></td>
-                                        <td><input type="text" name="materials[0][stock]" class="form-control" value="5,000 kg" required></td>
-                                        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="text" name="materials[1][name]" class="form-control" value="Yeast" required></td>
-                                        <td><input type="text" name="materials[1][category]" class="form-control" value="Fermentation Agent" required></td>
-                                        <td><input type="text" name="materials[1][use]" class="form-control" value="Converts sugar to alcohol" required></td>
-                                        <td><input type="text" name="materials[1][stock]" class="form-control" value="50 kg" required></td>
-                                        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="text" name="materials[2][name]" class="form-control" value="Oak Barrels" required></td>
-                                        <td><input type="text" name="materials[2][category]" class="form-control" value="Storage" required></td>
-                                        <td><input type="text" name="materials[2][use]" class="form-control" value="Aging and flavoring wine" required></td>
-                                        <td><input type="text" name="materials[2][stock]" class="form-control" value="120 units" required></td>
-                                        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="text" name="materials[3][name]" class="form-control" value="Bottles" required></td>
-                                        <td><input type="text" name="materials[3][category]" class="form-control" value="Packaging" required></td>
-                                        <td><input type="text" name="materials[3][use]" class="form-control" value="Final wine packaging" required></td>
-                                        <td><input type="text" name="materials[3][stock]" class="form-control" value="10,000 units" required></td>
-                                        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="text" name="materials[4][name]" class="form-control" value="Corks" required></td>
-                                        <td><input type="text" name="materials[4][category]" class="form-control" value="Packaging" required></td>
-                                        <td><input type="text" name="materials[4][use]" class="form-control" value="Sealing wine bottles" required></td>
-                                        <td><input type="text" name="materials[4][stock]" class="form-control" value="10,000 units" required></td>
-                                        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="text" name="materials[5][name]" class="form-control" value="Sugar" required></td>
-                                        <td><input type="text" name="materials[5][category]" class="form-control" value="Additive" required></td>
-                                        <td><input type="text" name="materials[5][use]" class="form-control" value="Adjusting sweetness" required></td>
-                                        <td><input type="text" name="materials[5][stock]" class="form-control" value="200 kg" required></td>
-                                        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="text" name="materials[6][name]" class="form-control" value="Sulfites" required></td>
-                                        <td><input type="text" name="materials[6][category]" class="form-control" value="Preservative" required></td>
-                                        <td><input type="text" name="materials[6][use]" class="form-control" value="Preserving wine" required></td>
-                                        <td><input type="text" name="materials[6][stock]" class="form-control" value="30 kg" required></td>
-                                        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="text" name="materials[7][name]" class="form-control" value="Cleaning Agents" required></td>
-                                        <td><input type="text" name="materials[7][category]" class="form-control" value="Sanitation" required></td>
-                                        <td><input type="text" name="materials[7][use]" class="form-control" value="Cleaning equipment" required></td>
-                                        <td><input type="text" name="materials[7][stock]" class="form-control" value="100 L" required></td>
-                                        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="text" name="materials[8][name]" class="form-control" value="Labels" required></td>
-                                        <td><input type="text" name="materials[8][category]" class="form-control" value="Packaging" required></td>
-                                        <td><input type="text" name="materials[8][use]" class="form-control" value="Branding and information" required></td>
-                                        <td><input type="text" name="materials[8][stock]" class="form-control" value="10,000 units" required></td>
-                                        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="text" name="materials[9][name]" class="form-control" value="Bentonite Clay" required></td>
-                                        <td><input type="text" name="materials[9][category]" class="form-control" value="Clarifier" required></td>
-                                        <td><input type="text" name="materials[9][use]" class="form-control" value="Clarifying and stabilizing wine" required></td>
-                                        <td><input type="text" name="materials[9][stock]" class="form-control" value="25 kg" required></td>
-                                        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="text" name="materials[10][name]" class="form-control" value="Enzymes" required></td>
-                                        <td><input type="text" name="materials[10][category]" class="form-control" value="Additive" required></td>
-                                        <td><input type="text" name="materials[10][use]" class="form-control" value="Improving extraction and clarification" required></td>
-                                        <td><input type="text" name="materials[10][stock]" class="form-control" value="10 kg" required></td>
-                                        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="text" name="materials[11][name]" class="form-control" value="Capsules" required></td>
-                                        <td><input type="text" name="materials[11][category]" class="form-control" value="Packaging" required></td>
-                                        <td><input type="text" name="materials[11][use]" class="form-control" value="Sealing bottle tops" required></td>
-                                        <td><input type="text" name="materials[11][stock]" class="form-control" value="10,000 units" required></td>
-                                        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="text" name="materials[12][name]" class="form-control" value="Acids (Tartaric, Malic, Citric)" required></td>
-                                        <td><input type="text" name="materials[12][category]" class="form-control" value="Additive" required></td>
-                                        <td><input type="text" name="materials[12][use]" class="form-control" value="Adjusting acidity" required></td>
-                                        <td><input type="text" name="materials[12][stock]" class="form-control" value="40 kg" required></td>
-                                        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="text" name="materials[13][name]" class="form-control" value="Fining Agents" required></td>
-                                        <td><input type="text" name="materials[13][category]" class="form-control" value="Clarifier" required></td>
-                                        <td><input type="text" name="materials[13][use]" class="form-control" value="Clarifying and stabilizing wine" required></td>
-                                        <td><input type="text" name="materials[13][stock]" class="form-control" value="15 kg" required></td>
-                                        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="text" name="materials[14][name]" class="form-control" value="Tannins" required></td>
-                                        <td><input type="text" name="materials[14][category]" class="form-control" value="Additive" required></td>
-                                        <td><input type="text" name="materials[14][use]" class="form-control" value="Enhancing structure and flavor" required></td>
-                                        <td><input type="text" name="materials[14][stock]" class="form-control" value="8 kg" required></td>
-                                        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="text" name="materials[15][name]" class="form-control" value="Water" required></td>
-                                        <td><input type="text" name="materials[15][category]" class="form-control" value="Base" required></td>
-                                        <td><input type="text" name="materials[15][use]" class="form-control" value="Dilution and cleaning" required></td>
-                                        <td><input type="text" name="materials[15][stock]" class="form-control" value="1,000 L" required></td>
-                                        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="text" name="materials[16][name]" class="form-control" value="Nutrients" required></td>
-                                        <td><input type="text" name="materials[16][category]" class="form-control" value="Additive" required></td>
-                                        <td><input type="text" name="materials[16][use]" class="form-control" value="Supporting yeast health" required></td>
-                                        <td><input type="text" name="materials[16][stock]" class="form-control" value="12 kg" required></td>
-                                        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="text" name="materials[17][name]" class="form-control" value="Filtering Pads" required></td>
-                                        <td><input type="text" name="materials[17][category]" class="form-control" value="Filtration" required></td>
-                                        <td><input type="text" name="materials[17][use]" class="form-control" value="Filtering wine before bottling" required></td>
-                                        <td><input type="text" name="materials[17][stock]" class="form-control" value="200 units" required></td>
-                                        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                                    </tr>
+@if(isset($materials) && count($materials) > 0)
+    @foreach($materials as $i => $material)
+        <tr>
+            <td><input type="text" name="materials[{{ $i }}][name]" class="form-control" value="{{ $material->name }}" required></td>
+            <td><input type="text" name="materials[{{ $i }}][category]" class="form-control" value="{{ $material->category }}" required></td>
+            <td><input type="text" name="materials[{{ $i }}][use]" class="form-control" value="{{ $material->typical_use }}" required></td>
+            <td><input type="text" name="materials[{{ $i }}][stock]" class="form-control" value="{{ $material->stock_level }}" required></td>
+            <td><input type="number" name="materials[{{ $i }}][unit_price]" class="form-control" value="{{ $material->unit_price }}" min="0" step="0.01" required></td>
+            <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
+        </tr>
+    @endforeach
+@else
+    <tr>
+        <td><input type="text" name="materials[0][name]" class="form-control" value="Grapes" required></td>
+        <td><input type="text" name="materials[0][category]" class="form-control" value="Fruit" required></td>
+        <td><input type="text" name="materials[0][use]" class="form-control" value="Main ingredient for wine" required></td>
+        <td><input type="text" name="materials[0][stock]" class="form-control" value="5,000 kg" required></td>
+        <td><input type="number" name="materials[0][unit_price]" class="form-control" value="2.50" min="0" step="0.01" required></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
+    </tr>
+    <tr>
+        <td><input type="text" name="materials[1][name]" class="form-control" value="Yeast" required></td>
+        <td><input type="text" name="materials[1][category]" class="form-control" value="Fermentation Agent" required></td>
+        <td><input type="text" name="materials[1][use]" class="form-control" value="Converts sugar to alcohol" required></td>
+        <td><input type="text" name="materials[1][stock]" class="form-control" value="50 kg" required></td>
+        <td><input type="number" name="materials[1][unit_price]" class="form-control" value="8.00" min="0" step="0.01" required></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
+    </tr>
+    <tr>
+        <td><input type="text" name="materials[2][name]" class="form-control" value="Oak Barrels" required></td>
+        <td><input type="text" name="materials[2][category]" class="form-control" value="Storage" required></td>
+        <td><input type="text" name="materials[2][use]" class="form-control" value="Aging and flavoring wine" required></td>
+        <td><input type="text" name="materials[2][stock]" class="form-control" value="120 units" required></td>
+        <td><input type="number" name="materials[2][unit_price]" class="form-control" value="120.00" min="0" step="0.01" required></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
+    </tr>
+    <tr>
+        <td><input type="text" name="materials[3][name]" class="form-control" value="Bottles" required></td>
+        <td><input type="text" name="materials[3][category]" class="form-control" value="Packaging" required></td>
+        <td><input type="text" name="materials[3][use]" class="form-control" value="Final wine packaging" required></td>
+        <td><input type="text" name="materials[3][stock]" class="form-control" value="10,000 units" required></td>
+        <td><input type="number" name="materials[3][unit_price]" class="form-control" value="0.30" min="0" step="0.01" required></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
+    </tr>
+    <tr>
+        <td><input type="text" name="materials[4][name]" class="form-control" value="Corks" required></td>
+        <td><input type="text" name="materials[4][category]" class="form-control" value="Packaging" required></td>
+        <td><input type="text" name="materials[4][use]" class="form-control" value="Sealing wine bottles" required></td>
+        <td><input type="text" name="materials[4][stock]" class="form-control" value="10,000 units" required></td>
+        <td><input type="number" name="materials[4][unit_price]" class="form-control" value="0.15" min="0" step="0.01" required></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
+    </tr>
+    <tr>
+        <td><input type="text" name="materials[5][name]" class="form-control" value="Sugar" required></td>
+        <td><input type="text" name="materials[5][category]" class="form-control" value="Additive" required></td>
+        <td><input type="text" name="materials[5][use]" class="form-control" value="Adjusting sweetness" required></td>
+        <td><input type="text" name="materials[5][stock]" class="form-control" value="200 kg" required></td>
+        <td><input type="number" name="materials[5][unit_price]" class="form-control" value="0.60" min="0" step="0.01" required></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
+    </tr>
+    <tr>
+        <td><input type="text" name="materials[6][name]" class="form-control" value="Sulfites" required></td>
+        <td><input type="text" name="materials[6][category]" class="form-control" value="Preservative" required></td>
+        <td><input type="text" name="materials[6][use]" class="form-control" value="Preserving wine" required></td>
+        <td><input type="text" name="materials[6][stock]" class="form-control" value="30 kg" required></td>
+        <td><input type="number" name="materials[6][unit_price]" class="form-control" value="1.20" min="0" step="0.01" required></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
+    </tr>
+    <tr>
+        <td><input type="text" name="materials[7][name]" class="form-control" value="Cleaning Agents" required></td>
+        <td><input type="text" name="materials[7][category]" class="form-control" value="Sanitation" required></td>
+        <td><input type="text" name="materials[7][use]" class="form-control" value="Cleaning equipment" required></td>
+        <td><input type="text" name="materials[7][stock]" class="form-control" value="100 L" required></td>
+        <td><input type="number" name="materials[7][unit_price]" class="form-control" value="3.00" min="0" step="0.01" required></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
+    </tr>
+    <tr>
+        <td><input type="text" name="materials[8][name]" class="form-control" value="Labels" required></td>
+        <td><input type="text" name="materials[8][category]" class="form-control" value="Packaging" required></td>
+        <td><input type="text" name="materials[8][use]" class="form-control" value="Branding and information" required></td>
+        <td><input type="text" name="materials[8][stock]" class="form-control" value="10,000 units" required></td>
+        <td><input type="number" name="materials[8][unit_price]" class="form-control" value="0.05" min="0" step="0.01" required></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
+    </tr>
+    <tr>
+        <td><input type="text" name="materials[9][name]" class="form-control" value="Bentonite Clay" required></td>
+        <td><input type="text" name="materials[9][category]" class="form-control" value="Clarifier" required></td>
+        <td><input type="text" name="materials[9][use]" class="form-control" value="Clarifying and stabilizing wine" required></td>
+        <td><input type="text" name="materials[9][stock]" class="form-control" value="25 kg" required></td>
+        <td><input type="number" name="materials[9][unit_price]" class="form-control" value="1.00" min="0" step="0.01" required></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
+    </tr>
+    <tr>
+        <td><input type="text" name="materials[10][name]" class="form-control" value="Enzymes" required></td>
+        <td><input type="text" name="materials[10][category]" class="form-control" value="Additive" required></td>
+        <td><input type="text" name="materials[10][use]" class="form-control" value="Improving extraction and clarification" required></td>
+        <td><input type="text" name="materials[10][stock]" class="form-control" value="10 kg" required></td>
+        <td><input type="number" name="materials[10][unit_price]" class="form-control" value="7.00" min="0" step="0.01" required></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
+    </tr>
+    <tr>
+        <td><input type="text" name="materials[11][name]" class="form-control" value="Capsules" required></td>
+        <td><input type="text" name="materials[11][category]" class="form-control" value="Packaging" required></td>
+        <td><input type="text" name="materials[11][use]" class="form-control" value="Sealing bottle tops" required></td>
+        <td><input type="text" name="materials[11][stock]" class="form-control" value="10,000 units" required></td>
+        <td><input type="number" name="materials[11][unit_price]" class="form-control" value="0.10" min="0" step="0.01" required></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
+    </tr>
+    <tr>
+        <td><input type="text" name="materials[12][name]" class="form-control" value="Acids (Tartaric, Malic, Citric)" required></td>
+        <td><input type="text" name="materials[12][category]" class="form-control" value="Additive" required></td>
+        <td><input type="text" name="materials[12][use]" class="form-control" value="Adjusting acidity" required></td>
+        <td><input type="text" name="materials[12][stock]" class="form-control" value="40 kg" required></td>
+        <td><input type="number" name="materials[12][unit_price]" class="form-control" value="2.00" min="0" step="0.01" required></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
+    </tr>
+    <tr>
+        <td><input type="text" name="materials[13][name]" class="form-control" value="Fining Agents" required></td>
+        <td><input type="text" name="materials[13][category]" class="form-control" value="Clarifier" required></td>
+        <td><input type="text" name="materials[13][use]" class="form-control" value="Clarifying and stabilizing wine" required></td>
+        <td><input type="text" name="materials[13][stock]" class="form-control" value="15 kg" required></td>
+        <td><input type="number" name="materials[13][unit_price]" class="form-control" value="1.50" min="0" step="0.01" required></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
+    </tr>
+    <tr>
+        <td><input type="text" name="materials[14][name]" class="form-control" value="Tannins" required></td>
+        <td><input type="text" name="materials[14][category]" class="form-control" value="Additive" required></td>
+        <td><input type="text" name="materials[14][use]" class="form-control" value="Enhancing structure and flavor" required></td>
+        <td><input type="text" name="materials[14][stock]" class="form-control" value="8 kg" required></td>
+        <td><input type="number" name="materials[14][unit_price]" class="form-control" value="4.00" min="0" step="0.01" required></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
+    </tr>
+    <tr>
+        <td><input type="text" name="materials[15][name]" class="form-control" value="Water" required></td>
+        <td><input type="text" name="materials[15][category]" class="form-control" value="Base" required></td>
+        <td><input type="text" name="materials[15][use]" class="form-control" value="Dilution and cleaning" required></td>
+        <td><input type="text" name="materials[15][stock]" class="form-control" value="1,000 L" required></td>
+        <td><input type="number" name="materials[15][unit_price]" class="form-control" value="0.01" min="0" step="0.01" required></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
+    </tr>
+    <tr>
+        <td><input type="text" name="materials[16][name]" class="form-control" value="Nutrients" required></td>
+        <td><input type="text" name="materials[16][category]" class="form-control" value="Additive" required></td>
+        <td><input type="text" name="materials[16][use]" class="form-control" value="Supporting yeast health" required></td>
+        <td><input type="text" name="materials[16][stock]" class="form-control" value="12 kg" required></td>
+        <td><input type="number" name="materials[16][unit_price]" class="form-control" value="2.20" min="0" step="0.01" required></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
+    </tr>
+    <tr>
+        <td><input type="text" name="materials[17][name]" class="form-control" value="Filtering Pads" required></td>
+        <td><input type="text" name="materials[17][category]" class="form-control" value="Filtration" required></td>
+        <td><input type="text" name="materials[17][use]" class="form-control" value="Filtering wine before bottling" required></td>
+        <td><input type="text" name="materials[17][stock]" class="form-control" value="200 units" required></td>
+        <td><input type="number" name="materials[17][unit_price]" class="form-control" value="0.50" min="0" step="0.01" required></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
+    </tr>
+@endif
                                 </tbody>
                             </table>
                         </div>
@@ -373,7 +409,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let rowIdx = 1;
+        let rowIdx = 18;
         document.getElementById('add-row').addEventListener('click', function() {
             const table = document.getElementById('materials-table').getElementsByTagName('tbody')[0];
             const newRow = document.createElement('tr');
@@ -382,6 +418,7 @@
                 <td><input type="text" name="materials[${rowIdx}][category]" class="form-control" placeholder="e.g. Fruit" required></td>
                 <td><input type="text" name="materials[${rowIdx}][use]" class="form-control" placeholder="e.g. Main ingredient" required></td>
                 <td><input type="text" name="materials[${rowIdx}][stock]" class="form-control" placeholder="e.g. 5,000 kg" required></td>
+                <td><input type="number" name="materials[${rowIdx}][unit_price]" class="form-control" placeholder="e.g. 1.00" min="0" step="0.01" required></td>
                 <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
             `;
             table.appendChild(newRow);

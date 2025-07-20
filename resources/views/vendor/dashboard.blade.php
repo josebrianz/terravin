@@ -133,8 +133,7 @@
                             <li><a href="{{ url('/vendor/orders') }}" class="nav-link"><i class="fas fa-shopping-bag"></i> Orders</a></li>
                             <li><a href="{{ url('/vendor/inventory') }}" class="nav-link"><i class="fas fa-boxes"></i> Inventory</a></li>
                             <li><a href="{{ url('/reports') }}" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a></li>
-                            <li><a href="{{ route('my.report') }}" class="nav-link btn btn-outline-warning text-gold px-2 py-1 ms-2" style="font-size:0.85em; border-color: #c8a97e; color: #c8a97e !important;"><i class="fas fa-eye me-1"></i>View Report</a></li>
-                            <li><a href="{{ route('my.report', ['download' => 1]) }}" class="nav-link btn text-white px-2 py-1 ms-1" style="background: #5e0f0f; font-size:0.85em;"><i class="fas fa-file-download me-1"></i>Download Report</a></li>
+                            <li><a href="{{ url('/vendor/bulk-order') }}" class="nav-link"><i class="fas fa-wine-bottle"></i> Bulk Order</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -175,8 +174,38 @@
                 <p>View sales analytics, performance reports, and demand forecasts to optimize your operations.</p>
                 <a href="{{ url('/reports') }}" class="btn btn-burgundy">View Analytics</a>
             </div>
+            <div class="dashboard-section" style="background: linear-gradient(135deg, #f5f0e6 60%, #c8a97e 100%); box-shadow: 0 4px 20px rgba(94, 15, 15, 0.10); border: 2px solid #c8a97e;">
+                <div class="section-title" style="font-size: 1.5rem; color: #5e0f0f;">
+                    <i class="fas fa-truck-loading me-2 text-gold"></i>Bulk Order from Company
+                </div>
+                <p style="font-size: 1.1rem; color: #5e0f0f;">
+                    Need to restock in large quantities? Place a creative bulk order directly from the company and enjoy special rates, priority processing, and seamless delivery for your business needs.
+                </p>
+                <a href="{{ url('/vendor/bulk-order') }}" class="btn btn-burgundy" style="font-size: 1.1rem; font-weight: 600; box-shadow: 0 2px 8px #c8a97e; transition: transform 0.2s;">
+                    <i class="fas fa-wine-bottle me-2"></i>Place Bulk Order
+                </a>
+            </div>
+            <div class="dashboard-section text-center" style="background: none; box-shadow: none; border: none; margin-top: -1rem;">
+                <a href="{{ route('vendor.bulk-order.history') }}" class="btn btn-burgundy btn-lg mt-2 wine-track-btn" style="font-size: 1.25rem; font-weight: 700; border: 2px solid #c8a97e; color: #fff; box-shadow: 0 4px 16px rgba(94,15,15,0.12); letter-spacing: 1px;">
+                    <i class="fas fa-history me-2"></i>Track Bulk Orders
+                </a>
+            </div>
+            <style>
+                .wine-track-btn {
+                    background: linear-gradient(135deg, #5e0f0f 60%, #8b1a1a 100%);
+                    border-radius: 2rem;
+                    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+                }
+                .wine-track-btn:hover, .wine-track-btn:focus {
+                    background: linear-gradient(135deg, #8b1a1a 60%, #5e0f0f 100%);
+                    color: #c8a97e;
+                    box-shadow: 0 8px 24px rgba(94,15,15,0.18);
+                    text-decoration: none;
+                }
+            </style>
         </div>
     </div>
+    @include('components.chat-widget')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html> 
