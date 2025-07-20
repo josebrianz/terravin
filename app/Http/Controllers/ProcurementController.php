@@ -31,8 +31,8 @@ class ProcurementController extends Controller
             ->take(10)
             ->get();
 
-        // Top wholesalers
-        $topWholesalers = Procurement::selectRaw('wholesaler_name, COUNT(*) as count, SUM(total_amount) as total_value')
+        // Top suppliers
+        $topSuppliers = Procurement::selectRaw('wholesaler_name, COUNT(*) as count, SUM(total_amount) as total_value')
             ->groupBy('wholesaler_name')
             ->orderBy('count', 'desc')
             ->take(5)
@@ -63,45 +63,87 @@ class ProcurementController extends Controller
             'approvedValue',
             'orderedValue',
             'recentProcurements',
-            'topWholesalers',
+            'topSuppliers',
             'monthlyTrend',
             'overdueProcurements'
         ));
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $procurements = Procurement::with(['requester', 'approver'])
-            ->latest()
-            ->paginate(15);
+        $query = Procurement::with(['requester', 'approver']);
 
-        return view('procurement.index', compact('procurements'));
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by supplier (wholesaler_name)
+        if ($request->filled('supplier')) {
+            $query->where('wholesaler_name', 'like', '%' . $request->supplier . '%');
+        }
+
+        // Filter by date range
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        $procurements = $query->latest()->paginate(15);
+
+        // Get all suppliers for dropdown
+        $suppliers = User::where('role', 'Supplier')->orderBy('name')->get(['id', 'name', 'email']);
+
+        return view('procurement.index', compact('procurements', 'suppliers'));
     }
 
     public function create()
     {
-        $users = User::all();
-        return view('procurement.create', compact('users'));
+        $suppliers = \App\Models\User::where('role', 'Supplier')->get(['id', 'name', 'email']);
+        $rawMaterials = \App\Models\SupplierRawMaterial::all();
+        return view('procurement.create', compact('suppliers', 'rawMaterials'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
+            'supplier_id' => 'required|exists:users,id',
             'item_name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'wholesaler_name' => 'required|string|max:255',
-            'wholesaler_email' => 'nullable|email',
-            'wholesaler_phone' => 'nullable|string',
             'quantity' => 'required|integer|min:1',
-            'unit_price' => 'required|numeric|min:0',
-            'expected_delivery' => 'nullable|date|after:today',
-            'notes' => 'nullable|string',
+            'unit_price' => 'required|numeric|min:0.01',
+            'order_date' => 'nullable|date',
+            'expected_delivery_date' => 'nullable|date|after:today',
         ]);
 
-        $procurement = new Procurement($request->all());
+        // Get supplier information
+        $supplier = User::findOrFail($request->supplier_id);
+
+        // Debug logging
+        \Log::info('Procurement creation:', [
+            'supplier' => $supplier->name,
+            'item_name' => $request->item_name,
+            'quantity' => $request->quantity,
+            'unit_price' => $request->unit_price,
+            'total_amount' => $request->quantity * $request->unit_price
+        ]);
+
+        $procurement = new Procurement();
+        $procurement->item_name = $request->item_name;
+        $procurement->description = $request->description;
+        $procurement->wholesaler_name = $supplier->name; // Use supplier name as wholesaler name
+        $procurement->wholesaler_email = $supplier->email;
+        $procurement->quantity = $request->quantity;
+        $procurement->unit_price = $request->unit_price;
+        $procurement->order_date = $request->order_date;
+        $procurement->expected_delivery = $request->expected_delivery_date;
         $procurement->po_number = 'PO-' . date('Y') . '-' . str_pad(Procurement::count() + 1, 4, '0', STR_PAD_LEFT);
         $procurement->total_amount = $request->quantity * $request->unit_price;
         $procurement->requested_by = auth()->id() ?? 1; // Default to user ID 1 if no auth
+        $procurement->status = 'pending';
         $procurement->save();
 
         return redirect()->route('procurement.index')

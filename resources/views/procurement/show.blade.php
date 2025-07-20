@@ -1,8 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.plain')
 
 @section('title', 'Wine Supply Order Details')
 
 @section('content')
+    @include('layouts.navigation')
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -13,10 +14,10 @@
                     Wine Supply Order Details
                 </h1>
                 <div class="page-options">
-                    <a href="{{ route('procurement.index') }}" class="btn btn-secondary">
+                    <a href="{{ route('procurement.index') }}" class="btn btn-burgundy btn-lg rounded-pill me-2">
                         <i class="fas fa-arrow-left"></i> Back to Supply Orders
                     </a>
-                    <a href="{{ route('procurement.edit', $procurement) }}" class="btn btn-primary">
+                    <a href="{{ route('procurement.edit', $procurement) }}" class="btn btn-outline-burgundy btn-lg rounded-pill">
                         <i class="fas fa-edit"></i> Edit
                     </a>
                 </div>
@@ -116,17 +117,17 @@
                         </div>
                     </div>
 
-                    <!-- Wholesaler Information -->
+                    <!-- Supplier Information -->
                     <div class="card mt-4">
                         <div class="card-header">
                             <h5 class="card-title mb-0">
-                                <i class="fas fa-building"></i> Wine Supply Wholesaler Information
+                                <i class="fas fa-building"></i> Wine Supply Supplier Information
                             </h5>
                         </div>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-4">
-                                    <strong>Wholesaler Name:</strong><br>
+                                    <strong>Supplier Name:</strong><br>
                                     {{ $procurement->wholesaler_name }}
                                 </div>
                                 <div class="col-md-4">
@@ -169,7 +170,7 @@
                             @if($procurement->status === 'pending')
                                 <form action="{{ route('procurement.approve', $procurement) }}" method="POST" class="mb-2">
                                     @csrf
-                                    <button type="submit" class="btn btn-success btn-block w-100" 
+                                    <button type="submit" class="btn btn-burgundy btn-lg btn-block w-100 rounded-pill mb-2" 
                                             onclick="return confirm('Approve this wine supply order?')">
                                         <i class="fas fa-check"></i> Approve Supply Order
                                     </button>
@@ -179,7 +180,7 @@
                             @if($procurement->status === 'approved')
                                 <form action="{{ route('procurement.markAsOrdered', $procurement) }}" method="POST" class="mb-2">
                                     @csrf
-                                    <button type="submit" class="btn btn-info btn-block w-100" 
+                                    <button type="submit" class="btn btn-burgundy btn-lg btn-block w-100 rounded-pill mb-2" 
                                             onclick="return confirm('Mark as ordered?')">
                                         <i class="fas fa-truck"></i> Mark as Ordered
                                     </button>
@@ -189,22 +190,22 @@
                             @if($procurement->status === 'ordered')
                                 <form action="{{ route('procurement.markAsReceived', $procurement) }}" method="POST" class="mb-2">
                                     @csrf
-                                    <button type="submit" class="btn btn-success btn-block w-100" 
+                                    <button type="submit" class="btn btn-burgundy btn-lg btn-block w-100 rounded-pill mb-2" 
                                             onclick="return confirm('Mark as received?')">
                                         <i class="fas fa-box"></i> Mark as Received
                                     </button>
                                 </form>
                             @endif
 
-                            <a href="{{ route('procurement.edit', $procurement) }}" class="btn btn-primary btn-block w-100 mb-2">
+                            <a href="{{ route('procurement.edit', $procurement) }}" class="btn btn-outline-burgundy btn-lg btn-block w-100 rounded-pill mb-2">
                                 <i class="fas fa-edit"></i> Edit Supply Order
                             </a>
 
                             <form action="{{ route('procurement.destroy', $procurement) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-block w-100" 
-                                        onclick="return confirm('Are you sure you want to delete this wine supply order?')">
+                                <button type="submit" class="btn btn-outline-burgundy btn-lg btn-block w-100 rounded-pill mb-2" 
+                                        onclick="return confirm('Are you sure you want to delete this order?')">
                                     <i class="fas fa-trash"></i> Delete
                                 </button>
                             </form>
@@ -244,7 +245,7 @@
                                     <div class="timeline-marker bg-primary"></div>
                                     <div class="timeline-content">
                                         <h6 class="timeline-title">Ordered</h6>
-                                        <p class="timeline-text">Order placed with wholesaler</p>
+                                        <p class="timeline-text">Order placed with supplier</p>
                                         @if($procurement->order_date)
                                             <small class="text-muted">{{ $procurement->order_date->format('M d, Y') }}</small>
                                         @endif
@@ -349,6 +350,44 @@
 .btn-block {
     display: block;
     width: 100%;
+}
+
+.btn-burgundy, .btn-outline-burgundy {
+    box-shadow: 0 4px 18px 0 rgba(200, 169, 126, 0.25), 0 1.5px 0 0 var(--gold);
+    border-width: 2.5px !important;
+    border-color: var(--gold) !important;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.25s cubic-bezier(0.4,0,0.2,1),
+                transform 0.18s cubic-bezier(0.4,0,0.2,1),
+                border-color 0.18s cubic-bezier(0.4,0,0.2,1);
+}
+.btn-burgundy:hover, .btn-burgundy:focus,
+.btn-outline-burgundy:hover, .btn-outline-burgundy:focus {
+    box-shadow: 0 8px 32px 0 rgba(200, 169, 126, 0.38), 0 2.5px 0 0 var(--gold);
+    border-color: var(--gold) !important;
+    transform: scale(1.045);
+}
+.btn-burgundy::after, .btn-outline-burgundy::after {
+    content: '';
+    position: absolute;
+    left: -75%;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg, rgba(200,169,126,0.18) 0%, rgba(255,255,255,0.12) 100%);
+    transform: skewX(-25deg);
+    transition: left 0.4s cubic-bezier(0.4,0,0.2,1);
+    pointer-events: none;
+    z-index: 1;
+}
+.btn-burgundy:hover::after, .btn-burgundy:focus::after,
+.btn-outline-burgundy:hover::after, .btn-outline-burgundy:focus::after {
+    left: 120%;
+}
+.btn-burgundy i, .btn-outline-burgundy i {
+    color: var(--gold) !important;
+    filter: drop-shadow(0 1px 0 #fff7e0);
 }
 </style>
 @endpush

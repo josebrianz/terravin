@@ -67,7 +67,7 @@ class OrderController extends Controller
             'payment_method' => 'required|in:Cash on Delivery,Mobile Money,Card',
         ]);
         $user = auth()->user();
-        $cartItems = \App\Models\CartItem::where('user_id', $user->id)->with('wine')->get();
+        $cartItems = \App\Models\CartItem::where('user_id', $user->id)->with('inventory')->get();
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
@@ -76,13 +76,13 @@ class OrderController extends Controller
         $total = 0;
         foreach ($cartItems as $item) {
             $items[] = [
-                'wine_id' => $item->wine_id,
-                'wine_name' => $item->wine->name,
-                'wine_category' => $item->wine->category ?? '',
+                'inventory_id' => $item->inventory_id,
+                'wine_name' => $item->inventory->name,
+                'wine_category' => $item->inventory->category ?? '',
                 'quantity' => $item->quantity,
-                'unit_price' => $item->wine->unit_price,
+                'unit_price' => $item->inventory->unit_price,
             ];
-            $total += $item->wine->unit_price * $item->quantity;
+            $total += $item->inventory->unit_price * $item->quantity;
         }
         $order = \App\Models\Order::create([
             'user_id' => $user->id,
@@ -91,7 +91,6 @@ class OrderController extends Controller
             'customer_phone' => $user->phone ?? '',
             'items' => json_encode($items),
             'total_amount' => $total,
-
             'shipping_address' => $request->shipping_address,
             'notes' => $request->notes,
             'status' => 'pending',
@@ -99,7 +98,11 @@ class OrderController extends Controller
         ]);
         // Clear cart
         \App\Models\CartItem::where('user_id', $user->id)->delete();
-        return redirect()->route('orders.confirmation', $order->id)->with('success', 'Order placed successfully!');
+        if ($user->role === 'Retailer') {
+            return redirect()->route('retailer.orders.confirmation', $order->id)->with('success', 'Order placed successfully!');
+        } else {
+            return redirect()->route('orders.confirmation', $order->id)->with('success', 'Order placed successfully!');
+        }
     }
 
     /**
@@ -198,5 +201,11 @@ class OrderController extends Controller
             ->orderByDesc('created_at')
             ->get();
         return view('orders.history', compact('orders'));
+    }
+
+    public function retailerConfirmation($orderId)
+    {
+        $order = \App\Models\Order::where('id', $orderId)->where('user_id', auth()->id())->firstOrFail();
+        return view('retailer.orders.confirmation', compact('order'));
     }
 } 

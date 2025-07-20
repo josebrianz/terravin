@@ -36,19 +36,28 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($order->items as $item)
+                    @php
+                        $items = $order->items;
+                    @endphp
+                    @if(is_array($items) && count($items) > 0)
+                        @foreach($items as $item)
                     <tr>
-                        <td>{{ $item->item_name ?? $item['wine_name'] ?? '-' }}</td>
-                        <td>{{ format_usd($item->unit_price ?? $item['unit_price'] ?? 0) }}</td>
-                        <td>{{ $item->quantity ?? $item['quantity'] ?? 0 }}</td>
-                        <td>{{ format_usd($item->subtotal ?? ($item['quantity'] ?? 0 * $item['unit_price'] ?? 0)) }}</td>
+                            <td>{{ $item['wine_name'] ?? $item['item_name'] ?? 'Unknown Item' }}</td>
+                            <td>${{ number_format($item['unit_price'] ?? 0, 2) }}</td>
+                            <td>{{ $item['quantity'] ?? 0 }}</td>
+                            <td>${{ number_format(($item['quantity'] ?? 0) * ($item['unit_price'] ?? 0), 2) }}</td>
                     </tr>
                     @endforeach
+                    @else
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">No items found for this order</td>
+                        </tr>
+                    @endif
                 </tbody>
                 <tfoot>
                     <tr>
                         <th colspan="3" class="text-end">Total</th>
-                        <th>{{ format_usd($order->total_amount) }}</th>
+                        <th>${{ number_format($order->total_amount, 2) }}</th>
                     </tr>
                 </tfoot>
             </table>

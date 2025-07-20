@@ -3,6 +3,7 @@
 @section('title', 'Wine Supply Procurement Dashboard')
 
 @section('content')
+@php $usdRate = 3800; @endphp
 <div class="container-fluid">
     <!-- Page Header -->
     <div class="row mb-4">
@@ -13,12 +14,9 @@
                         <i class="fas fa-wine-bottle me-2 text-gold"></i>
                         Wine Supply Procurement Dashboard
                     </h1>
-                    <span class="text-muted small">Overview of all procurement activities and wholesaler performance</span>
+                    <span class="text-muted small">Overview of all procurement activities and supplier performance</span>
                 </div>
                 <div class="header-actions">
-                    <a href="{{ route('help.index') }}" class="btn btn-outline-burgundy shadow-sm me-2" title="Get help and support">
-                        <i class="fas fa-question-circle"></i> Help
-                    </a>
                     <a href="{{ route('procurement.create') }}" class="btn btn-burgundy shadow-sm" title="Create a new supply order">
                         <i class="fas fa-plus"></i> New Supply Order
                     </a>
@@ -112,7 +110,9 @@
                         <i class="fas fa-coins fa-2x text-gold"></i>
                     </div>
                     <span class="text-burgundy text-uppercase small fw-bold">Total Value</span>
-                    <div class="h4 mb-0 fw-bold text-burgundy">UGX {{ number_format($totalValue, 0) }}</div>
+                    <div class="h4 mb-0 fw-bold text-burgundy">
+                        ${{ number_format($totalValue / $usdRate, 2) }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -123,7 +123,9 @@
                         <i class="fas fa-clock fa-2x text-burgundy"></i>
                     </div>
                     <span class="text-burgundy text-uppercase small fw-bold">Pending Value</span>
-                    <div class="h4 mb-0 fw-bold text-burgundy">UGX {{ number_format($pendingValue, 0) }}</div>
+                    <div class="h4 mb-0 fw-bold text-burgundy">
+                        ${{ number_format($pendingValue / $usdRate, 2) }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -134,7 +136,9 @@
                         <i class="fas fa-check fa-2x text-gold"></i>
                     </div>
                     <span class="text-burgundy text-uppercase small fw-bold">Approved Value</span>
-                    <div class="h4 mb-0 fw-bold text-burgundy">UGX {{ number_format($approvedValue, 0) }}</div>
+                    <div class="h4 mb-0 fw-bold text-burgundy">
+                        ${{ number_format($approvedValue / $usdRate, 2) }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -145,7 +149,9 @@
                         <i class="fas fa-shipping-fast fa-2x text-burgundy"></i>
                     </div>
                     <span class="text-burgundy text-uppercase small fw-bold">On Order Value</span>
-                    <div class="h4 mb-0 fw-bold text-burgundy">UGX {{ number_format($orderedValue, 0) }}</div>
+                    <div class="h4 mb-0 fw-bold text-burgundy">
+                        ${{ number_format($orderedValue / $usdRate, 2) }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -169,7 +175,7 @@
                                 <tr>
                                     <th class="text-burgundy fw-bold">PO Number</th>
                                     <th class="text-burgundy fw-bold">Supply Item</th>
-                                    <th class="text-burgundy fw-bold">Wholesaler</th>
+                                    <th class="text-burgundy fw-bold">Supplier</th>
                                     <th class="text-burgundy fw-bold">Amount</th>
                                     <th class="text-burgundy fw-bold">Status</th>
                                     <th class="text-burgundy fw-bold">Requested By</th>
@@ -184,7 +190,9 @@
                                     </td>
                                     <td>{{ $procurement->item_name }}</td>
                                     <td>{{ $procurement->wholesaler_name }}</td>
-                                    <td class="fw-bold">UGX {{ number_format($procurement->amount, 0) }}</td>
+                                    <td class="fw-bold">
+                                        ${{ number_format($procurement->total_amount / $usdRate, 2) }}
+                                    </td>
                                     <td>
                                         @switch($procurement->status)
                                             @case('pending')
@@ -255,26 +263,26 @@
                 </div>
             </div>
 
-            <!-- Wholesaler Performance -->
+            <!-- Supplier Performance -->
             <div class="card wine-card shadow-sm border-0 mt-4">
                 <div class="card-header bg-white border-bottom-0">
                     <h5 class="card-title mb-0 fw-bold text-burgundy">
-                        <i class="fas fa-chart-line text-gold me-2"></i> Top Wholesalers
+                        <i class="fas fa-chart-line text-gold me-2"></i> Top Suppliers
                     </h5>
                 </div>
                 <div class="card-body">
-                    @forelse($topWholesalers as $wholesaler)
+                    @forelse($topSuppliers as $supplier)
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div>
-                            <h6 class="mb-0 fw-bold text-burgundy">{{ $wholesaler->wholesaler_name }}</h6>
-                            <small class="text-muted">{{ $wholesaler->orders_count }} orders</small>
+                            <h6 class="mb-0 fw-bold text-burgundy">{{ $supplier->wholesaler_name }}</h6>
+                            <small class="text-muted">{{ $supplier->count }} orders</small>
                         </div>
-                        <span class="badge bg-gold text-burgundy">UGX {{ number_format($wholesaler->total_amount, 0) }}</span>
+                        <span class="badge bg-gold text-burgundy">UGX {{ number_format($supplier->total_value, 0) }}</span>
                     </div>
                     @empty
                     <div class="text-center text-muted py-3">
                         <i class="fas fa-chart-bar fa-2x mb-2"></i>
-                        <p class="mb-0">No wholesaler data available</p>
+                        <p class="mb-0">No supplier data available</p>
                     </div>
                     @endforelse
                 </div>

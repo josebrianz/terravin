@@ -47,7 +47,7 @@
                                 </a></li>
                                 @endpermission
                                 @permission('view_orders')
-                                <li><a href="{{ route('orders.index') }}" class="nav-link">
+                                <li><a href="{{ route('admin.orders.index') }}" class="nav-link">
                                     <i class="fas fa-shopping-bag"></i> Orders
                                 </a></li>
                                 @endpermission
@@ -337,6 +337,25 @@
         .dropdown-divider {
             border-color: rgba(200, 169, 126, 0.2);
             margin: 0.5rem 0;
+        }
+
+        /* Dashboard navbar font override */
+        .wine-nav .nav-link, .wine-brand, .user-name {
+            font-family: 'Montserrat', sans-serif !important;
+            font-size: 1.05rem !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.02em !important;
+            color: #fff !important;
+            transition: color 0.2s, background 0.2s;
+        }
+
+        .wine-top-bar .dropdown-toggle img.rounded-circle,
+        .wine-top-bar .dropdown-toggle .rounded-circle {
+            width: 70px !important;
+            height: 70px !important;
+            object-fit: cover;
+            border: 4px solid var(--gold);
+            font-size: 28px !important;
         }
 
         @media (max-width: 1200px) {

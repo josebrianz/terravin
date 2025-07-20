@@ -116,6 +116,24 @@
             background: var(--light-burgundy);
             color: white;
         }
+        .wine-date-badge {
+            background: linear-gradient(90deg, #5e0f0f 60%, #8b1a1a 100%);
+            color: #c8a97e;
+            border: 2px solid #c8a97e;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            box-shadow: 0 2px 8px rgba(94, 15, 15, 0.12);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.2rem;
+            margin-left: 1rem;
+        }
+        .wine-date-badge i {
+            color: #c8a97e;
+            font-size: 1.1rem;
+        }
     </style>
 </head>
 <body>
@@ -172,9 +190,9 @@
                             <a href="{{ route('inventory.create') }}" class="btn btn-burgundy shadow-sm" title="Add a new wine item">
                                 <i class="fas fa-plus"></i> Add New Wine Item
                             </a>
-                            <span class="badge bg-gold text-burgundy px-3 py-2 ms-3">
-                                <i class="fas fa-clock me-1"></i>
-                                {{ now()->format('M d, Y H:i') }}
+                            <span class="wine-date-badge">
+                                <i class="fas fa-wine-glass-alt"></i>
+                                <span>{{ now()->format('M d, Y H:i') }}</span>
                             </span>
                         </div>
                     </div>
@@ -332,54 +350,7 @@
             </div>
 
             <!-- Quick Stats -->
-            @if($items->count() > 0)
-            <div class="row mt-4 g-3">
-                <div class="col-md-3">
-                    <div class="card wine-card shadow-sm border-0">
-                        <div class="card-body text-center">
-                            <div class="icon-circle bg-burgundy mb-3">
-                                <i class="fas fa-boxes fa-2x text-gold"></i>
-                            </div>
-                            <h4 class="mb-0 fw-bold text-burgundy">{{ $items->count() }}</h4>
-                            <span class="text-muted small">Total Wine Items</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card wine-card shadow-sm border-0">
-                        <div class="card-body text-center">
-                            <div class="icon-circle bg-gold mb-3">
-                                <i class="fas fa-exclamation-triangle fa-2x text-burgundy"></i>
-                            </div>
-                            <h4 class="mb-0 fw-bold text-burgundy">{{ $items->where('quantity', '<', 10)->count() }}</h4>
-                            <span class="text-muted small">Low Stock Items</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card wine-card shadow-sm border-0">
-                        <div class="card-body text-center">
-                            <div class="icon-circle bg-burgundy mb-3">
-                                <i class="fas fa-coins fa-2x text-gold"></i>
-                            </div>
-                            <h4 class="mb-0 fw-bold text-burgundy">${{ number_format($items->sum('unit_price'), 0) }}</h4>
-                            <span class="text-muted small">Total Value</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card wine-card shadow-sm border-0">
-                        <div class="card-body text-center">
-                            <div class="icon-circle bg-gold mb-3">
-                                <i class="fas fa-check-circle fa-2x text-burgundy"></i>
-                            </div>
-                            <h4 class="mb-0 fw-bold text-burgundy">{{ $items->where('quantity', '>', 20)->count() }}</h4>
-                            <span class="text-muted small">Well Stocked</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @endif
+            <!-- Removed preset stat cards: Total Wine Items, Low Stock Items, Total Value, Well Stocked -->
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

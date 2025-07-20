@@ -45,9 +45,15 @@
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label for="wholesaler" class="form-label">Wholesaler</label>
-                            <input type="text" name="wholesaler" id="wholesaler" class="form-control" 
-                                   value="{{ request('wholesaler') }}" placeholder="Search wholesaler...">
+                            <label for="supplier" class="form-label">Supplier</label>
+                            <select name="supplier" id="supplier" class="form-select">
+                                <option value="">All Suppliers</option>
+                                @foreach($suppliers as $supplier)
+                                    <option value="{{ $supplier->name }}" {{ request('supplier') == $supplier->name ? 'selected' : '' }}>
+                                        {{ $supplier->name }} ({{ $supplier->email }})
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="col-md-3">
                             <label for="date_from" class="form-label">Date From</label>
@@ -96,10 +102,10 @@
                                 <tr>
                                     <th>PO Number</th>
                                     <th>Supply Item</th>
-                                    <th>Wholesaler</th>
+                                    <th>Supplier</th>
                                     <th>Quantity</th>
-                                    <th>Unit Price (UGX)</th>
-                                    <th>Total Amount (UGX)</th>
+                                    <th>Unit Price ($)</th>
+                                    <th>Total Amount ($)</th>
                                     <th>Status</th>
                                     <th>Requested By</th>
                                     <th>Created Date</th>

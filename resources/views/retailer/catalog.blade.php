@@ -71,13 +71,6 @@
             color: var(--gold);
             background: rgba(255,255,255,0.08);
         }
-        .user-name {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.15rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            color: #fff;
-        }
         .main-content {
             padding: 2rem 2.5rem;
             background-color: var(--light-gray);
@@ -195,35 +188,6 @@
             color: white;
             transform: translateY(-2px);
         }
-        .search-container {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            box-shadow: var(--shadow-sm);
-        }
-        .category-pills {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-bottom: 1rem;
-        }
-        .category-pill {
-            background: white;
-            color: var(--burgundy);
-            border: 1px solid var(--gold);
-            border-radius: 2rem;
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-            font-weight: 500;
-            text-decoration: none;
-            transition: var(--transition);
-        }
-        .category-pill:hover, .category-pill.active {
-            background: var(--burgundy);
-            color: white;
-            text-decoration: none;
-        }
     </style>
 </head>
 <body>
@@ -238,9 +202,8 @@
                     <nav class="wine-nav">
                         <ul class="nav-links d-flex align-items-center gap-3 mb-0" style="list-style:none;">
                             <li><a href="{{ route('retailer.dashboard') }}" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                            <li><a href="{{ route('orders.index') }}" class="nav-link"><i class="fas fa-shopping-bag"></i> Orders</a></li>
-                            <li><a href="{{ route('inventory.index') }}" class="nav-link"><i class="fas fa-boxes"></i> Inventory</a></li>
-                            <li><a href="{{ route('reports.index') }}" class="nav-link"><i class="fas fa-chart-line"></i> Reports</a></li>
+                            <li><a href="{{ route('retailer.orders') }}" class="nav-link"><i class="fas fa-shopping-bag"></i> Orders</a></li>
+                            <li><a href="{{ route('retailer.inventory') }}" class="nav-link"><i class="fas fa-boxes"></i> Inventory</a></li>
                             <li><a href="{{ route('retailer.catalog') }}" class="nav-link active"><i class="fas fa-store"></i> Product Catalog</a></li>
                         </ul>
                     </nav>
@@ -262,7 +225,7 @@
                             <div class="profile-photo-placeholder-large rounded-circle d-flex align-items-center justify-content-center me-2" style="border: 6px solid var(--gold); background: linear-gradient(135deg, var(--burgundy) 0%, #8b1a1a 100%); width: 72px; height: 72px; color: #fff; font-size: 2rem;">
                                 <span class="fw-bold">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
                             </div>
-                            <span class="user-name">{{ Auth::user()->name }} <span class="text-gold" style="font-weight: 500;">(Retailer)</span></span>
+                            <span class="user-name" style="color: #fff;">{{ Auth::user()->name }} <span class="text-gold" style="font-weight: 500; color: var(--gold);">(Retailer)</span></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="fas fa-user-edit me-2"></i> Profile</a></li>
@@ -288,93 +251,56 @@
                             <i class="fas fa-shopping-cart me-2"></i>View Cart ({{ $cartCount }})
                         </a>
                     @endif
-                    <span class="badge bg-gold text-burgundy px-3 py-2">
+                    <span class="badge bg-gold text-burgundy px-3 py-2" style="color: var(--burgundy); background: var(--gold);">
                         <i class="fas fa-clock me-1"></i>
                         {{ now()->format('M d, Y H:i') }}
                     </span>
                 </div>
             </div>
-            
-            <!-- Search and Filter Section -->
-            <div class="search-container">
-                <form method="GET" action="{{ route('retailer.catalog') }}" class="row g-3">
-                    <div class="col-md-4">
-                        <input type="text" name="search" class="form-control" placeholder="Search wines..." value="{{ request('search') }}">
-                    </div>
-                    <div class="col-md-3">
-                        <select name="category" class="form-select">
-                            <option value="">All Categories</option>
-                            @foreach($categories ?? [] as $category)
-                                <option value="{{ $category }}" {{ request('category') == $category ? 'selected' : '' }}>{{ $category }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <select name="vendor" class="form-select">
-                            <option value="">All Vendors</option>
-                            @foreach($vendors ?? [] as $vendor)
-                                <option value="{{ $vendor->id }}" {{ request('vendor') == $vendor->id ? 'selected' : '' }}>{{ $vendor->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="submit" class="btn btn-burgundy w-100">
-                            <i class="fas fa-search"></i> Search
-                        </button>
-                    </div>
-                </form>
-            </div>
-            
             <!-- Wine Grid -->
             <div class="row">
-                @forelse($products ?? [] as $product)
+                @forelse($wines as $wine)
                     <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
                         <div class="wine-card">
                             <div class="position-relative">
-                                @if(!empty($product->images) && is_array($product->images) && count($product->images) > 0)
-                                    @php $imgPath = $product->images[0]; @endphp
+                                @if(!empty($wine->images) && is_array($wine->images) && count($wine->images) > 0)
+                                    @php $imgPath = $wine->images[0]; @endphp
                                     @if(Str::startsWith($imgPath, 'inventory_images/'))
-                                        <img src="{{ asset('storage/' . $imgPath) }}" alt="{{ $product->name }}" class="wine-image">
+                                        <img src="{{ asset('storage/' . $imgPath) }}" alt="{{ $wine->name }}" class="wine-image">
                                     @else
-                                        <img src="{{ asset('wine_images/' . $imgPath) }}" alt="{{ $product->name }}" class="wine-image">
+                                        <img src="{{ asset('wine_images/' . $imgPath) }}" alt="{{ $wine->name }}" class="wine-image">
                                     @endif
                                 @else
                                     <div class="wine-image-placeholder">
                                         <i class="fas fa-wine-bottle"></i>
                                     </div>
                                 @endif
-                                
                                 <div class="wine-badges">
-                                    @if($product->quantity <= 10)
+                                    @if($wine->quantity <= 10)
                                         <span class="badge stock-warning">Low Stock</span>
                                     @endif
-                                    <span class="badge bg-secondary">{{ $product->vintage ?? 'N/A' }}</span>
                                 </div>
                             </div>
-                            
                             <div class="wine-details">
-                                <h3 class="wine-name">{{ $product->name }}</h3>
-                                <p class="wine-description">{{ Str::limit($product->description, 100) }}</p>
-                                
+                                <h3 class="wine-name">{{ $wine->name }}</h3>
+                                <p class="wine-description">{{ Str::limit($wine->description, 100) }}</p>
                                 <div class="wine-meta">
                                     <div class="meta-item">
-                                        <i class="fas fa-map-marker-alt me-1"></i>
-                                        <span>{{ $product->region ?? 'N/A' }}</span>
+                                        <i class="fas fa-barcode me-1"></i>
+                                        <span>{{ $wine->sku }}</span>
                                     </div>
                                     <div class="meta-item">
                                         <i class="fas fa-wine-glass me-1"></i>
-                                        <span>{{ $product->varietal ?? 'N/A' }}</span>
+                                        <span>{{ $wine->category ?? 'N/A' }}</span>
                                     </div>
                                 </div>
-                                
                                 <div class="wine-stats">
-                                    <div class="wine-price">${{ number_format($product->unit_price, 2) }}</div>
-                                    <div class="wine-stock {{ $product->quantity <= 10 ? 'low-stock' : 'in-stock' }}">
-                                        {{ $product->quantity }} in stock
+                                    <div class="wine-price">${{ number_format($wine->unit_price, 2) }}</div>
+                                    <div class="wine-stock {{ $wine->quantity <= 10 ? 'low-stock' : 'in-stock' }}">
+                                        {{ $wine->quantity }} in stock
                                     </div>
                                 </div>
-                                
-                                <button class="btn btn-order w-100" onclick="addToOrder({{ $product->id }}, '{{ $product->name }}')">
+                                <button class="btn btn-order w-100" onclick="addToOrder({{ $wine->id }}, '{{ $wine->name }}')">
                                     <i class="fas fa-cart-plus me-2"></i>Add to Order
                                 </button>
                             </div>
@@ -392,56 +318,85 @@
             </div>
         </div>
     </div>
-    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function addToOrder(productId, productName) {
-            // Add to cart functionality
-            fetch('/retailer/cart/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({
-                    wine_id: productId,
-                    quantity: 1
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Show success message
-                    const successDiv = document.createElement('div');
-                    successDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
-                    successDiv.style.cssText = 'top: 100px; right: 20px; z-index: 1050; min-width: 300px;';
-                    successDiv.innerHTML = `
-                        <i class="fas fa-check-circle me-2"></i>
-                        ${productName} added to cart!
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    `;
-                    document.body.appendChild(successDiv);
-                    
-                    // Auto-remove after 3 seconds
-                    setTimeout(() => {
-                        if (successDiv.parentNode) {
-                            successDiv.remove();
-                        }
-                    }, 3000);
-                    
-                    // Reload page to update cart count
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1000);
-                } else {
-                    alert('Error adding product to cart');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error adding product to order');
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.innerHTML = `<div class="notification-content"><i class="fas fa-check-circle"></i><span>${message}</span></div>`;
+    document.body.appendChild(notification);
+    setTimeout(() => { notification.classList.add('show'); }, 10);
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => { document.body.removeChild(notification); }, 300);
+    }, 2000);
+}
+function addToOrder(wineId, wineName) {
+    fetch('/retailer/cart/add', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ wine_id: wineId, quantity: 1 })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            showNotification('Added to order!');
+            // Visual feedback
+            const btn = document.querySelector(`button[onclick*="addToOrder(${wineId}"]`);
+            if(btn) {
+                btn.innerHTML = '<i class="fas fa-check me-2"></i>Added';
+                btn.classList.add('btn-success');
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fas fa-cart-plus me-2"></i>Add to Order';
+                    btn.classList.remove('btn-success');
+                }, 2000);
+            }
+            // Update cart counter
+            let cartCount = document.querySelectorAll('.cart-count-badge');
+            cartCount.forEach(function(el) {
+                el.textContent = parseInt(el.textContent||'0') + 1;
             });
+        } else {
+            showNotification('Error: Could not add to order');
         }
-    </script>
+    })
+    .catch(() => showNotification('Error: Could not add to order'));
+}
+// Notification styles
+const style = document.createElement('style');
+style.textContent = `
+    .notification {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--burgundy);
+        color: white;
+        padding: 15px 20px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-md);
+        transform: translateY(100px);
+        opacity: 0;
+        transition: all 0.3s ease;
+        z-index: 1000;
+    }
+    .notification.show {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    .notification-content {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .notification i {
+        font-size: 1.2rem;
+        color: var(--gold);
+    }
+`;
+document.head.appendChild(style);
+</script>
 </body>
 </html> 

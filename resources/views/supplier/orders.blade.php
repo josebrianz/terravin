@@ -200,9 +200,13 @@
                 <div class="d-flex align-items-center gap-4">
                     <div class="dropdown">
                         <a class="dropdown-toggle d-flex align-items-center text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
+                            @if(Auth::user()->profile_photo)
+                                <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}?v={{ time() }}" alt="{{ Auth::user()->name }}" class="profile-photo-large rounded-circle me-2" style="border: 6px solid var(--gold); width: 72px; height: 72px; object-fit: cover;">
+                            @else
                             <div class="profile-photo-placeholder-large rounded-circle d-flex align-items-center justify-content-center me-2" style="border: 6px solid var(--gold); background: linear-gradient(135deg, var(--burgundy) 0%, #8b1a1a 100%); width: 72px; height: 72px; color: #fff; font-size: 2rem;">
                                 <span class="fw-bold">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
                             </div>
+                            @endif
                             <span class="user-name">{{ Auth::user()->name }} <span class="text-gold" style="font-weight: 500;">(Supplier)</span></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
@@ -237,38 +241,40 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @if($orders->count() > 0)
+                                    @foreach($orders as $order)
                                 <tr>
-                                    <td>#1001</td>
-                                    <td>Grapes, Yeast</td>
-                                    <td>2,000 kg, 20 kg</td>
-                                    <td>2025-07-15</td>
-                                    <td><span class="badge badge-status badge-pending">Pending</span></td>
-                                    <td><a href="{{ url('/supplier/orders/1001') }}" class="btn btn-details"><i class="fas fa-eye"></i> Details</a></td>
+                                            <td>#{{ $order->po_number }}</td>
+                                            <td>{{ $order->item_name }}</td>
+                                            <td>{{ $order->quantity }}</td>
+                                            <td>{{ $order->order_date ? $order->order_date->format('Y-m-d') : 'N/A' }}</td>
+                                            <td>
+                                                @if($order->status === 'pending')
+                                                    <span class="badge badge-status badge-pending">Pending</span>
+                                                @elseif($order->status === 'approved')
+                                                    <span class="badge badge-status badge-approved">Approved</span>
+                                                @elseif($order->status === 'ordered')
+                                                    <span class="badge badge-status badge-shipped">Ordered</span>
+                                                @elseif($order->status === 'received')
+                                                    <span class="badge badge-status badge-delivered">Received</span>
+                                                @else
+                                                    <span class="badge badge-status badge-pending">{{ ucfirst($order->status) }}</span>
+                                                @endif
+                                            </td>
+                                            <td><a href="{{ url('/supplier/orders/' . $order->id) }}" class="btn btn-details"><i class="fas fa-eye"></i> Details</a></td>
                                 </tr>
-                                <tr>
-                                    <td>#1002</td>
-                                    <td>Bottles, Corks</td>
-                                    <td>5,000 units, 5,000 units</td>
-                                    <td>2025-07-16</td>
-                                    <td><span class="badge badge-status badge-approved">Approved</span></td>
-                                    <td><a href="{{ url('/supplier/orders/1002') }}" class="btn btn-details"><i class="fas fa-eye"></i> Details</a></td>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4">
+                                            <div class="text-muted">
+                                                <i class="fas fa-inbox fa-2x mb-3"></i>
+                                                <p>No orders found for your account.</p>
+                                                <small>Orders from the company will appear here once they are placed.</small>
+                                            </div>
+                                        </td>
                                 </tr>
-                                <tr>
-                                    <td>#1003</td>
-                                    <td>Oak Barrels</td>
-                                    <td>50 units</td>
-                                    <td>2025-07-17</td>
-                                    <td><span class="badge badge-status badge-shipped">Shipped</span></td>
-                                    <td><a href="{{ url('/supplier/orders/1003') }}" class="btn btn-details"><i class="fas fa-eye"></i> Details</a></td>
-                                </tr>
-                                <tr>
-                                    <td>#1004</td>
-                                    <td>Labels, Capsules</td>
-                                    <td>2,000 units, 2,000 units</td>
-                                    <td>2025-07-17</td>
-                                    <td><span class="badge badge-status badge-delivered">Delivered</span></td>
-                                    <td><a href="{{ url('/supplier/orders/1004') }}" class="btn btn-details"><i class="fas fa-eye"></i> Details</a></td>
-                                </tr>
+                                @endif
                             </tbody>
                         </table>
                     </div>

@@ -161,21 +161,29 @@
                 <tbody>
                     @php $total = 0; @endphp
                     @foreach($cartItems as $item)
-                        @php $subtotal = $item->wine->unit_price * $item->quantity; $total += $subtotal; @endphp
-                        <tr data-id="{{ $item->id }}">
-                            <td>
-                                <img src="{{ $item->wine->images && count($item->wine->images) > 0 ? asset('storage/' . $item->wine->images[0]) : 'https://via.placeholder.com/70x70?text=Wine' }}" class="cart-image" alt="{{ $item->wine->name }}">
-                            </td>
-                            <td>{{ $item->wine->name }}</td>
-                            <td>{{ format_usd($item->wine->unit_price) }}</td>
-                            <td>
-                                <input type="number" min="1" class="form-control text-center cart-qty" value="{{ $item->quantity }}" style="width:70px;display:inline-block;">
-                            </td>
-                            <td>{{ format_usd($subtotal) }}</td>
-                            <td>
-                                <button type="button" class="cart-remove" title="Remove"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
+                        @if($item->inventory)
+                            @php $subtotal = $item->inventory->unit_price * $item->quantity; $total += $subtotal; @endphp
+                            <tr data-id="{{ $item->id }}">
+                                <td>
+                                    <img src="{{ $item->inventory->images && count($item->inventory->images) > 0 ? asset('storage/' . $item->inventory->images[0]) : 'https://via.placeholder.com/70x70?text=Wine' }}" class="cart-image" alt="{{ $item->inventory->name }}">
+                                </td>
+                                <td>{{ $item->inventory->name }}</td>
+                                <td>{{ format_usd($item->inventory->unit_price) }}</td>
+                                <td>
+                                    <input type="number" min="1" class="form-control text-center cart-qty" value="{{ $item->quantity }}" style="width:70px;display:inline-block;">
+                                </td>
+                                <td>{{ format_usd($subtotal) }}</td>
+                                <td>
+                                    <button type="button" class="cart-remove" title="Remove"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        @else
+                            <tr data-id="{{ $item->id }}" class="table-danger">
+                                <td colspan="6" class="text-danger text-center">
+                                    This product is no longer available. <button type="button" class="cart-remove btn btn-link text-danger p-0" title="Remove"><i class="fas fa-trash"></i> Remove</button>
+                                </td>
+                            </tr>
+                        @endif
                     @endforeach
                 </tbody>
             </table>

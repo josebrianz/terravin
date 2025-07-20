@@ -172,23 +172,17 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php $total = 0; @endphp
-                        @foreach($order->orderItems ?? [] as $item)
+                        @php
+                            $items = is_array($order->items) ? $order->items : (json_decode($order->items, true) ?: []);
+                            $total = 0;
+                        @endphp
+                        @foreach($items as $item)
                             <tr>
-                                <td>{{ $item->item_name ?? $item->wine_name ?? 'Wine' }} <span class="text-muted">x{{ $item->quantity }}</span></td>
-                                <td class="text-end">${{ number_format($item->total_price ?? $item->subtotal ?? 0, 2) }}</td>
+                                <td>{{ $item['wine_name'] ?? 'Wine' }} <span class="text-muted">x{{ $item['quantity'] ?? 1 }}</span></td>
+                                <td class="text-end">${{ number_format(($item['unit_price'] ?? 0) * ($item['quantity'] ?? 1), 2) }}</td>
                             </tr>
-                            @php $total += $item->total_price ?? $item->subtotal ?? 0; @endphp
+                            @php $total += ($item['unit_price'] ?? 0) * ($item['quantity'] ?? 1); @endphp
                         @endforeach
-                        @if(isset($order->items) && is_iterable($order->items) && count($order->items) > 0)
-                            @foreach($order->items as $item)
-                                <tr>
-                                    <td>{{ $item['wine_name'] ?? 'Wine' }} <span class="text-muted">x{{ $item['quantity'] ?? 1 }}</span></td>
-                                    <td class="text-end">${{ number_format(($item['unit_price'] ?? 0) * ($item['quantity'] ?? 1), 2) }}</td>
-                                </tr>
-                                @php $total += ($item['unit_price'] ?? 0) * ($item['quantity'] ?? 1); @endphp
-                            @endforeach
-                        @endif
                     </tbody>
                     <tfoot>
                         <tr>

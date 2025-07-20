@@ -35,7 +35,7 @@ class RoleController extends Controller
         }
 
         $request->validate([
-            'role' => 'required|string|in:Admin,Vendor,Retailer,Wholesaler,Customer'
+            'role' => 'required|string|in:Admin,Vendor,Supplier,Retailer,Wholesaler,Customer'
         ]);
 
         $user = User::findOrFail($userId);
@@ -115,7 +115,7 @@ class RoleController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $userId,
-            'role' => 'required|string|in:Admin,Vendor,Retailer,Wholesaler,Customer'
+            'role' => 'required|string|in:Admin,Vendor,Supplier,Retailer,Wholesaler,Customer'
         ]);
 
         $user->update([
