@@ -383,5 +383,6 @@
             }
         }
         </style>
+       @yield('scripts') 
     </body>
 </html> 
