@@ -12,7 +12,7 @@ use App\Http\Controllers\VendorApplicationController;
 use App\Http\Controllers\HelpController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
-
+use App\Http\Controllers\VendorController;
 use App\Http\Controllers\SalesController;
 
 use Illuminate\Http\Request;
@@ -679,5 +679,6 @@ Route::get('/retailer/orders', [\App\Http\Controllers\RetailerOrderController::c
 
 // Retailer order confirmation page
 Route::get('/retailer/orders/confirmation/{order}', [App\Http\Controllers\OrderController::class, 'retailerConfirmation'])->name('retailer.orders.confirmation');
+Route::get('/vendor', [VendorController::class, 'index']);
 
 
