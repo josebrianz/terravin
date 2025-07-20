@@ -440,7 +440,9 @@ Route::post('/stakeholders/{id}/preferences', [App\Http\Controllers\StakeholderC
 
 Route::get('/stakeholders/dashboard', [App\Http\Controllers\StakeholderController::class, 'dashboard'])->name('stakeholders.dashboard');
 
-Route::get('/stakeholders/{id}/reports', [App\Http\Controllers\StakeholderController::class, 'showReports'])->name('stakeholders.reports');
+Route::middleware(['auth', 'role:Vendor,Supplier,Admin'])->group(function () {
+    Route::get('/my-report', [App\Http\Controllers\StakeholderController::class, 'showReports'])->name('my.report');
+});
 
 
 require __DIR__.'/auth.php';
@@ -608,4 +610,8 @@ Route::middleware(['auth', 'role:Supplier'])->group(function () {
 
 // Supplier Reports API Route - returns live data as JSON for AJAX polling
 Route::middleware(['auth:sanctum', 'role:Supplier'])->get('/api/supplier/reports', [App\Http\Controllers\SupplierReportController::class, 'apiIndex']);
+
+Route::middleware(['auth', 'role:Admin'])->group(function () {
+    Route::get('/stakeholders/{id}/reports', [App\Http\Controllers\StakeholderController::class, 'showReportsForStakeholder'])->name('stakeholders.reports');
+});
 

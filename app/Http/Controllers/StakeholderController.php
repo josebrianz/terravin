@@ -89,11 +89,47 @@ class StakeholderController extends Controller
         return view('stakeholders.dashboard', compact('stakeholders'));
     }
 
-    public function showReports($id)
+    public function showReports()
+    {
+        $user = auth()->user();
+        $stakeholder = \App\Models\Stakeholder::where('role', $user->role)->first();
+        if ($stakeholder && $stakeholder->reportPreference) {
+            $reportData = \App\Services\ReportService::generateForStakeholder($stakeholder);
+        } else {
+            // Fallback to default preferences if no stakeholder or preferences
+            $preferences = [
+                'frequency' => 'weekly',
+                'report_types' => ['inventory', 'orders', 'procurement']
+            ];
+            $reportData = \App\Services\ReportService::generateForUser($user, $preferences);
+        }
+        $pdf = \PDF::loadView('stakeholders.reports_pdf', [
+            'user' => $user,
+            'reportData' => $reportData
+        ]);
+        $filename = 'report_' . $user->id . '.pdf';
+        if (request()->query('download')) {
+            return $pdf->download($filename);
+        }
+        return $pdf->stream($filename);
+    }
+
+    public function showReportsForStakeholder($id)
     {
         $stakeholder = \App\Models\Stakeholder::findOrFail($id);
+        $preferences = $stakeholder->reportPreference;
+        if (!$preferences) {
+            // Fallback to default if no preferences set
+            $preferences = [
+                'frequency' => 'weekly',
+                'report_types' => ['inventory', 'orders', 'procurement']
+            ];
+        }
         $reportData = \App\Services\ReportService::generateForStakeholder($stakeholder);
-        $pdf = Pdf::loadView('stakeholders.reports_pdf', compact('stakeholder', 'reportData'));
+        $pdf = \PDF::loadView('stakeholders.reports_pdf', [
+            'stakeholder' => $stakeholder,
+            'reportData' => $reportData
+        ]);
         $filename = 'report_' . $stakeholder->id . '.pdf';
         if (request()->query('download')) {
             return $pdf->download($filename);

@@ -22,8 +22,6 @@
         <table id="stakeholders-table" class="table table-bordered table-hover table-lg align-middle w-100 m-0" style="font-size: 1.1rem; border-radius: 0;">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Email</th>
                     <th>Role</th>
                     <th>Report Preferences</th>
                     <th>Actions</th>
@@ -32,8 +30,6 @@
             <tbody>
                 @foreach($stakeholders as $stakeholder)
                 <tr>
-                    <td>{{ $stakeholder->name }}</td>
-                    <td>{{ $stakeholder->email }}</td>
                     <td>{{ $stakeholder->role }}</td>
                     <td>
                         <form method="POST" action="{{ route('stakeholders.preferences.update', $stakeholder->id) }}">
@@ -49,7 +45,7 @@
                             <div class="mb-2">
                                 <label>Report Types</label><br>
                                 @php $selectedTypes = optional($stakeholder->reportPreference)->report_types ?? []; @endphp
-                                @foreach(['inventory','orders','sales & demand','supplier & vendor','financial & profitability'] as $type)
+                                @foreach(['inventory','orders','procurement'] as $type)
                                     <label class="me-2">
                                         <input type="checkbox" name="report_types[]" value="{{ $type }}" {{ in_array($type, $selectedTypes) ? 'checked' : '' }}> {{ ucfirst($type) }}
                                     </label>
@@ -67,24 +63,6 @@
                 @endforeach
             </tbody>
         </table>
-    </div>
-
-    {{-- Create Stakeholder Form --}}
-    <div class="mb-5">
-        <h3>Add New Stakeholder</h3>
-        <form method="POST" action="{{ route('stakeholders.store') }}">
-            @csrf
-            <div class="mb-3">
-                <input type="text" name="name" class="form-control" placeholder="Name" required>
-            </div>
-            <div class="mb-3">
-                <input type="email" name="email" class="form-control" placeholder="Email" required>
-            </div>
-            <div class="mb-3">
-                <input type="text" name="role" class="form-control" placeholder="Role" required>
-            </div>
-            <button type="submit" class="btn btn-success">Add Stakeholder</button>
-        </form>
     </div>
 
     {{-- Edit Stakeholder Modal/Form (hidden by default) --}}

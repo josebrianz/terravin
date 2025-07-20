@@ -25,6 +25,15 @@
         </ul>
     @endif
 
+    @if(isset($data['procurement']))
+        <h3>Procurement</h3>
+        <ul>
+            @foreach($data['procurement'] as $proc)
+                <li>Procurement #{{ $proc->id }} - {{ $proc->status ?? 'N/A' }}</li>
+            @endforeach
+        </ul>
+    @endif
+
     <p>Thank you,<br>Terravin Wine Company</p>
 </body>
 </html> 

@@ -133,6 +133,8 @@
                             <li><a href="{{ url('/vendor/orders') }}" class="nav-link"><i class="fas fa-shopping-bag"></i> Orders</a></li>
                             <li><a href="{{ url('/vendor/inventory') }}" class="nav-link"><i class="fas fa-boxes"></i> Inventory</a></li>
                             <li><a href="{{ url('/reports') }}" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a></li>
+                            <li><a href="{{ route('my.report') }}" class="nav-link btn btn-outline-warning text-gold px-2 py-1 ms-2" style="font-size:0.85em; border-color: #c8a97e; color: #c8a97e !important;"><i class="fas fa-eye me-1"></i>View Report</a></li>
+                            <li><a href="{{ route('my.report', ['download' => 1]) }}" class="nav-link btn text-white px-2 py-1 ms-1" style="background: #5e0f0f; font-size:0.85em;"><i class="fas fa-file-download me-1"></i>Download Report</a></li>
                         </ul>
                     </nav>
                 </div>
