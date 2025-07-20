@@ -1,8 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\CartItem;
+use App\Models\Inventory;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -85,12 +88,23 @@ class OrderController extends Controller
             'customer_phone' => $user->phone ?? '',
             'items' => json_encode($items),
             'total_amount' => $total,
-
             'shipping_address' => $request->shipping_address,
             'notes' => $request->notes,
             'status' => 'pending',
             'payment_method' => $request->payment_method,
         ]);
+        // NEW: Create order_items records for each cart item
+        foreach ($cartItems as $item) {
+            OrderItem::create([
+                'order_id'     => $order->id,
+                'inventory_id' => $item->wine_id,
+                'item_name'    => $item->wine->name,
+                'unit_price'   => $item->wine->unit_price,
+                'quantity'     => $item->quantity,
+                'subtotal'     => $item->wine->unit_price * $item->quantity,
+                'category'     => $item->wine->category,
+            ]);
+        }
         // Clear cart
         \App\Models\CartItem::where('user_id', $user->id)->delete();
         return redirect()->route('orders.confirmation', $order->id)->with('success', 'Order placed successfully!');

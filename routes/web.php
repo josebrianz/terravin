@@ -278,6 +278,8 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::post('/predict-sales', [AnalyticsDashboardController::class, 'predictSales'])->name('predict.sales');
 });
 
+Route::get('/analytics/segmentation', [AnalyticsDashboardController::class, 'segmentationDashboard'])->name('analytics.segmentation');
+
 // Vendor Dashboard Route - Accessible only by Vendor role
 Route::middleware(['auth', 'role:Vendor'])->group(function () {
     Route::get('/vendor/dashboard', [App\Http\Controllers\VendorDashboardController::class, 'index'])->name('vendor.dashboard');
@@ -384,4 +386,8 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/shipments', [\App\Http\Controllers\LogisticsDashboardController::class, 'shipmentsIndex'])->name('shipments.index');
     Route::resource('shipments', \App\Http\Controllers\LogisticsDashboardController::class)->except(['index']); // index handled by dashboard
 }); 
+
+Route::get('/customer/recommendations', [App\Http\Controllers\CustomerRecommendationController::class, 'index'])
+    ->name('customer.recommendations')
+    ->middleware(['auth', 'role:Customer']); 
 

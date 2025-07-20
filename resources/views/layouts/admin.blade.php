@@ -82,6 +82,11 @@
                                         <i class="fas fa-chart-line"></i> Forecast
                                     </a>
                                 </li>
+                                <li>
+                                    <a href="{{ route('analytics.segmentation') }}" class="nav-link">
+                                        <i class="fas fa-users"></i> Customer Segmentation
+                                    </a>
+                                </li>
                             </ul>
                         </nav>
                     </div>

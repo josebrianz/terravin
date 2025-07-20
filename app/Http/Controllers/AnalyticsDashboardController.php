@@ -240,4 +240,9 @@ class AnalyticsDashboardController extends Controller
             return back()->with('error', 'An unexpected error occurred. Please try again later.');
         }
     }
+
+    public function segmentationDashboard()
+    {
+        return view('analytics.segmentation');
+    }
 } 

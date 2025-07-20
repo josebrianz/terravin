@@ -211,7 +211,7 @@
         </div>
         <div class="forecast-section">
             <div class="forecast-header" style="display: flex; align-items: center; justify-content: center; gap: 1em; flex-wrap: wrap;">
-                <h1 style="margin-bottom: 0;">Sales Forecast</h1>
+                <h1 style="margin-bottom: 0;">Demand Forecast</h1>
                 <a href="{{ route('forecast.download') }}" id="download-csv-btn" class="download-btn" style="background: var(--gold); color: var(--burgundy); border: none; border-radius: 8px; padding: 0.6em 1.2em; font-size: 1.05rem; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 0.5em; box-shadow: 0 2px 8px rgba(200,169,126,0.10); transition: background 0.2s, color 0.2s;">
                     <i class="fa-solid fa-download"></i> Download CSV
                 </a>
@@ -318,7 +318,13 @@
                         legend: { display: true }
                     },
                     scales: {
-                        y: { beginAtZero: true }
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Quantity'
+                            }
+                        }
                     }
                 }
             });

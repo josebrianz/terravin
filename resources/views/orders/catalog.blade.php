@@ -741,6 +741,7 @@ body {
                         <a href="{{ route('orders.create') }}" class="btn btn-primary px-4">
                             <i class="fas fa-shopping-cart me-2"></i>New Order
                         </a>
+
                     </div>
                 </div>
             </header>
@@ -777,6 +778,9 @@ body {
                             @php $addedCategories[$slug] = true; @endphp
                         @endif
                     @endforeach
+                    <a href="{{ route('customer.recommendations') }}" class="category-pill recommended-pill" style="background: var(--gold); color: var(--primary); font-weight: 700;">
+                        <i class="fas fa-magic me-1"></i> Recommended For You
+                    </a>
                 </div>
             </nav>
             
@@ -879,25 +883,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
     categoryLinks.forEach(link => {
         link.addEventListener('click', function(e) {
-            e.preventDefault();
-            categoryLinks.forEach(l => l.classList.remove('active'));
-            this.classList.add('active');
-            if (this.classList.contains('all-wines-pill')) {
-                // Show all sections
-                categorySections.forEach(section => section.style.display = '');
-            } else {
-                // Hide all, show only selected
-                categorySections.forEach(section => section.style.display = 'none');
-                const targetId = this.getAttribute('href');
-                const targetSection = document.querySelector(targetId);
-                if (targetSection) {
-                    targetSection.style.display = '';
-                    window.scrollTo({
-                        top: targetSection.offsetTop - 120,
-                        behavior: 'smooth'
-                    });
+            // Only prevent default for category filter pills, not the recommended button
+            if (!this.classList.contains('recommended-pill')) {
+                e.preventDefault();
+                categoryLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                if (this.classList.contains('all-wines-pill')) {
+                    // Show all sections
+                    categorySections.forEach(section => section.style.display = '');
+                } else {
+                    // Hide all, show only selected
+                    categorySections.forEach(section => section.style.display = 'none');
+                    const targetId = this.getAttribute('href');
+                    const targetSection = document.querySelector(targetId);
+                    if (targetSection) {
+                        targetSection.style.display = '';
+                        window.scrollTo({
+                            top: targetSection.offsetTop - 120,
+                            behavior: 'smooth'
+                        });
+                    }
                 }
             }
+            // Otherwise, let the link work as normal (for recommended-pill)
         });
     });
     // On page load, show all
