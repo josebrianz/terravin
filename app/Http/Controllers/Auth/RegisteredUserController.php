@@ -51,6 +51,26 @@ class RegisteredUserController extends Controller
             return redirect()->route('customer.dashboard');
         }
 
+        // If registering as Vendor, create as Customer, request upgrade, then redirect to vendor application form
+        if ($request->role === 'Vendor') {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => 'Customer',
+            ]);
+            RoleApprovalRequest::create([
+                'user_id' => $user->id,
+                'requested_role' => $request->role,
+                'status' => 'pending',
+            ]);
+            event(new Registered($user));
+            Auth::login($user);
+            // Redirect to vendor application form
+            return redirect()->route('vendor.apply')
+                ->with('success', 'Account created successfully! Please complete your vendor application form.');
+        }
+
         // For all other roles, create as Customer and request upgrade
         $user = User::create([
             'name' => $request->name,
