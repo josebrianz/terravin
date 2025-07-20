@@ -119,11 +119,11 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::post('/admin/orders/{order}/status', [\App\Http\Controllers\AdminOrderController::class, 'updateStatus'])->name('admin.orders.update-status');
 });
 
-// Chat routes (only for wholesalers and customers)
+// Chat routes (open to all authenticated users)
 Route::middleware(['auth'])->group(function () {
-    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index')->middleware('role:Admin,Wholesaler,Customer');
-    Route::get('/chat/{user}', [ChatController::class, 'show'])->name('chat.show')->middleware('role:Admin,Wholesaler,Customer');
-    Route::post('/chat/{user}', [ChatController::class, 'store'])->name('chat.store')->middleware('role:Admin,Wholesaler,Customer');
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/{user}', [ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/{user}', [ChatController::class, 'store'])->name('chat.store');
 });
 
 Route::delete('/chat/message/{id}', [\App\Http\Controllers\ChatController::class, 'deleteMessage'])->middleware('auth');
@@ -322,9 +322,9 @@ Route::get('/retailer/catalog', [App\Http\Controllers\RetailerCatalogController:
 
 
 // Reports Route - Accessible by authenticated users
-// Route::middleware('auth')->group(function () {
-//     Route::get('/reports', [App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
-// });
+Route::middleware('auth')->group(function () {
+    Route::get('/reports', [App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
+});
 
 
 // Financial Reports Route - Accessible by all authenticated users

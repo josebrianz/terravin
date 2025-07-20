@@ -662,4 +662,5 @@
 }
 </style>
 @endpush
+@include('components.chat-widget')
 @endsection 
