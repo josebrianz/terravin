@@ -14,11 +14,8 @@ class VendorOrderController extends Controller
     public function index()
     {
         $vendorId = Auth::id();
-        // Only show orders where the vendor is the current user and the user placing the order is a retailer
+        // Show all orders where the vendor is the current user
         $orders = Order::where('vendor_id', $vendorId)
-            ->whereHas('user', function ($query) {
-                $query->where('role', 'Retailer');
-            })
             ->with(['user', 'orderItems'])
             ->latest()
             ->paginate(15);

@@ -17,7 +17,8 @@ class Inventory extends Model
         'category',
         'location',
         'is_active',
-        'images' // Add images to fillable
+        'images', // Add images to fillable
+        'user_id', // Add user_id for per-user inventory
     ];
 
     protected $casts = [
@@ -55,5 +56,10 @@ class Inventory extends Model
     public function batches()
     {
         return $this->hasMany(\App\Models\Batch::class, 'product_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class);
     }
 }

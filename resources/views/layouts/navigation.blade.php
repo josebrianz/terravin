@@ -77,6 +77,14 @@
             align-items: center;
             justify-content: center;
         }
+        .wine-navbar .nav-link, .wine-navbar .dropdown-link, .wine-navbar .navbar-brand {
+            font-family: 'Montserrat', sans-serif !important;
+            font-size: 1.05rem !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.02em !important;
+            color: var(--gold) !important;
+            transition: color 0.2s, background 0.2s;
+        }
     </style>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">

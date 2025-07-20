@@ -210,9 +210,13 @@
                 <div class="d-flex align-items-center gap-4">
                     <div class="dropdown">
                         <a class="dropdown-toggle d-flex align-items-center text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
+                            @if(Auth::user()->profile_photo)
+                                <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}?v={{ time() }}" alt="{{ Auth::user()->name }}" class="profile-photo-large rounded-circle me-2" style="border: 6px solid var(--gold); width: 72px; height: 72px; object-fit: cover;">
+                            @else
                             <div class="profile-photo-placeholder-large rounded-circle d-flex align-items-center justify-content-center me-2" style="border: 6px solid var(--gold); background: linear-gradient(135deg, var(--burgundy) 0%, #8b1a1a 100%); width: 72px; height: 72px; color: #fff; font-size: 2rem;">
                                 <span class="fw-bold">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
                             </div>
+                            @endif
                             <span class="user-name">{{ Auth::user()->name }} <span class="text-gold" style="font-weight: 500;">(Supplier)</span></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">

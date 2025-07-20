@@ -121,16 +121,24 @@
                 <tbody>
                     @php $total = 0; @endphp
                     @foreach($cartItems as $item)
-                        @php $subtotal = $item->wine->unit_price * $item->quantity; $total += $subtotal; @endphp
-                        <tr>
-                            <td>
-                                <img src="{{ $item->wine->images && count($item->wine->images) > 0 ? asset('storage/' . $item->wine->images[0]) : 'https://via.placeholder.com/50x50?text=Wine' }}" class="checkout-image" alt="{{ $item->wine->name }}">
-                            </td>
-                            <td>{{ $item->wine->name }}</td>
-                            <td>{{ number_format($item->wine->unit_price, 0) }} UGX</td>
-                            <td>{{ $item->quantity }}</td>
-                            <td>{{ number_format($subtotal, 0) }} UGX</td>
-                        </tr>
+                        @if($item->inventory)
+                            @php $subtotal = $item->inventory->unit_price * $item->quantity; $total += $subtotal; @endphp
+                            <tr>
+                                <td>
+                                    <img src="{{ $item->inventory->images && count($item->inventory->images) > 0 ? asset('storage/' . $item->inventory->images[0]) : 'https://via.placeholder.com/50x50?text=Wine' }}" class="checkout-image" alt="{{ $item->inventory->name }}">
+                                </td>
+                                <td>{{ $item->inventory->name }}</td>
+                                <td>{{ number_format($item->inventory->unit_price, 0) }} UGX</td>
+                                <td>{{ $item->quantity }}</td>
+                                <td>{{ number_format($subtotal, 0) }} UGX</td>
+                            </tr>
+                        @else
+                            <tr class="table-danger">
+                                <td colspan="5" class="text-danger text-center">
+                                    This product is no longer available.
+                                </td>
+                            </tr>
+                        @endif
                     @endforeach
                 </tbody>
             </table>

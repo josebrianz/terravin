@@ -88,4 +88,28 @@ class InventoryController extends Controller
 
         return redirect()->route('inventory.index')->with('success', 'Item deleted.');
     }
+
+    public function searchCatalog(Request $request)
+    {
+        $q = $request->input('q');
+        $items = \App\Models\Inventory::where('is_active', true)
+            ->where('quantity', '>', 0)
+            ->where('name', 'like', "%$q%")
+            ->orderBy('name')
+            ->limit(8)
+            ->get(['id', 'name', 'images', 'unit_price']);
+        $results = $items->map(function($item) {
+            $img = null;
+            if (is_array($item->images) && count($item->images) > 0) {
+                $img = (str_starts_with($item->images[0], 'inventory_images/') ? asset('storage/' . $item->images[0]) : asset('wine_images/' . $item->images[0]));
+            }
+            return [
+                'id' => $item->id,
+                'name' => $item->name,
+                'image' => $img,
+                'unit_price' => $item->unit_price,
+            ];
+        });
+        return response()->json($results);
+    }
 }

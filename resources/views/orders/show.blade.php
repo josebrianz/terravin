@@ -187,103 +187,6 @@
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item text-danger" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
                             </ul>
-
-                <div class="card-body">
-                    <div class="mb-3">
-                        <strong class="text-burgundy">Name:</strong> 
-                        <span class="text-dark">{{ $order->customer_name }}</span>
-                    </div>
-                    <div class="mb-3">
-                        <strong class="text-burgundy">Email:</strong> 
-                        <span class="text-dark">{{ $order->customer_email }}</span>
-                    </div>
-                    <div class="mb-3">
-                        <strong class="text-burgundy">Phone:</strong> 
-                        <span class="text-dark">{{ $order->customer_phone }}</span>
-                    </div>
-                    <div class="mb-3">
-                        <strong class="text-burgundy">Shipping Address:</strong> 
-                        <span class="text-dark">{{ $order->shipping_address }}</span>
-                    </div>
-                    <div class="mb-3">
-                        <strong class="text-burgundy">Notes:</strong> 
-                        <span class="text-dark">{{ $order->notes ?? 'No notes provided' }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6">
-            <div class="card wine-card shadow-sm border-0">
-                <div class="card-header bg-white border-bottom-0">
-                    <h5 class="card-title mb-0 fw-bold text-burgundy">
-                        <i class="fas fa-info-circle text-gold me-2"></i> Order Details
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <strong class="text-burgundy">Status:</strong> 
-                        <span class="badge {{ $order->status_badge }} ms-2">{{ ucfirst($order->status) }}</span>
-                    </div>
-                    <div class="mb-3">
-                        <strong class="text-burgundy">Total Amount:</strong> 
-                        <span class="text-dark fw-bold">${{ number_format($order->total_amount, 2) }}</span>
-                    </div>
-                    <div class="mb-3">
-                        <strong class="text-burgundy">Created At:</strong> 
-                        <span class="text-dark">{{ $order->created_at->format('M d, Y H:i') }}</span>
-                    </div>
-                    <div class="mb-3">
-                        <strong class="text-burgundy">Updated At:</strong> 
-                        <span class="text-dark">{{ $order->updated_at->format('M d, Y H:i') }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card wine-card shadow-sm border-0">
-                <div class="card-header bg-white border-bottom-0">
-                    <h5 class="card-title mb-0 fw-bold text-burgundy">
-                        <i class="fas fa-wine-bottle text-gold me-2"></i> Order Items
-                    </h5>
-                </div>
-                <div class="card-body">
-                    @if($order->items_array && count($order->items_array) > 0)
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th class="text-burgundy fw-bold">Wine Name</th>
-                                        <th class="text-burgundy fw-bold">Quantity</th>
-                                        <th class="text-burgundy fw-bold">Unit Price</th>
-                                        <th class="text-burgundy fw-bold">Subtotal</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($order->items_array as $item)
-                                    <tr class="wine-list-item">
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <i class="fas fa-wine-bottle text-gold me-2"></i>
-                                                <strong class="text-burgundy">{{ $item['wine_name'] }}</strong>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-burgundy text-gold">{{ $item['quantity'] }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="text-dark">${{ number_format($item['unit_price'], 2) }}</span>
-                                        </td>
-                                        <td>
-                                            <strong class="text-burgundy">${{ number_format($item['quantity'] * $item['unit_price'], 2) }}</strong>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-
                         </div>
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
                         @endauth
@@ -292,6 +195,7 @@
             </div>
         </div>
     </div>
+
     <div class="dashboard">
         <main class="main-content container">
             <div class="section-header">

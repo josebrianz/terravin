@@ -12,7 +12,7 @@ class CartController extends Controller
     // View cart contents
     public function index()
     {
-        $cartItems = CartItem::where('user_id', Auth::id())->with('wine')->get();
+        $cartItems = CartItem::where('user_id', Auth::id())->with('inventory')->get();
         return view('cart.index', compact('cartItems'));
     }
 
@@ -25,13 +25,13 @@ class CartController extends Controller
             }
 
             $validated = $request->validate([
-                'wine_id' => 'required|exists:inventories,id',
+                'inventory_id' => 'required|exists:inventories,id',
                 'quantity' => 'required|integer|min:1',
             ]);
 
             $cartItem = \App\Models\CartItem::firstOrNew([
                 'user_id' => auth()->id(),
-                'wine_id' => $validated['wine_id'],
+                'inventory_id' => $validated['inventory_id'],
             ]);
             $cartItem->quantity += $validated['quantity'];
             $cartItem->save();
@@ -64,7 +64,7 @@ class CartController extends Controller
 
     public function checkout()
     {
-        $cartItems = \App\Models\CartItem::where('user_id', Auth::id())->with('wine')->get();
+        $cartItems = \App\Models\CartItem::where('user_id', Auth::id())->with('inventory')->get();
         return view('cart.checkout', compact('cartItems'));
     }
 }

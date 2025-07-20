@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order #{{ $orderId }} | Supplier | TERRAVIN</title>
+    <title>Order #{{ $order->po_number }} | Supplier | TERRAVIN</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -196,9 +196,13 @@
                 <div class="d-flex align-items-center gap-4">
                     <div class="dropdown">
                         <a class="dropdown-toggle d-flex align-items-center text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
+                            @if(Auth::user()->profile_photo)
+                                <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}?v={{ time() }}" alt="{{ Auth::user()->name }}" class="profile-photo-large rounded-circle me-2" style="border: 6px solid var(--gold); width: 72px; height: 72px; object-fit: cover;">
+                            @else
                             <div class="profile-photo-placeholder-large rounded-circle d-flex align-items-center justify-content-center me-2" style="border: 6px solid var(--gold); background: linear-gradient(135deg, var(--burgundy) 0%, #8b1a1a 100%); width: 72px; height: 72px; color: #fff; font-size: 2rem;">
                                 <span class="fw-bold">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
                             </div>
+                            @endif
                             <span class="user-name">{{ Auth::user()->name }} <span class="text-gold" style="font-weight: 500;">(Supplier)</span></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
@@ -215,43 +219,73 @@
     <div class="main-content">
         <div class="container-fluid">
             <a href="{{ url('/supplier/orders') }}" class="btn btn-back mb-3"><i class="fas fa-arrow-left"></i> Back to Orders</a>
-            <h1 class="page-title mb-4">Order #{{ $orderId }}</h1>
+            <h1 class="page-title mb-4">Order #{{ $order->po_number }}</h1>
             <div class="dashboard-section order-summary">
                 <div class="section-title"><i class="fas fa-clipboard-list me-2"></i>Order Details</div>
                 <table class="table order-table">
                     <tbody>
                         <tr>
                             <th>Order ID</th>
-                            <td>#{{ $orderId }}</td>
+                            <td>#{{ $order->po_number }}</td>
                         </tr>
                         <tr>
                             <th>Order Date</th>
-                            <td>2025-07-17</td>
+                            <td>{{ $order->order_date ? $order->order_date->format('Y-m-d') : 'N/A' }}</td>
                         </tr>
                         <tr>
                             <th>Status</th>
-                            <td><span class="badge badge-status badge-pending">Pending</span></td>
+                            <td>
+                                @if($order->status === 'pending')
+                                    <span class="badge badge-status badge-pending">Pending</span>
+                                @elseif($order->status === 'approved')
+                                    <span class="badge badge-status badge-approved">Approved</span>
+                                @elseif($order->status === 'ordered')
+                                    <span class="badge badge-status badge-shipped">Ordered</span>
+                                @elseif($order->status === 'received')
+                                    <span class="badge badge-status badge-delivered">Received</span>
+                                @else
+                                    <span class="badge badge-status badge-pending">{{ ucfirst($order->status) }}</span>
+                                @endif
+                            </td>
                         </tr>
                         <tr>
-                            <th>Items</th>
-                            <td>Grapes, Yeast</td>
+                            <th>Item</th>
+                            <td>{{ $order->item_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Description</th>
+                            <td>{{ $order->description ?: 'No description provided' }}</td>
                         </tr>
                         <tr>
                             <th>Quantity</th>
-                            <td>2,000 kg, 20 kg</td>
+                            <td>{{ $order->quantity }}</td>
+                        </tr>
+                        <tr>
+                            <th>Unit Price</th>
+                            <td>${{ number_format($order->unit_price, 2) }}</td>
+                        </tr>
+                        <tr>
+                            <th>Total Amount</th>
+                            <td>${{ number_format($order->total_amount, 2) }}</td>
+                        </tr>
+                        <tr>
+                            <th>Expected Delivery</th>
+                            <td>{{ $order->expected_delivery ? $order->expected_delivery->format('Y-m-d') : 'Not specified' }}</td>
                         </tr>
                         <tr>
                             <th>Requested By</th>
-                            <td>Admin (Company)</td>
+                            <td>{{ $order->requester ? $order->requester->name : 'Admin (Company)' }}</td>
                         </tr>
                         <tr>
-                            <th>Delivery Address</th>
-                            <td>123 Winery Lane, Napa Valley, CA</td>
+                            <th>Supplier Email</th>
+                            <td>{{ $order->wholesaler_email ?: 'Not provided' }}</td>
                         </tr>
+                        @if($order->notes)
                         <tr>
                             <th>Notes</th>
-                            <td>Please deliver by end of the month.</td>
+                            <td>{{ $order->notes }}</td>
                         </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
