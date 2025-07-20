@@ -464,8 +464,9 @@
                             <select id="role" name="role" required class="form-input" style="padding-left: 3rem;">
                                 <option value="">Select your role</option>
                                 <option value="Vendor" {{ old('role') == 'Vendor' ? 'selected' : '' }}>Vendor</option>
-                                <option value="Wholesaler" {{ old('role') == 'Wholesaler' ? 'selected' : '' }}>Wholesaler</option>
+                                <option value="Supplier" {{ old('role') == 'Supplier' ? 'selected' : '' }}>Supplier</option>
                                 <option value="Retailer" {{ old('role') == 'Retailer' ? 'selected' : '' }}>Retailer</option>
+                                <option value="Customer" {{ old('role') == 'Customer' ? 'selected' : '' }}>Customer</option>
                             </select>
                         </div>
                     @error('role')

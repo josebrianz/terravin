@@ -42,6 +42,11 @@ class Order extends Model
         return $this->hasOne(\App\Models\Shipment::class);
     }
 
+    public function vendor()
+    {
+        return $this->belongsTo(User::class, 'vendor_id');
+    }
+
     public function getItemsAttribute($value)
     {
         if (is_array($value) || is_null($value)) {

@@ -77,6 +77,14 @@
             align-items: center;
             justify-content: center;
         }
+        .wine-navbar .nav-link, .wine-navbar .dropdown-link, .wine-navbar .navbar-brand {
+            font-family: 'Montserrat', sans-serif !important;
+            font-size: 1.05rem !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.02em !important;
+            color: var(--gold) !important;
+            transition: color 0.2s, background 0.2s;
+        }
     </style>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
@@ -90,9 +98,6 @@
                 <div class="flex justify-center items-center gap-5" style="flex:2;">
                     <a href="{{ route('retailer.dashboard') }}" class="d-flex align-items-center fw-bold" style="color:#f8e7d1;">
                         <i class="fas fa-compass me-2"></i> Dashboard
-                    </a>
-                    <a href="{{ route('help.index') }}" class="d-flex align-items-center fw-bold" style="color:#f8e7d1;">
-                        <i class="fas fa-question-circle me-2"></i> Help
                     </a>
                 </div>
                 <div class="flex items-center justify-end gap-6" style="flex:1;">
@@ -178,14 +183,6 @@
                             <x-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')">
                                 {{ __('Profile') }}
                             </x-nav-link>
-                            <x-nav-link :href="route('help.index')" :active="request()->routeIs('help.index')">
-                                {{ __('Help') }}
-                            </x-nav-link>
-                            @if(Auth::user() && Auth::user()->hasRole('Customer'))
-                                <x-nav-link :href="route('customer.products')" :active="request()->routeIs('customer.products')">
-                                    {{ __('Products') }}
-                                </x-nav-link>
-                            @endif
                         @elseif(Auth::user() && Auth::user()->hasRole('Admin'))
                             <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                                 {{ __('Dashboard') }}
@@ -268,9 +265,6 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')">
                     {{ __('Profile') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('help.index')" :active="request()->routeIs('help.index')">
-                    {{ __('Help') }}
                 </x-responsive-nav-link>
                 @if(Auth::user() && Auth::user()->hasRole('Customer'))
                     <x-responsive-nav-link :href="route('customer.products')" :active="request()->routeIs('customer.products')">

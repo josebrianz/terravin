@@ -198,4 +198,12 @@ class User extends Authenticatable
     {
         return $this->roleApprovalRequests()->pending()->exists();
     }
+
+    /**
+     * Get all orders placed by this user
+     */
+    public function orders()
+    {
+        return $this->hasMany(\App\Models\Order::class, 'user_id');
+    }
 }

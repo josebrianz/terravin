@@ -1,3 +1,4 @@
+
 @extends('layouts.minimal')
 
 @section('title', 'Order Confirmation')
@@ -31,6 +32,7 @@
         }
         .wine-top-bar {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+
             color: white;
             padding: 0.75rem 0;
             box-shadow: 0 2px 10px rgba(94, 15, 15, 0.2);
@@ -41,6 +43,7 @@
             z-index: 1000;
         }
         .wine-brand {
+
             color: var(--secondary);
             text-decoration: none;
             font-size: 1.5rem;
@@ -49,11 +52,13 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+
         }
         .wine-brand:hover {
             color: white;
             text-decoration: none;
         }
+
         .nav-links {
             list-style: none;
             margin: 0;
@@ -69,10 +74,12 @@
             border-radius: 20px;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             font-size: 0.95rem;
+
             font-weight: 500;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            
             position: relative;
         }
         .nav-link:hover {
@@ -153,7 +160,7 @@
             font-weight: 600;
             font-size: 1.1rem;
         }
-    </style>
+    </styl>
 @endpush
 
 @section('content')
@@ -229,8 +236,45 @@
                 @endforeach
             </ul>
             <h5 class="fw-bold text-burgundy">Total: {{ format_usd($order->total_amount) }}</h5>
+
         </div>
     </div>
-    <a href="{{ route('customer.dashboard') }}" class="btn btn-burgundy mt-4">Back to Dashboard</a>
-</div>
-@endsection 
+    <div class="main-content">
+        <div class="container">
+            <div class="confirmation-box">
+                <h2 class="mb-3">Thank You for Your Order!</h2>
+                <div class="alert alert-success">Your order has been placed successfully. Below is your order summary.</div>
+                <table class="order-summary-table table table-bordered mt-4">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                            $items = is_array($order->items) ? $order->items : (json_decode($order->items, true) ?: []);
+                            $total = 0;
+                        @endphp
+                        @foreach($items as $item)
+                            <tr>
+                                <td>{{ $item['wine_name'] ?? 'Wine' }} <span class="text-muted">x{{ $item['quantity'] ?? 1 }}</span></td>
+                                <td class="text-end">${{ number_format(($item['unit_price'] ?? 0) * ($item['quantity'] ?? 1), 2) }}</td>
+                            </tr>
+                            @php $total += ($item['unit_price'] ?? 0) * ($item['quantity'] ?? 1); @endphp
+                        @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>Total:</th>
+                            <th class="text-end">${{ number_format($total, 2) }}</th>
+                        </tr>
+                    </tfoot>
+                </table>
+                <a href="{{ url('/customer/dashboard') }}" class="btn btn-burgundy mt-4">Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

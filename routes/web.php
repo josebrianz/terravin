@@ -18,6 +18,8 @@ use App\Http\Controllers\SalesController;
 use Illuminate\Http\Request;
 use App\Models\Workforce;
 use App\Models\SupplyCentre;
+use App\Models\SupplierRawMaterial;
+use App\Http\Controllers\FavoriteController;
 
 
 Route::get('/', function () {
@@ -99,34 +101,225 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::post('/admin/role-approvals/{roleApprovalRequest}/approve', [RoleApprovalController::class, 'approve'])->name('admin.role-approval.approve');
     Route::post('/admin/role-approvals/{roleApprovalRequest}/reject', [RoleApprovalController::class, 'reject'])->name('admin.role-approval.reject');
     Route::get('/admin/role-approvals-stats', [RoleApprovalController::class, 'getStats'])->name('admin.role-approval.stats');
-    Route::post('/admin/orders/bulk', [\App\Http\Controllers\AdminOrderController::class, 'bulk'])->name('admin.orders.bulk');
+    // Admin Orders Management
+    Route::get('/admin/orders', [\App\Http\Controllers\AdminOrderController::class, 'index'])->name('admin.orders.index');
+    Route::get('/admin/orders/{order}', [\App\Http\Controllers\AdminOrderController::class, 'show'])->name('admin.orders.show');
+    Route::get('/admin/orders/{order}/edit', [\App\Http\Controllers\AdminOrderController::class, 'edit'])->name('admin.orders.edit');
+    Route::put('/admin/orders/{order}', [\App\Http\Controllers\AdminOrderController::class, 'update'])->name('admin.orders.update');
+    Route::delete('/admin/orders/{order}', [\App\Http\Controllers\AdminOrderController::class, 'destroy'])->name('admin.orders.destroy');
+    Route::post('/admin/orders/bulk-update', [\App\Http\Controllers\AdminOrderController::class, 'bulkUpdate'])->name('admin.orders.bulk-update');
     Route::get('/admin/orders/export', [\App\Http\Controllers\AdminOrderController::class, 'export'])->name('admin.orders.export');
-    Route::post('/admin/orders/{order}/admin-notes', [\App\Http\Controllers\AdminOrderController::class, 'updateAdminNotes'])->name('admin.orders.update-admin-notes');
     Route::get('/admin/orders/{order}/invoice', [\App\Http\Controllers\AdminOrderController::class, 'invoice'])->name('admin.orders.invoice');
+    Route::get('/admin/orders/stats', [\App\Http\Controllers\AdminOrderController::class, 'getStats'])->name('admin.orders.stats');
+    
+    // Legacy admin order routes (keeping for compatibility)
+    Route::post('/admin/orders/bulk', [\App\Http\Controllers\AdminOrderController::class, 'bulk'])->name('admin.orders.bulk');
+    Route::post('/admin/orders/{order}/admin-notes', [\App\Http\Controllers\AdminOrderController::class, 'updateAdminNotes'])->name('admin.orders.update-admin-notes');
     Route::post('/admin/orders/{order}/assign', [\App\Http\Controllers\AdminOrderController::class, 'updateAssignment'])->name('admin.orders.update-assignment');
+    Route::post('/admin/orders/{order}/status', [\App\Http\Controllers\AdminOrderController::class, 'updateStatus'])->name('admin.orders.update-status');
 });
 
 // Chat routes (only for wholesalers and customers)
 Route::middleware(['auth'])->group(function () {
-    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index')->middleware('role:Wholesaler,Customer');
-    Route::get('/chat/{user}', [ChatController::class, 'show'])->name('chat.show')->middleware('role:Wholesaler,Customer');
-    Route::post('/chat/{user}', [ChatController::class, 'store'])->name('chat.store')->middleware('role:Wholesaler,Customer');
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index')->middleware('role:Admin,Wholesaler,Customer');
+    Route::get('/chat/{user}', [ChatController::class, 'show'])->name('chat.show')->middleware('role:Admin,Wholesaler,Customer');
+    Route::post('/chat/{user}', [ChatController::class, 'store'])->name('chat.store')->middleware('role:Admin,Wholesaler,Customer');
 });
+
+Route::delete('/chat/message/{id}', [\App\Http\Controllers\ChatController::class, 'deleteMessage'])->middleware('auth');
+Route::patch('/chat/message/{id}', [\App\Http\Controllers\ChatController::class, 'editMessage'])->middleware('auth');
 
 Route::get('/vendor/apply', [VendorApplicationController::class, 'create'])->name('vendor.apply');
 
-Route::post('/vendor/submit', [VendorApplicationController::class, 'submit'])->name('vendor.submit');
-Route::get('/vendor/waiting', [VendorApplicationController::class, 'waiting'])->name('vendor.waiting'); 
+Route::get('/vendor/apply',[VendorApplicationController::class,'create'])->name('vendor.apply');
+Route::post('/vendor/submit',[VendorApplicationController::class,'submit'])->name('vendor.submit');
+Route::get('/vendor/waiting',[VendorApplicationController::class,'waiting'])->name('vendor.waiting');
+Route::get('/vendor/status', [VendorController::class, 'checkValidationStatus']);
 //Route::view('/vendor/apply', 'vendor.apply');
 //Route::post('/vendor/submit', [VendorFormController::class, 'submit']);
-
+Route::get('/vendor/apply', [VendorController::class, 'showApplicationForm'])->name('vendor.apply');
+Route::post('/vendor/apply', [VendorController::class, 'submitVendorApplication'])->name('vendor.submit');
 // Retailer Dashboard Route
 Route::middleware(['auth', 'role:Retailer'])->group(function () {
     Route::get('/retailer/dashboard', [\App\Http\Controllers\RetailerDashboardController::class, 'index'])->name('retailer.dashboard');
+    Route::get('/retailer/inventory', [\App\Http\Controllers\RetailerInventoryController::class, 'index'])->name('retailer.inventory');
 });
+
+  // Retailer Product Catalog Route
+  Route::get('/retailer/catalog', function () {
+      // Get all available products from vendors/wholesalers
+      $products = \App\Models\Inventory::where('is_active', true)
+          ->where('quantity', '>', 0)
+          ->orderBy('name')
+          ->get();
+      
+      // Get unique categories
+      $categories = \App\Models\Inventory::where('is_active', true)
+          ->where('quantity', '>', 0)
+          ->distinct()
+          ->pluck('category')
+          ->filter()
+          ->values();
+      
+          // Get vendors (users with Wholesaler role)
+    $vendors = \App\Models\User::where('role', 'Wholesaler')->get();
+      
+      return view('retailer.catalog', compact('products', 'categories', 'vendors'));
+  })->name('retailer.catalog')->middleware(['auth', 'role:Retailer']);
+
+// Cart functionality for retailers
+Route::post('/retailer/cart/add', function (\Illuminate\Http\Request $request) {
+    $request->validate([
+        'wine_id' => 'required|exists:inventories,id',
+        'quantity' => 'required|integer|min:1'
+    ]);
+    
+    // Add to cart (you can implement this using session or database)
+    $cart = session()->get('retailer_cart', []);
+    $productId = $request->wine_id;
+    
+    if (isset($cart[$productId])) {
+        $cart[$productId] += $request->quantity;
+    } else {
+        $cart[$productId] = $request->quantity;
+    }
+    
+    session()->put('retailer_cart', $cart);
+    
+    return response()->json(['success' => true]);
+})->middleware(['auth', 'role:Retailer']);
+
+Route::post('/retailer/cart/update', function (\Illuminate\Http\Request $request) {
+    $request->validate([
+        'wine_id' => 'required|exists:inventories,id',
+        'quantity' => 'required|integer|min:1'
+    ]);
+    $cart = session()->get('retailer_cart', []);
+    $productId = $request->wine_id;
+    if (isset($cart[$productId])) {
+        $cart[$productId] = $request->quantity;
+        session()->put('retailer_cart', $cart);
+
+        // Calculate new subtotal and total
+        $product = \App\Models\Inventory::find($productId);
+        $subtotal = $product ? $product->unit_price * $cart[$productId] : 0;
+
+        $total = 0;
+        foreach ($cart as $pid => $qty) {
+            $p = \App\Models\Inventory::find($pid);
+            if ($p) $total += $p->unit_price * $qty;
+        }
+
+        return response()->json([
+            'success' => true,
+            'subtotal' => number_format($subtotal, 2),
+            'total' => number_format($total, 2),
+            'quantity' => $cart[$productId]
+        ]);
+    }
+    return response()->json(['success' => false, 'message' => 'Item not found in cart']);
+})->middleware(['auth', 'role:Retailer']);
+
+Route::get('/retailer/cart', function () {
+    $cart = session()->get('retailer_cart', []);
+    $cartItems = [];
+    $total = 0;
+    
+    foreach ($cart as $productId => $quantity) {
+        $product = \App\Models\Inventory::find($productId);
+        if ($product) {
+            $cartItems[] = [
+                'product' => $product,
+                'quantity' => $quantity,
+                'subtotal' => $product->unit_price * $quantity
+            ];
+            $total += $product->unit_price * $quantity;
+        }
+    }
+    
+    return view('retailer.cart', compact('cartItems', 'total'));
+})->name('retailer.cart')->middleware(['auth', 'role:Retailer']);
+
+Route::post('/retailer/cart/remove', function (\Illuminate\Http\Request $request) {
+    $request->validate([
+        'wine_id' => 'required|exists:inventories,id'
+    ]);
+    
+    $cart = session()->get('retailer_cart', []);
+    $productId = $request->wine_id;
+    
+    if (isset($cart[$productId])) {
+        unset($cart[$productId]);
+        session()->put('retailer_cart', $cart);
+    }
+    
+    return response()->json(['success' => true]);
+})->middleware(['auth', 'role:Retailer']);
+
+Route::post('/retailer/cart/clear', function () {
+    session()->forget('retailer_cart');
+    return response()->json(['success' => true]);
+})->middleware(['auth', 'role:Retailer']);
+
+Route::post('/retailer/checkout', function (\Illuminate\Http\Request $request) {
+    $cart = session()->get('retailer_cart', []);
+    if (empty($cart)) {
+        return redirect()->back()->with('error', 'Cart is empty');
+    }
+    try {
+        \DB::beginTransaction();
+        // Create the order
+        $order = \App\Models\Order::create([
+            'user_id' => auth()->id(),
+            'vendor_id' => null, // Company as seller
+            'customer_name' => auth()->user()->name,
+            'customer_email' => auth()->user()->email,
+            'customer_phone' => '',
+            'status' => 'pending',
+            'total_amount' => 0,
+            'payment_method' => $request->input('payment_method', 'Cash on Delivery'),
+            'shipping_address' => $request->input('shipping_address', ''),
+            'notes' => $request->input('notes', null),
+        ]);
+        $totalAmount = 0;
+        // Create order items
+        foreach ($cart as $productId => $quantity) {
+            $product = \App\Models\Inventory::find($productId);
+            if ($product && $product->quantity >= $quantity) {
+                \App\Models\OrderItem::create([
+                    'order_id' => $order->id,
+                    'inventory_id' => $productId,
+                    'item_name' => $product->name,
+                    'quantity' => $quantity,
+                    'unit_price' => $product->unit_price,
+                    'total_price' => $product->unit_price * $quantity,
+                    'subtotal' => $product->unit_price * $quantity,
+                ]);
+                $totalAmount += $product->unit_price * $quantity;
+                // Update inventory quantity
+                $product->decrement('quantity', $quantity);
+            }
+        }
+        // Update order total
+        $order->update(['total_amount' => $totalAmount]);
+        // Clear the cart
+        session()->forget('retailer_cart');
+        \DB::commit();
+        return redirect()->route('retailer.orders')->with('success', 'Order placed successfully!');
+    } catch (\Exception $e) {
+        \DB::rollback();
+        return redirect()->back()->with('error', 'Error placing order: ' . $e->getMessage());
+    }
+})->middleware(['auth', 'role:Retailer']);
+
+Route::get('/retailer/checkout', function () {
+    // You can customize this view as needed
+    return view('retailer.checkout');
+})->middleware(['auth', 'role:Retailer'])->name('retailer.checkout');
 
 // Retailer Wine Catalog Route
 Route::get('/retailer/catalog', [App\Http\Controllers\RetailerCatalogController::class, 'index'])->name('retailer.catalog');
+
 
 // Reports Route - Accessible by authenticated users
 // Route::middleware('auth')->group(function () {
@@ -267,7 +460,9 @@ Route::post('/stakeholders/{id}/preferences', [App\Http\Controllers\StakeholderC
 
 Route::get('/stakeholders/dashboard', [App\Http\Controllers\StakeholderController::class, 'dashboard'])->name('stakeholders.dashboard');
 
-Route::get('/stakeholders/{id}/reports', [App\Http\Controllers\StakeholderController::class, 'showReports'])->name('stakeholders.reports');
+Route::middleware(['auth', 'role:Vendor,Supplier,Admin'])->group(function () {
+    Route::get('/my-report', [App\Http\Controllers\StakeholderController::class, 'showReports'])->name('my.report');
+});
 
 
 require __DIR__.'/auth.php';
@@ -288,6 +483,11 @@ Route::middleware(['auth', 'role:Vendor'])->group(function () {
 // Vendor Orders Resource Routes - Accessible only by Vendor role
 Route::middleware(['auth', 'role:Vendor'])->group(function () {
     Route::resource('vendor/orders', App\Http\Controllers\VendorOrderController::class)->names('vendor.orders');
+});
+
+// Vendor Order Management Routes - Accessible by Vendor only
+Route::middleware(['auth', 'role:Vendor'])->group(function () {
+    Route::get('/vendor/orders', [\App\Http\Controllers\VendorOrderController::class, 'index'])->name('vendor.orders.index');
 });
 
 // Vendor Finance Route - Accessible only by Vendor role
@@ -349,9 +549,9 @@ Route::middleware(['auth', 'role:Customer'])->group(function () {
 
 // Customer Favorites Placeholder Page
 Route::middleware(['auth', 'role:Customer'])->group(function () {
-    Route::get('/customer/favorites', function () {
-        return view('customer.favorites');
-    })->name('customer.favorites');
+    Route::post('/customer/favorites', [FavoriteController::class, 'store'])->name('customer.favorites.add');
+    Route::delete('/customer/favorites', [FavoriteController::class, 'destroy'])->name('customer.favorites.remove');
+    Route::get('/customer/favorites', [FavoriteController::class, 'index'])->name('customer.favorites');
 });
 
 // Blade test route
@@ -387,7 +587,97 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::resource('shipments', \App\Http\Controllers\LogisticsDashboardController::class)->except(['index']); // index handled by dashboard
 }); 
 
+
 Route::get('/customer/recommendations', [App\Http\Controllers\CustomerRecommendationController::class, 'index'])
     ->name('customer.recommendations')
     ->middleware(['auth', 'role:Customer']); 
+
+Route::get('/retailer/help', function () {
+    return view('help.retailer');
+})->name('help.retailer'); 
+
+// Vendor Inventory Management Route - Accessible by Vendor only
+Route::middleware(['auth', 'role:Vendor'])->group(function () {
+    Route::get('/vendor/inventory', [\App\Http\Controllers\VendorInventoryController::class, 'index'])->name('vendor.inventory.index');
+}); 
+
+// Supplier Dashboard Route - Accessible only by Supplier role
+Route::middleware(['auth', 'role:Supplier'])->group(function () {
+    Route::get('/supplier/dashboard', function () {
+        return view('supplier.dashboard');
+    })->name('supplier.dashboard');
+}); 
+
+// Supplier Raw Materials Route - Accessible only by Supplier role
+Route::middleware(['auth', 'role:Supplier'])->group(function () {
+    Route::get('/supplier/raw-materials', function () {
+        $materials = SupplierRawMaterial::where('user_id', auth()->id())->get();
+        return view('supplier.raw-materials', compact('materials'));
+    })->name('supplier.raw-materials');
+    Route::post('/supplier/raw-materials', function (\Illuminate\Http\Request $request) {
+        $user = auth()->user();
+        // Remove all previous materials for this supplier
+        SupplierRawMaterial::where('user_id', $user->id)->delete();
+        // Save new materials
+        $materials = $request->input('materials', []);
+        foreach ($materials as $material) {
+            SupplierRawMaterial::create([
+                'user_id' => $user->id,
+                'name' => $material['name'] ?? '',
+                'category' => $material['category'] ?? '',
+                'typical_use' => $material['use'] ?? '',
+                'stock_level' => $material['stock'] ?? '',
+                'unit_price' => $material['unit_price'] ?? 0,
+            ]);
+        }
+        return redirect()->back()->with('success', 'Raw materials updated successfully!');
+    })->name('supplier.raw-materials.save');
+}); 
+
+// Supplier Orders Route - Accessible only by Supplier role
+Route::middleware(['auth', 'role:Supplier'])->group(function () {
+    Route::get('/supplier/orders', function () {
+        $supplier = auth()->user();
+        $orders = \App\Models\Procurement::where('wholesaler_name', $supplier->name)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        return view('supplier.orders', compact('orders'));
+    })->name('supplier.orders');
+}); 
+
+// Supplier Order Details Route - Accessible only by Supplier role
+Route::middleware(['auth', 'role:Supplier'])->group(function () {
+    Route::get('/supplier/orders/{order}', function ($order) {
+        $supplier = auth()->user();
+        $orderData = \App\Models\Procurement::where('id', $order)
+            ->where('wholesaler_name', $supplier->name)
+            ->firstOrFail();
+        return view('supplier.orders-show', ['order' => $orderData]);
+    })->name('supplier.orders.show');
+}); 
+
+// Supplier Reports Route - Accessible only by Supplier role
+use App\Http\Controllers\SupplierReportController;
+Route::middleware(['auth', 'role:Supplier'])->group(function () {
+    Route::get('/supplier/reports', [SupplierReportController::class, 'index'])->name('supplier.reports');
+}); 
+
+// Supplier Reports API Route - returns live data as JSON for AJAX polling
+Route::middleware(['auth:sanctum', 'role:Supplier'])->get('/api/supplier/reports', [App\Http\Controllers\SupplierReportController::class, 'apiIndex']);
+
+Route::get('/api/catalog/search', [App\Http\Controllers\InventoryController::class, 'searchCatalog'])->name('api.catalog.search');
+
+// Vendor Bulk Order Routes - Accessible only by Vendor role
+Route::middleware(['auth', 'role:Vendor'])->group(function () {
+    Route::get('/vendor/bulk-order', [\App\Http\Controllers\VendorBulkOrderController::class, 'showForm'])->name('vendor.bulk-order.form');
+    Route::post('/vendor/bulk-order', [\App\Http\Controllers\VendorBulkOrderController::class, 'submit'])->name('vendor.bulk-order.submit');
+    Route::get('/vendor/bulk-order/confirmation/{order}', [\App\Http\Controllers\VendorBulkOrderController::class, 'confirmation'])->name('vendor.bulk-order.confirmation');
+    Route::get('/vendor/bulk-order/history', [\App\Http\Controllers\VendorBulkOrderController::class, 'history'])->name('vendor.bulk-order.history');
+});
+
+Route::get('/retailer/orders', [\App\Http\Controllers\RetailerOrderController::class, 'index'])->name('retailer.orders');
+
+// Retailer order confirmation page
+Route::get('/retailer/orders/confirmation/{order}', [App\Http\Controllers\OrderController::class, 'retailerConfirmation'])->name('retailer.orders.confirmation');
+
 

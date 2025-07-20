@@ -121,6 +121,8 @@
                             <li><a href="{{ route('orders.index') }}" class="nav-link"><i class="fas fa-shopping-bag"></i> Orders</a></li>
                             <li><a href="{{ route('inventory.index') }}" class="nav-link"><i class="fas fa-boxes"></i> Inventory</a></li>
                             <li><a href="{{ route('help.index') }}" class="nav-link"><i class="fas fa-question-circle"></i> Help</a></li>
+                            <li><a href="{{ route('retailer.inventory') }}" class="nav-link"><i class="fas fa-boxes"></i> Inventory</a></li>
+
                         </ul>
                     </nav>
                 </div>
@@ -184,18 +186,35 @@
                                             </div>
                                         </td>
                                         <td>
-                                            @if(is_iterable($order->items) && count($order->items) > 0)
+                                            @if($order->orderItems && $order->orderItems->count() > 0)
+                                                @foreach($order->orderItems as $item)
+                                                    @php
+                                                        $product = \App\Models\Inventory::find($item->inventory_id);
+                                                        $imgPath = $product && !empty($product->images) && is_array($product->images) && count($product->images) > 0
+                                                            ? (Str::startsWith($product->images[0], 'inventory_images/') ? asset('storage/' . $product->images[0]) : asset('wine_images/' . $product->images[0]))
+                                                            : null;
+                                                    @endphp
+                                                    <div class="small text-burgundy d-flex align-items-center">
+                                                        @if($imgPath)
+                                                            <img src="{{ $imgPath }}" alt="{{ $item->item_name ?? 'Wine' }}" style="width: 24px; height: 24px; object-fit: cover; border-radius: 4px; margin-right: 6px;">
+                                                        @else
+                                                            <i class="fas fa-wine-bottle me-1 text-gold"></i>
+                                                        @endif
+                                                        {{ $item->item_name ?? $item->wine_name ?? 'Wine' }} ({{ $item->quantity }})
+                                                    </div>
+                                                @endforeach
+                                            @elseif(is_iterable($order->items) && count($order->items) > 0)
                                                 @foreach($order->items as $item)
                                                     <div class="small text-burgundy">
                                                         <i class="fas fa-wine-bottle me-1 text-gold"></i>
-                                                        {{ $item['wine_name'] }} ({{ $item['quantity'] }})
+                                                        {{ $item['wine_name'] ?? 'Wine' }} ({{ $item['quantity'] ?? 1 }})
                                                     </div>
                                                 @endforeach
                                             @else
                                                 <span class="text-muted">No items</span>
                                             @endif
                                         </td>
-                                        <td><strong class="text-burgundy">{{ format_usd($order->total_amount) }}</strong></td>
+                                        <td><strong class="text-burgundy">{{ 'UGX ' . number_format($order->total_amount, 0) }}</strong></td>
                                         <td>
                                             @php
                                                 $statusColors = [

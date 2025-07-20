@@ -1,340 +1,210 @@
-@extends('layouts.app')
-
-@section('title', 'Vendor Dashboard')
-
-@section('navigation')
-    @include('layouts.navigation')
-@endsection
-
-@section('content')
-<style>
-:root {
-    --burgundy: #5e0f0f;
-    --gold: #c8a97e;
-    --cream: #f5f0e6;
-    --light-burgundy: #8b1a1a;
-    --dark-gold: #b8945f;
-}
-.vendor-theme-bg {
-    background: linear-gradient(120deg, var(--cream) 0%, #fff 60%, #f5e6e6 100%);
-    min-height: 100vh;
-    font-family: 'Segoe UI', 'Figtree', Arial, sans-serif;
-}
-.card, .stat-card {
-    border-radius: 22px;
-    box-shadow: 0 6px 32px rgba(94, 15, 15, 0.13);
-    border: none;
-    background: #fff7f3;
-    margin-bottom: 2rem;
-}
-.page-header {
-    background: linear-gradient(135deg, var(--cream) 0%, #fff 100%);
-    border-radius: 16px;
-    box-shadow: 0 2px 16px rgba(94, 15, 15, 0.13);
-    padding: 2rem 2.5rem 1.5rem 2.5rem;
-    margin-bottom: 2rem;
-}
-.text-burgundy {
-    color: var(--burgundy) !important;
-}
-.text-gold {
-    color: var(--gold) !important;
-}
-.bg-burgundy {
-    background-color: var(--burgundy) !important;
-}
-.bg-gold {
-    background-color: var(--gold) !important;
-}
-.btn, .btn-burgundy, .btn-gold, .btn-outline-burgundy, .btn-outline-gold {
-    font-size: 1.15rem !important;
-    font-weight: 700 !important;
-    border-width: 2px !important;
-    border-radius: 10px !important;
-    box-shadow: 0 2px 10px rgba(94, 15, 15, 0.13) !important;
-    transition: all 0.18s !important;
-    outline: none !important;
-    padding: 0.6rem 1.5rem !important;
-    letter-spacing: 0.03em;
-}
-.btn-burgundy {
-    background-color: var(--burgundy) !important;
-    border-color: var(--burgundy) !important;
-    color: #fff !important;
-}
-.btn-burgundy:hover, .btn-burgundy:focus {
-    background-color: var(--light-burgundy) !important;
-    border-color: var(--light-burgundy) !important;
-    color: #fff !important;
-    box-shadow: 0 4px 18px rgba(94, 15, 15, 0.18) !important;
-    transform: translateY(-2px) scale(1.04);
-}
-.btn-gold {
-    background-color: var(--gold) !important;
-    border-color: var(--gold) !important;
-    color: var(--burgundy) !important;
-}
-.btn-gold:hover, .btn-gold:focus {
-    background-color: var(--dark-gold) !important;
-    border-color: var(--dark-gold) !important;
-    color: var(--burgundy) !important;
-    box-shadow: 0 4px 18px rgba(200, 169, 126, 0.18) !important;
-    transform: translateY(-2px) scale(1.04);
-}
-.btn-outline-burgundy {
-    border-color: var(--burgundy) !important;
-    color: var(--burgundy) !important;
-    background: #fff !important;
-}
-.btn-outline-burgundy:hover, .btn-outline-burgundy:focus {
-    background-color: var(--burgundy) !important;
-    color: #fff !important;
-    box-shadow: 0 4px 18px rgba(94, 15, 15, 0.18) !important;
-    transform: translateY(-2px) scale(1.04);
-}
-.btn-outline-gold {
-    border-color: var(--gold) !important;
-    color: var(--gold) !important;
-    background: #fff !important;
-}
-.btn-outline-gold:hover, .btn-outline-gold:focus {
-    background-color: var(--gold) !important;
-    color: var(--burgundy) !important;
-    box-shadow: 0 4px 18px rgba(200, 169, 126, 0.18) !important;
-    transform: translateY(-2px) scale(1.04);
-}
-.vendor-list-item {
-    background: #f5f0e6;
-    border-left: 4px solid var(--burgundy);
-    margin-bottom: 0.5rem;
-    padding: 0.85rem 1.2rem;
-    border-radius: 10px;
-    font-size: 1.08rem;
-}
-.section-title {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: var(--burgundy);
-    margin-bottom: 1rem;
-    letter-spacing: 0.5px;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-.section-divider {
-    border-top: 2px solid var(--gold);
-    margin: 2.5rem 0 2rem 0;
-}
-.card-header.bg-white {
-    background: linear-gradient(90deg, #fff7f3 60%, #f5e6e6 100%);
-    border-radius: 12px 12px 0 0;
-    border-bottom: 2px solid #f5e0d6;
-    padding-top: 1.2rem;
-    padding-bottom: 1.2rem;
-}
-</style>
-<div class="vendor-theme-bg min-vh-100">
-    <div class="container-fluid py-4">
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="page-header border-bottom pb-3 mb-4 d-flex align-items-center justify-content-between">
-                    <div>
-                        <h1 class="page-title mb-0 fw-bold text-burgundy">
-                            <i class="fas fa-warehouse me-2 text-gold"></i>
-                            Vendor Dashboard
-                        </h1>
-                        <span class="text-muted small">All your vendor operations at a glance</span>
-                    </div>
-                    <div class="header-actions">
-                        <span class="badge bg-gold text-burgundy px-3 py-2">
-                            <i class="fas fa-clock me-1"></i>
-                            {{ now()->format('M d, Y H:i') }}
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Orders & Inventory -->
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <div class="card shadow-sm stat-card mb-3">
-                    <div class="card-header bg-white border-bottom">
-                        <h6 class="mb-0 fw-bold text-burgundy"><i class="fas fa-shopping-cart text-gold me-2"></i> Orders</h6>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group mb-0">
-                            <li class="list-group-item">View, confirm, update, and track orders</li>
-                            @forelse($orders as $order)
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>Order #{{ $order->id }}</span>
-                                <span class="badge {{ $order->status === 'confirmed' ? 'bg-success' : ($order->status === 'pending' ? 'bg-info' : 'bg-warning text-dark') }}">{{ ucfirst($order->status) }}</span>
-                            </li>
-                            @empty
-                            <li class="list-group-item text-muted">No recent orders</li>
-                            @endforelse
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Dashboard | TERRAVIN</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <style>
+        :root {
+            --burgundy: #5e0f0f;
+            --light-burgundy: #8b1a1a;
+            --gold: #c8a97e;
+            --cream: #f5f0e6;
+            --light-cream: #f9f5ed;
+            --dark-text: #2a2a2a;
+            --gray: #e1e5e9;
+            --light-gray: #f8f9fa;
+            --shadow-sm: 0 2px 8px rgba(94, 15, 15, 0.08);
+            --shadow-md: 0 4px 20px rgba(94, 15, 15, 0.12);
+            --transition: all 0.3s ease;
+            --border-radius: 12px;
+        }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--light-cream);
+            color: var(--dark-text);
+            line-height: 1.6;
+        }
+        .wine-top-bar {
+            background: linear-gradient(135deg, var(--burgundy) 0%, var(--light-burgundy) 100%);
+            color: white;
+            padding: 0.75rem 0;
+            box-shadow: 0 2px 10px rgba(94, 15, 15, 0.2);
+            position: fixed;
+            width: 100%;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+        }
+        .wine-brand {
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 700;
+            transition: color 0.3s ease;
+            margin-right: 1.5rem;
+        }
+        .wine-brand:hover {
+            color: white;
+            text-decoration: none;
+        }
+        .wine-nav .nav-links {
+            gap: 1.5rem;
+        }
+        .nav-link {
+            color: rgba(255, 255, 255, 0.92);
+            text-decoration: none;
+            padding: 0.5rem 1.1rem;
+            border-radius: 20px;
+            transition: all 0.2s;
+            font-size: 1.05rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: var(--gold);
+            background: rgba(255,255,255,0.08);
+        }
+        .user-name {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #fff;
+        }
+        .main-content {
+            padding: 2rem 2.5rem;
+            background-color: var(--light-gray);
+            margin-top: 90px;
+        }
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--burgundy);
+            font-weight: 600;
+        }
+        .dashboard-section {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+        }
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: var(--burgundy);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .btn-burgundy {
+            background: var(--burgundy);
+            color: white;
+            border: none;
+            border-radius: 2rem;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .btn-burgundy:hover {
+            background: var(--light-burgundy);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Wine-themed top nav bar for vendor -->
+    <div class="wine-top-bar">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center justify-content-between" style="min-height: 80px;">
+                <div class="d-flex align-items-center gap-3">
+                    <a class="wine-brand" href="{{ url('/vendor/dashboard') }}">
+                        <i class="fas fa-wine-bottle"></i>
+                    </a>
+                    <nav class="wine-nav">
+                        <ul class="nav-links d-flex align-items-center gap-3 mb-0" style="list-style:none;">
+                            <li><a href="{{ url('/vendor/dashboard') }}" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                            <li><a href="{{ url('/vendor/orders') }}" class="nav-link"><i class="fas fa-shopping-bag"></i> Orders</a></li>
+                            <li><a href="{{ url('/vendor/inventory') }}" class="nav-link"><i class="fas fa-boxes"></i> Inventory</a></li>
+                            <li><a href="{{ url('/reports') }}" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a></li>
+                            <li><a href="{{ url('/vendor/bulk-order') }}" class="nav-link"><i class="fas fa-wine-bottle"></i> Bulk Order</a></li>
                         </ul>
-                        <a href="{{ route('vendor.orders.index', ['vendor' => $vendor]) }}" class="btn btn-burgundy btn-sm mt-2">Manage Orders</a>
-                    </div>
+                    </nav>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card shadow-sm stat-card mb-3">
-                    <div class="card-header bg-white border-bottom">
-                        <h6 class="mb-0 fw-bold text-burgundy"><i class="fas fa-boxes text-gold me-2"></i> Inventory & Demand</h6>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group mb-0">
-                            <li class="list-group-item">See buyer needs and demand forecasts</li>
-                            @forelse($inventory as $item)
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>{{ $item->name }}</span>
-                                <span class="badge {{ $item->quantity < 10 ? 'bg-warning text-dark' : 'bg-secondary' }}">{{ $item->quantity < 10 ? 'High Demand' : 'Normal' }}</span>
-                            </li>
-                            @empty
-                            <li class="list-group-item text-muted">No inventory data</li>
-                            @endforelse
+                <div class="d-flex align-items-center gap-4">
+                    <div class="dropdown">
+                        <a class="dropdown-toggle d-flex align-items-center text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
+                            <div class="profile-photo-placeholder-large rounded-circle d-flex align-items-center justify-content-center me-2" style="border: 6px solid var(--gold); background: linear-gradient(135deg, var(--burgundy) 0%, #8b1a1a 100%); width: 72px; height: 72px; color: #fff; font-size: 2rem;">
+                                <span class="fw-bold">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
+                            </div>
+                            <span class="user-name">{{ Auth::user()->name }} <span class="text-gold" style="font-weight: 500;">(Vendor)</span></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="fas fa-user-edit me-2"></i> Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
                         </ul>
-                        <a href="{{ url('vendor/inventory') }}" class="btn btn-gold btn-sm mt-2">View Inventory</a>
                     </div>
-                </div>
-            </div>
-        </div>
-        <!-- Logistics & Product Specs -->
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <div class="card shadow-sm stat-card mb-3">
-                    <div class="card-header bg-white border-bottom">
-                        <h6 class="mb-0 fw-bold text-burgundy"><i class="fas fa-truck text-gold me-2"></i> Logistics</h6>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group mb-0">
-                            <li class="list-group-item">Shipment schedules, addresses, proofs of delivery</li>
-                            @forelse($shipments as $shipment)
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>Shipment #{{ $shipment->id }}</span>
-                                <span class="badge {{ $shipment->status === 'delivered' ? 'bg-success' : 'bg-info' }}">{{ ucfirst($shipment->status) }}</span>
-                            </li>
-                            @empty
-                            <li class="list-group-item text-muted">No recent shipments</li>
-                            @endforelse
-                        </ul>
-                        <a href="{{ url('vendor/shipments') }}" class="btn btn-outline-gold btn-sm mt-2">Track Shipments</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card shadow-sm stat-card mb-3">
-                    <div class="card-header bg-white border-bottom">
-                        <h6 class="mb-0 fw-bold text-burgundy"><i class="fas fa-certificate text-gold me-2"></i> Product Specs & Compliance</h6>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group mb-0">
-                            <li class="list-group-item">Quality standards, compliance requirements</li>
-                            @forelse($complianceDocs as $doc)
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>{{ $doc->name }}</span>
-                                <span class="badge {{ $doc->status === 'valid' ? 'bg-success' : 'bg-warning text-dark' }}">{{ ucfirst($doc->status) }}</span>
-                            </li>
-                            @empty
-                            <li class="list-group-item text-muted">No compliance documents</li>
-                            @endforelse
-                        </ul>
-                        <a href="{{ url('vendor/compliance-documents') }}" class="btn btn-outline-burgundy btn-sm mt-2">View Specs</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Finance & Reports -->
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <div class="card shadow-sm stat-card mb-3">
-                    <div class="card-header bg-white border-bottom">
-                        <h6 class="mb-0 fw-bold text-burgundy"><i class="fas fa-file-invoice-dollar text-gold me-2"></i> Finance</h6>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group mb-0">
-                            <li class="list-group-item">Invoices, payments, credits</li>
-                            @forelse($invoices as $invoice)
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>Invoice #{{ $invoice->id }}</span>
-                                <span class="badge bg-warning text-dark">Outstanding</span>
-                            </li>
-                            @empty
-                            <li class="list-group-item text-muted">No outstanding invoices</li>
-                            @endforelse
-                            @forelse($payments as $payment)
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>Payment #{{ $payment->id }}</span>
-                                <span class="badge bg-success">Received</span>
-                            </li>
-                            @empty
-                            @endforelse
-                        </ul>
-                        <a href="{{ route('vendor.finance') }}" class="btn btn-burgundy btn-sm mt-2">View Finance</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card shadow-sm stat-card mb-3">
-                    <div class="card-header bg-white border-bottom">
-                        <h6 class="mb-0 fw-bold text-burgundy"><i class="fas fa-chart-line text-gold me-2"></i> Reports & Audits</h6>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group mb-0">
-                            <li class="list-group-item">Performance scorecards, audit data</li>
-                            @forelse($reports as $report)
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>Report #{{ $report->id }}</span>
-                                <span class="badge bg-gold text-burgundy">{{ $report->status ?? 'A+' }}</span>
-                            </li>
-                            @empty
-                            <li class="list-group-item text-muted">No recent reports</li>
-                            @endforelse
-                        </ul>
-                        <a href="{{ route('vendor.reports') }}" class="btn btn-outline-gold btn-sm mt-2">View Reports</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Communication & Contracts -->
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <div class="card shadow-sm stat-card mb-3">
-                    <div class="card-header bg-white border-bottom">
-                        <h6 class="mb-0 fw-bold text-burgundy"><i class="fas fa-comments text-gold me-2"></i> Communication</h6>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group mb-0">
-                            <li class="list-group-item">Messaging, notifications</li>
-                            <li class="list-group-item">New Message: <span class="badge bg-info">{{ count($messages) }}</span></li>
-                            <li class="list-group-item">Notifications: <span class="badge bg-gold text-burgundy">{{ count($notifications) }}</span></li>
-                        </ul>
-                        <a href="{{ route('vendor.messages') }}" class="btn btn-outline-burgundy btn-sm mt-2">Go to Messages</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card shadow-sm stat-card mb-3">
-                    <div class="card-header bg-white border-bottom">
-                        <h6 class="mb-0 fw-bold text-burgundy"><i class="fas fa-file-contract text-gold me-2"></i> Contracts</h6>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group mb-0">
-                            <li class="list-group-item">View and manage agreements</li>
-                            @forelse($contracts as $contract)
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>Contract #{{ $contract->id }}</span>
-                                <span class="badge {{ $contract->status === 'active' ? 'bg-success' : 'bg-warning text-dark' }}">{{ ucfirst($contract->status) }}</span>
-                            </li>
-                            @empty
-                            <li class="list-group-item text-muted">No contracts</li>
-                            @endforelse
-                        </ul>
-                        <a href="{{ route('vendor.contracts') }}" class="btn btn-outline-gold btn-sm mt-2">Manage Contracts</a>
-                    </div>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
                 </div>
             </div>
         </div>
     </div>
-</div>
-@endsection 
+    <div class="main-content">
+        <div class="container-fluid">
+            <h1 class="page-title mb-4">Vendor Dashboard</h1>
+            <div class="dashboard-section">
+                <div class="section-title"><i class="fas fa-shopping-bag me-2"></i>Orders</div>
+                <p>View, confirm, update, and track orders assigned to you as a vendor.</p>
+                <a href="{{ url('/vendor/orders') }}" class="btn btn-burgundy">Manage Orders</a>
+            </div>
+            <div class="dashboard-section">
+                <div class="section-title"><i class="fas fa-boxes me-2"></i>Inventory</div>
+                <p>View and manage your inventory, update stock levels, and add new products.</p>
+                <a href="{{ url('/vendor/inventory') }}" class="btn btn-burgundy">View Inventory</a>
+            </div>
+            <div class="dashboard-section">
+                <div class="section-title"><i class="fas fa-chart-line me-2"></i>Analytics</div>
+                <p>View sales analytics, performance reports, and demand forecasts to optimize your operations.</p>
+                <a href="{{ url('/reports') }}" class="btn btn-burgundy">View Analytics</a>
+            </div>
+            <div class="dashboard-section" style="background: linear-gradient(135deg, #f5f0e6 60%, #c8a97e 100%); box-shadow: 0 4px 20px rgba(94, 15, 15, 0.10); border: 2px solid #c8a97e;">
+                <div class="section-title" style="font-size: 1.5rem; color: #5e0f0f;">
+                    <i class="fas fa-truck-loading me-2 text-gold"></i>Bulk Order from Company
+                </div>
+                <p style="font-size: 1.1rem; color: #5e0f0f;">
+                    Need to restock in large quantities? Place a creative bulk order directly from the company and enjoy special rates, priority processing, and seamless delivery for your business needs.
+                </p>
+                <a href="{{ url('/vendor/bulk-order') }}" class="btn btn-burgundy" style="font-size: 1.1rem; font-weight: 600; box-shadow: 0 2px 8px #c8a97e; transition: transform 0.2s;">
+                    <i class="fas fa-wine-bottle me-2"></i>Place Bulk Order
+                </a>
+            </div>
+            <div class="dashboard-section text-center" style="background: none; box-shadow: none; border: none; margin-top: -1rem;">
+                <a href="{{ route('vendor.bulk-order.history') }}" class="btn btn-burgundy btn-lg mt-2 wine-track-btn" style="font-size: 1.25rem; font-weight: 700; border: 2px solid #c8a97e; color: #fff; box-shadow: 0 4px 16px rgba(94,15,15,0.12); letter-spacing: 1px;">
+                    <i class="fas fa-history me-2"></i>Track Bulk Orders
+                </a>
+            </div>
+            <style>
+                .wine-track-btn {
+                    background: linear-gradient(135deg, #5e0f0f 60%, #8b1a1a 100%);
+                    border-radius: 2rem;
+                    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+                }
+                .wine-track-btn:hover, .wine-track-btn:focus {
+                    background: linear-gradient(135deg, #8b1a1a 60%, #5e0f0f 100%);
+                    color: #c8a97e;
+                    box-shadow: 0 8px 24px rgba(94,15,15,0.18);
+                    text-decoration: none;
+                }
+            </style>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

@@ -830,65 +830,17 @@
                     </div>
                 </div>
                 <div class="search-cart">
-                    <form class="search-bar" method="GET" action="{{ route('customer.dashboard') }}" style="margin-bottom:0;">
+                    <form class="search-bar" method="GET" action="{{ route('customer.dashboard') }}" style="margin-bottom:0; position:relative;">
                         <i class="fas fa-search"></i>
-                        <input type="text" name="search" placeholder="Search wines..." value="{{ request('search') }}">
+                        <input type="text" name="search" placeholder="Search wines..." value="{{ request('search') }}" autocomplete="off" id="catalog-search-input">
+                        <ul id="search-suggestions" style="display:none; position:absolute; top:110%; left:0; width:100%; background:#fff; z-index:1001; border-radius: 0 0 12px 12px; box-shadow: 0 4px 18px rgba(200,169,126,0.13); padding:0; margin:0; list-style:none; border:1px solid var(--gold); max-height:320px; overflow-y:auto;"></ul>
                     </form>
                     {{-- <button class="cart-btn" onclick="window.location='{{ route('cart.index') }}'">Cart</button> --}}
                 </div>
             </div>
 
             <!-- Stats Overview -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-shopping-bag"></i>
-                    </div>
-                    <div class="stat-content">
-                        <p class="stat-title">Total Orders</p>
-                        <h3 class="stat-value">{{ \App\Models\Order::where('customer_email', Auth::user()->email)->count() }}</h3>
-                        <p class="stat-change">
-                            <i class="fas fa-arrow-up"></i> 12% from last month
-                        </p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-heart"></i>
-                    </div>
-                    <div class="stat-content">
-                        <p class="stat-title">Favorites</p>
-                        <h3 class="stat-value">8</h3>
-                        <p class="stat-change">
-                            <i class="fas fa-arrow-up"></i> 2 new this week
-                        </p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <div class="stat-content">
-                        <p class="stat-title">Member Level</p>
-                        <h3 class="stat-value">Gold</h3>
-                        <p class="stat-change">
-                            <i class="fas fa-award"></i> 150 points to Platinum
-                        </p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-wine-bottle"></i>
-                    </div>
-                    <div class="stat-content">
-                        <p class="stat-title">Wines Tasted</p>
-                        <h3 class="stat-value">24</h3>
-                        <p class="stat-change negative">
-                            <i class="fas fa-arrow-down"></i> Time to restock!
-                        </p>
-                    </div>
-                </div>
-            </div>
+            <!-- Removed all stat cards (Total Orders, Member Level, Wines Tasted) -->
 
             <!-- Featured Wines -->
             <div class="section-header">
@@ -914,8 +866,11 @@
                     $wines = $winesQuery->inRandomOrder()->take(4)->get();
                 @endphp
                 @forelse($wines as $wine)
+                @php
+                    $imgPath = ($wine->images && count($wine->images) > 0) ? $wine->images[0] : null;
+                @endphp
                 <div class="wine-card">
-                    <div class="wine-image" style="background-image: url('{{ $wine->images && count($wine->images) > 0 ? asset('storage/' . $wine->images[0]) : 'https://via.placeholder.com/300x200?text=Wine' }}');">
+                    <div class="wine-image" style="background-image: url('{{ $imgPath ? (Str::startsWith($imgPath, 'inventory_images/') ? asset('storage/' . $imgPath) : asset('wine_images/' . $imgPath)) : 'https://via.placeholder.com/300x200?text=Wine' }}');">
                         <span class="wine-badge">Limited</span>
                     </div>
                     <div class="wine-details">
@@ -927,10 +882,10 @@
                             {{ $wine->description ?? 'A premium selection with rich flavors and elegant finish. Perfect for special occasions.' }}
                         </p>
                         <div class="wine-footer">
-                            <span class="wine-price">{{ format_usd($wine->unit_price) }}</span>
+                            <span class="wine-price">{{ 'UGX ' . number_format($wine->unit_price, 0) }}</span>
                             <!-- Inside the wine card or wine actions section for each wine -->
                             <div class="wine-actions">
-                                <button class="btn btn-wine btn-wine-primary btn-add-to-cart" data-wine-id="{{ $wine->id }}">
+                                <button class="btn btn-wine btn-wine-primary btn-add-to-cart" data-inventory-id="{{ $wine->id }}">
                                     <i class="fas fa-cart-plus"></i> Add to Cart
                                 </button>
                             </div>
@@ -998,14 +953,14 @@
             const addToCartButtons = document.querySelectorAll('.btn-add-to-cart');
             addToCartButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    const wineId = this.getAttribute('data-wine-id');
+                    const inventoryId = this.getAttribute('data-inventory-id');
                     fetch('/cart/add', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                         },
-                        body: JSON.stringify({ wine_id: wineId, quantity: 1 })
+                        body: JSON.stringify({ inventory_id: inventoryId, quantity: 1 })
                     })
                     .then(res => res.json())
                     .then(data => {
@@ -1082,6 +1037,44 @@
                 }
             `;
             document.head.appendChild(style);
+
+            const searchInput = document.getElementById('catalog-search-input');
+            const suggestionsBox = document.getElementById('search-suggestions');
+            let debounceTimeout;
+            searchInput.addEventListener('input', function() {
+                clearTimeout(debounceTimeout);
+                const q = this.value.trim();
+                if (q.length < 2) {
+                    suggestionsBox.style.display = 'none';
+                    suggestionsBox.innerHTML = '';
+                    return;
+                }
+                debounceTimeout = setTimeout(() => {
+                    fetch(`/api/catalog/search?q=${encodeURIComponent(q)}`)
+                        .then(res => res.json())
+                        .then(items => {
+                            if (!items.length) {
+                                suggestionsBox.innerHTML = '<li style="padding:0.7rem 1rem;color:#888;">No matches found</li>';
+                                suggestionsBox.style.display = 'block';
+                                return;
+                            }
+                            suggestionsBox.innerHTML = items.map(item =>
+                                `<li style="display:flex;align-items:center;gap:0.7rem;padding:0.6rem 1rem;cursor:pointer;border-bottom:1px solid #f5f0e6;transition:background 0.18s;" onmouseover="this.style.background='#f5f0e6'" onmouseout="this.style.background='#fff'" onclick="window.location='{{ route('customer.products') }}?search='+encodeURIComponent('${item.name}')">
+                                    <img src="${item.image || 'https://via.placeholder.com/40x40?text=Wine'}" alt="${item.name}" style="width:40px;height:40px;object-fit:cover;border-radius:8px;border:1.5px solid var(--gold);">
+                                    <span style="color:#5e0f0f;font-weight:600;">${item.name}</span>
+                                </li>`
+                            ).join('');
+                            suggestionsBox.style.display = 'block';
+                        });
+                }, 180);
+            });
+            // Hide suggestions on blur (with delay for click)
+            searchInput.addEventListener('blur', function() {
+                setTimeout(() => { suggestionsBox.style.display = 'none'; }, 180);
+            });
+            searchInput.addEventListener('focus', function() {
+                if (suggestionsBox.innerHTML.trim()) suggestionsBox.style.display = 'block';
+            });
         });
     </script>
 </body>

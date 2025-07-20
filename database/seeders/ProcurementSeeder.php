@@ -19,7 +19,7 @@ class ProcurementSeeder extends Seeder
             ['email' => 'admin@terravin.com'],
             [
                 'name' => 'Admin User',
-                'password' => bcrypt('password'),
+                'password' => bcrypt('Admin@123'),
             ]
         );
 

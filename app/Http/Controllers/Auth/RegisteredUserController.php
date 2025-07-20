@@ -35,34 +35,58 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'string', 'in:Vendor,Wholesaler,Retailer'],
+            'role' => ['required', 'string', 'in:Vendor,Supplier,Retailer,Customer'],
         ]);
 
-        // Create user with Customer role initially
+        // If registering as Customer, create and redirect directly
+        if ($request->role === 'Customer') {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => 'Customer',
+            ]);
+            event(new Registered($user));
+            Auth::login($user);
+            return redirect()->route('customer.dashboard');
+        }
+
+        // If registering as Vendor, create as Customer, request upgrade, then redirect to vendor application form
+        if ($request->role === 'Vendor') {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => 'Customer',
+            ]);
+            RoleApprovalRequest::create([
+                'user_id' => $user->id,
+                'requested_role' => $request->role,
+                'status' => 'pending',
+            ]);
+            event(new Registered($user));
+            Auth::login($user);
+            // Redirect to vendor application form
+            return redirect()->route('vendor.apply')
+                ->with('success', 'Account created successfully! Please complete your vendor application form.');
+        }
+
+        // For all other roles, create as Customer and request upgrade
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'Customer', // Default to Customer role
+            'role' => 'Customer',
         ]);
-
-        // Create role approval request
         RoleApprovalRequest::create([
             'user_id' => $user->id,
             'requested_role' => $request->role,
             'status' => 'pending',
         ]);
-
         event(new Registered($user));
-
         Auth::login($user);
-
-        if ($request->role === 'Vendor') {
-            return redirect()->route('vendor.apply');
-}
-
         return redirect()->route('application.status')
-            ->with('success', 'Account created successfully! Your role upgrade request has been submitted and is pending admin approval.');
+            ->with('success', 'Account created successfully! Your application for the ' . $request->role . ' role is pending admin approval.');
     }
 
     /**

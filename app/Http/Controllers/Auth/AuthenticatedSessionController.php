@@ -49,11 +49,17 @@ class AuthenticatedSessionController extends Controller
             'details' => null,
         ]);
 
+        if ($user && $user->hasRole('Admin')) {
+            return redirect(route('admin.dashboard', absolute: false));
+        }
         if ($user && $user->hasRole('Retailer')) {
             return redirect()->intended(route('retailer.dashboard', absolute: false));
         }
         if ($user && $user->hasRole('Vendor')) {
             return redirect()->intended(route('vendor.dashboard', absolute: false));
+        }
+        if ($user && $user->hasRole('Supplier')) {
+            return redirect()->intended(route('supplier.dashboard', absolute: false));
         }
         if ($user && $user->hasRole('Customer')) {
             return redirect()->intended(route('customer.dashboard', absolute: false));

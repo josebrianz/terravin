@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Order;
+use Illuminate\Support\Facades\Auth;
 
 class VendorOrderController extends Controller
 {
@@ -11,7 +13,13 @@ class VendorOrderController extends Controller
      */
     public function index()
     {
-        //
+        $vendorId = Auth::id();
+        // Show all orders where the vendor is the current user
+        $orders = Order::where('vendor_id', $vendorId)
+            ->with(['user', 'orderItems'])
+            ->latest()
+            ->paginate(15);
+        return view('vendor.orders.index', compact('orders'));
     }
 
     /**
