@@ -122,6 +122,7 @@ Route::get('/vendor/apply', [VendorApplicationController::class, 'create'])->nam
 Route::get('/vendor/apply',[VendorApplicationController::class,'create'])->name('vendor.apply');
 Route::post('/vendor/submit',[VendorApplicationController::class,'submit'])->name('vendor.submit');
 Route::get('/vendor/waiting',[VendorApplicationController::class,'waiting'])->name('vendor.waiting');
+Route::get('/vendor/status', [VendorController::class, 'checkValidationStatus']);
 //Route::view('/vendor/apply', 'vendor.apply');
 //Route::post('/vendor/submit', [VendorFormController::class, 'submit']);
 Route::get('/vendor/apply', [VendorController::class, 'showApplicationForm'])->name('vendor.apply');

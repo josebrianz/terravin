@@ -66,8 +66,9 @@ class VendorApplicationController extends Controller
                     ['name'=>'certificationOrganic','contents'=>$vendor->certification_organic ? 'true' : 'false'],
                     ['name'=>'certificationIso','contents'=>$vendor->certification_iso ? 'true' : 'false'],
                     ['name'=>'regulatoryCompliance','contents'=>'true'],
+                    ['name'=>'email','contents'=>$vendor->contact_email],
                     [
-                        'name'=>'applicationPdf',
+                        'name'=>'application_pdf',
                         'contents'=>fopen(storage_path('app/public/'.$vendor->application_pdf),'r'),
                         'filename'=>basename($vendor->application_pdf),
                         'headers'=>['Content-Type'=>'application/pdf'],
@@ -77,6 +78,12 @@ class VendorApplicationController extends Controller
             $data=json_decode($response->getBody(),true);
 
             if($data['status']==='approved'){
+                // Only now, after approval, create the role approval request for admin
+                \App\Models\RoleApprovalRequest::create([
+                    'user_id' => Auth::id(),
+                    'requested_role' => 'Vendor',
+                    'status' => 'pending',
+                ]);
                 return redirect()->route('vendor.waiting')->with('message','Approved. Visit on ' . ($data['scheduledVisitDate'] ?? 'TBD'));
             }
 
