@@ -6,11 +6,11 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up() {
-        Schema::table('favorites', function (Blueprint $table) {
-            if (!Schema::hasColumn('favorites', 'inventory_id')) {
-                $table->foreignId('inventory_id')->after('customer_id')->constrained('inventories')->onDelete('cascade');
-            }
-        });
+        {
+            Schema::table('favorites', function (Blueprint $table) {
+                $table->unsignedBigInteger('customer_id')->after('id');
+            });
+        }  
     }
     public function down() {
         Schema::table('favorites', function (Blueprint $table) {

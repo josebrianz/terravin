@@ -240,20 +240,6 @@
     </div>
 
     <!-- Wine Grid -->
-    <div class="row">
-        @forelse($wines as $wine)
-            <div class="col-md-4 mb-4">
-                <div class="card wine-card shadow border-0 h-100">
-                    <img src="{{ $wine->image_url ?? 'https://images.unsplash.com/photo-1514361892635-cebb9b6c7ca5?auto=format&fit=crop&w=400&q=80' }}" class="card-img-top" alt="{{ $wine->name }}" style="height: 220px; object-fit: cover;">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title text-burgundy">{{ $wine->name }}</h5>
-                        <p class="card-text text-muted">{{ $wine->description }}</p>
-                        <div class="mt-auto d-flex justify-content-between align-items-center">
-                            <span class="fw-bold text-gold" style="color: #b85c38; font-size: 1.2rem;">{{ 'UGX ' . number_format($wine->price, 0) }}</span>
-                            <a href="#" class="btn wine-btn" style="background: #b85c38; color: #fff;"><i class="fas fa-cart-plus me-1"></i> Add to Order</a>
-                        </div>
-                    </div>
-
     <div class="main-content">
         <div class="container-fluid">
             <div class="d-flex justify-content-between align-items-center mb-4">

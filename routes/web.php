@@ -322,9 +322,9 @@ Route::get('/retailer/catalog', [App\Http\Controllers\RetailerCatalogController:
 
 
 // Reports Route - Accessible by authenticated users
-// Route::middleware('auth')->group(function () {
-//     Route::get('/reports', [App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
-// });
+Route::middleware('auth')->group(function () {
+    Route::get('/reports', [\App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
+});
 
 
 // Financial Reports Route - Accessible by all authenticated users
@@ -463,6 +463,9 @@ Route::get('/stakeholders/dashboard', [App\Http\Controllers\StakeholderControlle
 Route::middleware(['auth', 'role:Vendor,Supplier,Admin'])->group(function () {
     Route::get('/my-report', [App\Http\Controllers\StakeholderController::class, 'showReports'])->name('my.report');
 });
+
+// Stakeholder Reports Route
+Route::get('/stakeholders/reports', [\App\Http\Controllers\StakeholderController::class, 'showReports'])->name('stakeholders.reports');
 
 
 require __DIR__.'/auth.php';

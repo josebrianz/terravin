@@ -347,4 +347,5 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 }
 </style>
+@endpush
 @endsection 

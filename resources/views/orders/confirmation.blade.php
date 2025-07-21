@@ -79,7 +79,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            
+
             position: relative;
         }
         .nav-link:hover {
@@ -239,11 +239,13 @@
 
         </div>
     </div>
+    {{--
     <div class="main-content">
         <div class="container">
             <div class="confirmation-box">
                 <h2 class="mb-3">Thank You for Your Order!</h2>
                 <div class="alert alert-success">Your order has been placed successfully. Below is your order summary.</div>
+               
                 <table class="order-summary-table table table-bordered mt-4">
                     <thead>
                         <tr>
@@ -271,6 +273,7 @@
                         </tr>
                     </tfoot>
                 </table>
+                --}}
                 <a href="{{ url('/customer/dashboard') }}" class="btn btn-burgundy mt-4">Back to Dashboard</a>
             </div>
         </div>

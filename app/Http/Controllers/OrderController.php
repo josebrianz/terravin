@@ -101,14 +101,15 @@ class OrderController extends Controller
         ]);
         // NEW: Create order_items records for each cart item
         foreach ($cartItems as $item) {
-            OrderItem::create([
+            if (!$item->inventory) continue; // skip if inventory record is missing
+            \App\Models\OrderItem::create([
                 'order_id'     => $order->id,
-                'inventory_id' => $item->wine_id,
-                'item_name'    => $item->wine->name,
-                'unit_price'   => $item->wine->unit_price,
+                'inventory_id' => $item->inventory_id,
+                'item_name'    => $item->inventory->name,
+                'unit_price'   => $item->inventory->unit_price,
                 'quantity'     => $item->quantity,
-                'subtotal'     => $item->wine->unit_price * $item->quantity,
-                'category'     => $item->wine->category,
+                'subtotal'     => $item->inventory->unit_price * $item->quantity,
+                'category'     => $item->inventory->category,
             ]);
         }
         // Clear cart
