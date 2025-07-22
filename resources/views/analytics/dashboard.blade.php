@@ -1,24 +1,22 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Analytics Dashboard - Terravin Wine Supply Management')
 
 @section('content')
+
 <style>
     :root {
-        --burgundy: #5e0f0f;
-        --gold: #c8a97e;
-        --cream: #f5f0e6;
-        --dark-text: #2a2a2a;
-        --light-text: #f8f8f8;
-        --success-green: #28a745;
-        --warning-orange: #ffc107;
-        --danger-red: #dc3545;
-        --info-blue: #17a2b8;
-    }
-    
-    body, .container-fluid {
-        background-color: var(--cream) !important;
-        color: var(--dark-text) !important;
+        --burgundy: #7B112C;
+        --gold: #C8A97E;
+        --cream: #F5F0E6;
+        --deep-green: #3C5A14;
+        --blush: #E6B7A9;
+        --rose: #A26769;
+        --tawny: #B5651D;
+        --dark-burgundy: #5E0F0F;
+        --light-gold: #D4B88A;
+        --champagne: #E8E0D0;
+        --shadow: 0 8px 32px rgba(123, 17, 44, 0.18);
     }
     
     .page-header, .card, .card-header, .card-body {
@@ -33,10 +31,11 @@
     }
     
     .card {
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(94, 15, 15, 0.1);
-        border: 1px solid var(--gold);
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+        border: 2px solid var(--gold);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
+        margin-bottom: 2.5rem;
     }
     
     .card:hover {
@@ -54,18 +53,20 @@
     }
     
     .chart-container {
-        background: var(--burgundy);
-        border-radius: 10px;
-        padding: 1rem;
+        background: var(--cream);
+        border-radius: 24px;
+        padding: 3.5rem 2.5rem 2.5rem 2.5rem;
         position: relative;
+        min-height: 600px !important;
+        box-shadow: var(--shadow);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 2.5rem;
     }
     
     .card-body {
         color: var(--dark-text) !important;
-    }
-    
-    .btn, .nav-link, .navbar-brand {
-        color: var(--burgundy) !important;
     }
     
     .btn-primary, .btn-info, .btn-success, .btn-warning {
@@ -263,11 +264,14 @@
         }
         
         .chart-container {
-            min-height: 250px !important;
+            min-height: 340px !important;
+            padding: 1.2rem;
+        }
+        .card-title {
+            font-size: 1.4rem;
         }
     }
 </style>
-
 <div class="container-fluid">
     <!-- Error Display -->
     @if(isset($error))
@@ -390,212 +394,19 @@
 
     <hr class="my-5" style="border-color: var(--gold);">
 
-    <!-- Prediction Section -->
-    <div class="row g-4 mb-5">
-        <div class="col-lg-12">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-header bg-white border-bottom-0">
-                    <h5 class="card-title mb-0 fw-bold">
-                        <i class="fas fa-magic me-2"></i> 
-                        AI-Powered Sales Prediction
-                    </h5>
-                    <p class="text-muted mb-0 mt-1">
-                        <i class="fas fa-robot me-1"></i>
-                        Generate future sales forecasts using machine learning
-                    </p>
-                </div>
-                <div class="card-body">
-                    <form action="{{ route('predict.sales') }}" method="POST" id="predictionForm">
-                        @csrf
-                        <div class="row">
-                            <div class="col-md-6 col-lg-4 mb-3 prediction-form-group">
-                                <label for="year" class="form-label">
-                                    <i class="fas fa-calendar me-1"></i>Year:
-                                </label>
-                                <input type="number" id="year" name="year" class="form-control" 
-                                       placeholder="e.g., 2025" required value="{{ old('year', now()->year) }}"
-                                       min="2020" max="2030">
-                                @error('year') 
-                                    <div class="text-danger small mt-1">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div> 
-                                @enderror
-                            </div>
-                            <div class="col-md-6 col-lg-4 mb-3 prediction-form-group">
-                                <label for="month" class="form-label">
-                                    <i class="fas fa-calendar-day me-1"></i>Month:
-                                </label>
-                                <input type="number" id="month" name="month" class="form-control" 
-                                       placeholder="e.g., 7" required value="{{ old('month') }}"
-                                       min="1" max="12">
-                                @error('month') 
-                                    <div class="text-danger small mt-1">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div> 
-                                @enderror
-                            </div>
-                            <div class="col-md-6 col-lg-4 mb-3 prediction-form-group">
-                                <label for="supplier" class="form-label">
-                                    <i class="fas fa-truck me-1"></i>Supplier:
-                                </label>
-                                <input type="text" id="supplier" name="supplier" class="form-control" 
-                                       placeholder="e.g., REPUBLIC NATIONAL DISTRIBUTING CO" 
-                                       required value="{{ old('supplier') }}" maxlength="255">
-                                @error('supplier') 
-                                    <div class="text-danger small mt-1">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div> 
-                                @enderror
-                            </div>
-                            <div class="col-md-6 col-lg-4 mb-3 prediction-form-group">
-                                <label for="item_description" class="form-label">
-                                    <i class="fas fa-tag me-1"></i>Item Description:
-                                </label>
-                                <input type="text" id="item_description" name="item_description" class="form-control" 
-                                       placeholder="e.g., BOOTLEG RED - 750ML" 
-                                       required value="{{ old('item_description') }}" maxlength="255">
-                                @error('item_description') 
-                                    <div class="text-danger small mt-1">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div> 
-                                @enderror
-                            </div>
-                            <div class="col-md-6 col-lg-4 mb-3 prediction-form-group">
-                                <label for="item_type" class="form-label">
-                                    <i class="fas fa-wine-bottle me-1"></i>Item Type:
-                                </label>
-                                <input type="text" id="item_type" name="item_type" class="form-control" 
-                                       placeholder="e.g., WINE" required value="{{ old('item_type') }}" maxlength="100">
-                                @error('item_type') 
-                                    <div class="text-danger small mt-1">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div> 
-                                @enderror
-                            </div>
-                            <div class="col-md-6 col-lg-4 mb-3 prediction-form-group">
-                                <label for="retail_transfers" class="form-label">
-                                    <i class="fas fa-store me-1"></i>Retail Transfers:
-                                </label>
-                                <input type="number" id="retail_transfers" name="retail_transfers" class="form-control" 
-                                       step="0.01" required value="{{ old('retail_transfers') }}" min="0">
-                                @error('retail_transfers') 
-                                    <div class="text-danger small mt-1">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div> 
-                                @enderror
-                            </div>
-                            <div class="col-md-6 col-lg-4 mb-3 prediction-form-group">
-                                <label for="warehouse_sales" class="form-label">
-                                    <i class="fas fa-warehouse me-1"></i>Warehouse Sales:
-                                </label>
-                                <input type="number" id="warehouse_sales" name="warehouse_sales" class="form-control" 
-                                       step="0.01" required value="{{ old('warehouse_sales') }}" min="0">
-                                @error('warehouse_sales') 
-                                    <div class="text-danger small mt-1">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div> 
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                            <button type="submit" class="btn btn-primary btn-lg" id="predictBtn">
-                                <i class="fas fa-calculator me-2"></i> 
-                                <span id="predictBtnText">Generate Prediction</span>
-                                <div class="spinner-border spinner-border-sm ms-2 d-none" id="predictSpinner"></div>
-                            </button>
-                        </div>
-                    </form>
-
-                    <!-- Prediction Result -->
-                    @if(isset($predicted_sales))
-                        <div class="prediction-result-box">
-                            <div class="d-flex align-items-center mb-3">
-                                <i class="fas fa-chart-line fa-2x me-3"></i>
-                                <h3 class="mb-0">Prediction Result</h3>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p class="lead mb-2">
-                                        <strong>Predicted Retail Sales:</strong>
-                                    </p>
-                                    <h2 class="text-burgundy fw-bold mb-3">
-                                        ${{ number_format($predicted_sales, 2) }}
-                                    </h2>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="alert alert-info mb-0">
-                                        <i class="fas fa-info-circle me-2"></i>
-                                        <strong>Note:</strong> This prediction is based on historical data patterns and machine learning algorithms.
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <hr class="my-5" style="border-color: var(--gold);">
-
     <!-- Analytics Charts Grid -->
     <div class="row row-cols-1 row-cols-lg-2 g-4">
         <div class="col">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white border-bottom-0">
                     <h5 class="card-title mb-0 fw-bold">
-                        <i class="fas fa-chart-area me-2"></i> Sales & Revenue Trends
+                        <i class="fas fa-boxes me-2"></i> Inventory by Stock
                     </h5>
-                    <p class="text-muted mb-0 mt-1">Monthly performance overview</p>
+                    <p class="text-muted mb-0 mt-1">Stock levels for each product</p>
                 </div>
                 <div class="card-body d-flex align-items-center justify-content-center position-relative">
-                    <div class="chart-container w-100" style="min-height: 320px;">
-                        <canvas id="salesRevenueChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-bottom-0">
-                    <h5 class="card-title mb-0 fw-bold">
-                        <i class="fas fa-user-friends me-2"></i> Customer Segments
-                    </h5>
-                    <p class="text-muted mb-0 mt-1">Distribution by customer type</p>
-                </div>
-                <div class="card-body d-flex align-items-center justify-content-center">
-                    <div class="chart-container w-100" style="min-height: 320px;">
-                        <canvas id="customerSegmentsChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-bottom-0">
-                    <h5 class="card-title mb-0 fw-bold">
-                        <i class="fas fa-wine-bottle me-2"></i> Top 5 Products
-                    </h5>
-                    <p class="text-muted mb-0 mt-1">Best performing products</p>
-                </div>
-                <div class="card-body d-flex align-items-center justify-content-center">
-                    <div class="chart-container w-100" style="min-height: 320px;">
-                        <canvas id="topProductsChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-bottom-0">
-                    <h5 class="card-title mb-0 fw-bold">
-                        <i class="fas fa-calendar-alt me-2"></i> Monthly Orders
-                    </h5>
-                    <p class="text-muted mb-0 mt-1">Order volume by month</p>
-                </div>
-                <div class="card-body d-flex align-items-center justify-content-center">
-                    <div class="chart-container w-100" style="min-height: 320px;">
-                        <canvas id="monthlyOrdersChart"></canvas>
+                    <div class="chart-container w-100">
+                        <canvas id="inventoryStockChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -606,11 +417,41 @@
                     <h5 class="card-title mb-0 fw-bold">
                         <i class="fas fa-layer-group me-2"></i> Inventory by Category
                     </h5>
-                    <p class="text-muted mb-0 mt-1">Current stock by category</p>
+                    <p class="text-muted mb-0 mt-1">Stock distribution by category</p>
                 </div>
-                <div class="card-body d-flex align-items-center justify-content-center">
-                    <div class="chart-container w-100" style="min-height: 320px;">
+                <div class="card-body d-flex align-items-center justify-content-center position-relative">
+                    <div class="chart-container w-100">
                         <canvas id="inventoryCategoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-bottom-0">
+                    <h5 class="card-title mb-0 fw-bold">
+                        <i class="fas fa-shopping-cart me-2"></i> Orders
+                    </h5>
+                    <p class="text-muted mb-0 mt-1">Orders per month</p>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center position-relative">
+                    <div class="chart-container w-100">
+                        <canvas id="ordersChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-bottom-0">
+                    <h5 class="card-title mb-0 fw-bold">
+                        <i class="fas fa-file-invoice-dollar me-2"></i> Procurement
+                    </h5>
+                    <p class="text-muted mb-0 mt-1">Procurement per month</p>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center position-relative">
+                    <div class="chart-container w-100">
+                        <canvas id="procurementChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -618,393 +459,228 @@
     </div>
 </div>
 
-<!-- Footer -->
-<footer>
-    <div class="container">
-        <h3 class="mb-3">
-            <i class="fas fa-wine-bottle me-2"></i>
-            Terravin Wine Estate
-        </h3>
-        <p class="mb-2">
-            <i class="fas fa-map-marker-alt me-2"></i>
-            Plot 42 Lakeside Drive • Entebbe, Uganda
-        </p>
-        <div class="social-links">
-            <a href="#" title="Business Hours"><i class="fas fa-clock"></i></a>
-            <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
-            <a href="#" title="Facebook"><i class="fab fa-facebook"></i></a>
-            <a href="#" title="Location"><i class="fas fa-map-pin"></i></a>
-        </div>
-        <p class="mb-0">
-            <i class="fas fa-copyright me-1"></i>
-            2025 Terravin Wines. All rights reserved.
-        </p>
-    </div>
-</footer>
 @endsection
 
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Form submission with loading state
-    document.getElementById('predictionForm').addEventListener('submit', function() {
-        const btn = document.getElementById('predictBtn');
-        const btnText = document.getElementById('predictBtnText');
-        const spinner = document.getElementById('predictSpinner');
-        
-        btn.disabled = true;
-        btnText.textContent = 'Generating Prediction...';
-        spinner.classList.remove('d-none');
-    });
-
-    // Enhanced chart interactions
-    function showDetailModal(title, content) {
-        // Create a simple modal for better UX
-        const modal = document.createElement('div');
-        modal.className = 'modal fade';
-        modal.innerHTML = `
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">${title}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>${content}</p>
-                    </div>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-        const modalInstance = new bootstrap.Modal(modal);
-        modalInstance.show();
-        modal.addEventListener('hidden.bs.modal', () => modal.remove());
+    // Helper: Create wine-inspired gradients for Chart.js
+    function createWineGradient(ctx, area, colors) {
+        const gradient = ctx.createLinearGradient(area.left, area.top, area.right, area.bottom);
+        colors.forEach((stop, i) => {
+            gradient.addColorStop(i / (colors.length - 1), stop);
+        });
+        return gradient;
     }
 
-    // Sales & Revenue Chart
-    const salesRevenueCtx = document.getElementById('salesRevenueChart').getContext('2d');
-    const salesRevenueChart = new Chart(salesRevenueCtx, {
-        type: 'line',
-        data: {
-            labels: @json($salesRevenueData['labels']),
-            datasets: [
-                {
-                    label: 'Sales (Orders)',
-                    data: @json($salesRevenueData['sales']),
-                    borderColor: '#5e0f0f',
-                    backgroundColor: 'rgba(94, 15, 15, 0.1)',
+    // Chart.js global options for premium look
+    Chart.defaults.font.size = 20;
+    Chart.defaults.font.family = 'Playfair Display', 'serif';
+    Chart.defaults.plugins.legend.labels.boxWidth = 36;
+    Chart.defaults.plugins.legend.labels.boxHeight = 20;
+    Chart.defaults.plugins.tooltip.bodyFont.size = 20;
+    Chart.defaults.plugins.tooltip.titleFont.size = 24;
+    Chart.defaults.plugins.tooltip.backgroundColor = '#fff';
+    Chart.defaults.plugins.tooltip.titleColor = '#7B112C';
+    Chart.defaults.plugins.tooltip.bodyColor = '#2a2a2a';
+    Chart.defaults.plugins.tooltip.borderColor = '#C8A97E';
+    Chart.defaults.plugins.tooltip.borderWidth = 2;
+    Chart.defaults.plugins.tooltip.cornerRadius = 12;
+    Chart.defaults.plugins.tooltip.padding = 18;
+    Chart.defaults.plugins.tooltip.displayColors = true;
+    Chart.defaults.plugins.tooltip.boxPadding = 10;
+    Chart.defaults.plugins.title.display = true;
+    Chart.defaults.plugins.title.font = { size: 28, weight: 'bold' };
+    Chart.defaults.plugins.title.color = '#7B112C';
+    Chart.defaults.plugins.title.align = 'start';
+    Chart.defaults.plugins.title.padding = { top: 20, bottom: 20 };
+    Chart.defaults.elements.bar.borderRadius = 12;
+    Chart.defaults.elements.bar.borderSkipped = false;
+    Chart.defaults.elements.point.radius = 9;
+    Chart.defaults.elements.point.backgroundColor = '#C8A97E';
+    Chart.defaults.elements.point.borderColor = '#7B112C';
+    Chart.defaults.elements.point.borderWidth = 4;
+    Chart.defaults.layout.padding = 32;
+
+    // Inventory by Stock Chart with gradient (now as a line chart)
+    const inventoryStockCtx = document.getElementById('inventoryStockChart').getContext('2d');
+    let inventoryStockChart;
+    function renderInventoryStockChart() {
+        if (inventoryStockChart) inventoryStockChart.destroy();
+        inventoryStockChart = new Chart(inventoryStockCtx, {
+            type: 'line',
+            data: {
+                labels: @json($inventoryStockData['labels'] ?? []),
+                datasets: [{
+                    label: 'Stock',
+                    data: @json($inventoryStockData['data'] ?? []),
                     fill: true,
-                    tension: 0.4,
-                    borderWidth: 3
-                },
-                {
-                    label: 'Revenue ($)',
-                    data: @json($salesRevenueData['revenue']),
-                    borderColor: '#c8a97e',
-                    backgroundColor: 'rgba(200, 169, 126, 0.1)',
-                    fill: true,
-                    tension: 0.4,
-                    borderWidth: 3
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { 
-                    display: true,
-                    position: 'top',
-                    labels: {
-                        usePointStyle: true,
-                        padding: 20
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(94, 15, 15, 0.9)',
-                    titleColor: '#f5f0e6',
-                    bodyColor: '#f5f0e6',
-                    borderColor: '#c8a97e',
-                    borderWidth: 1,
-                    callbacks: {
-                        label: function(context) {
-                            if(context.dataset.label === 'Revenue ($)') {
-                                return context.dataset.label + ': $' + context.parsed.y.toLocaleString();
-                            }
-                            return context.dataset.label + ': ' + context.parsed.y;
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: 'rgba(200, 169, 126, 0.2)'
+                    backgroundColor: function(context) {
+                        const chart = context.chart;
+                        const {ctx, chartArea} = chart;
+                        if (!chartArea) return '#C8A97E';
+                        // Gradient fill for area under the line
+                        return createWineGradient(ctx, chartArea, [
+                            'rgba(123, 17, 44, 0.18)', // Burgundy (transparent)
+                            'rgba(200, 169, 126, 0.12)', // Gold (transparent)
+                            'rgba(245, 240, 230, 0.10)' // Cream (transparent)
+                        ]);
                     },
-                    ticks: {
-                        color: '#5e0f0f'
+                    borderColor: '#7B112C',
+                    borderWidth: 4,
+                    pointBackgroundColor: '#C8A97E',
+                    pointBorderColor: '#7B112C',
+                    pointRadius: 9,
+                    pointHoverRadius: 13,
+                    tension: 0.35,
+                    shadowOffsetX: 2,
+                    shadowOffsetY: 4,
+                    shadowBlur: 12,
+                    shadowColor: 'rgba(123, 17, 44, 0.18)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#fff',
+                        titleColor: '#7B112C',
+                        bodyColor: '#2a2a2a',
                     }
                 },
-                x: {
-                    grid: {
-                        color: 'rgba(200, 169, 126, 0.2)'
-                    },
-                    ticks: {
-                        color: '#5e0f0f'
-                    }
-                }
-            },
-            onClick: function(evt, elements) {
-                if(elements.length > 0) {
-                    const idx = elements[0].index;
-                    const label = this.data.labels[idx];
-                    const sales = this.data.datasets[0].data[idx];
-                    const revenue = this.data.datasets[1].data[idx];
-                    showDetailModal(
-                        'Month: ' + label,
-                        `Sales: ${sales} orders<br>Revenue: $${revenue.toLocaleString()}`
-                    );
+                scales: {
+                    y: { beginAtZero: true, ticks: { color: '#7B112C', font: { size: 18 } }, grid: { color: '#E8E0D0' } },
+                    x: { ticks: { color: '#7B112C', font: { size: 18 } }, grid: { color: '#E8E0D0' } }
                 }
             }
-        }
-    });
+        });
+    }
 
-    // Customer Segments Chart
-    const customerSegmentsCtx = document.getElementById('customerSegmentsChart').getContext('2d');
-    const customerSegmentsChart = new Chart(customerSegmentsCtx, {
-        type: 'doughnut',
-        data: {
-            labels: @json($customerSegmentsData['labels']),
-            datasets: [{
-                data: @json($customerSegmentsData['data']),
-                backgroundColor: ['#5e0f0f', '#c8a97e', '#f5f0e6'],
-                borderColor: '#5e0f0f',
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { 
-                    display: true,
-                    position: 'bottom',
-                    labels: {
-                        usePointStyle: true,
-                        padding: 20
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(94, 15, 15, 0.9)',
-                    titleColor: '#f5f0e6',
-                    bodyColor: '#f5f0e6',
-                    callbacks: {
-                        label: function(context) {
-                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const percent = ((context.parsed / total) * 100).toFixed(1);
-                            return context.label + ': ' + context.parsed + ' (' + percent + '%)';
-                        }
-                    }
-                }
-            },
-            onClick: function(evt, elements) {
-                if(elements.length > 0) {
-                    const idx = elements[0].index;
-                    const label = this.data.labels[idx];
-                    const value = this.data.datasets[0].data[idx];
-                    const total = this.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                    const percent = ((value / total) * 100).toFixed(1);
-                    showDetailModal(
-                        'Customer Segment: ' + label,
-                        `Count: ${value}<br>Percentage: ${percent}%`
-                    );
-                }
-            }
-        }
-    });
-
-    // Top 5 Products Chart
-    const topProductsCtx = document.getElementById('topProductsChart').getContext('2d');
-    const topProductsChart = new Chart(topProductsCtx, {
-        type: 'bar',
-        data: {
-            labels: @json($topProductsData['labels']),
-            datasets: [{
-                label: 'Units Sold',
-                data: @json($topProductsData['data']),
-                backgroundColor: '#c8a97e',
-                borderColor: '#5e0f0f',
-                borderWidth: 2,
-                borderRadius: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor: 'rgba(94, 15, 15, 0.9)',
-                    titleColor: '#f5f0e6',
-                    bodyColor: '#f5f0e6',
-                    callbacks: {
-                        label: function(context) {
-                            return context.dataset.label + ': ' + context.parsed.y + ' units';
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: { 
-                    beginAtZero: true,
-                    grid: {
-                        color: 'rgba(200, 169, 126, 0.2)'
-                    },
-                    ticks: {
-                        color: '#5e0f0f'
-                    }
-                },
-                x: {
-                    grid: {
-                        color: 'rgba(200, 169, 126, 0.2)'
-                    },
-                    ticks: {
-                        color: '#5e0f0f',
-                        maxRotation: 45
-                    }
-                }
-            },
-            onClick: function(evt, elements) {
-                if(elements.length > 0) {
-                    const idx = elements[0].index;
-                    const label = this.data.labels[idx];
-                    const value = this.data.datasets[0].data[idx];
-                    showDetailModal(
-                        'Product: ' + label,
-                        `Units Sold: ${value}`
-                    );
-                }
-            }
-        }
-    });
-
-    // Monthly Orders Chart
-    const monthlyOrdersCtx = document.getElementById('monthlyOrdersChart').getContext('2d');
-    const monthlyOrdersChart = new Chart(monthlyOrdersCtx, {
-        type: 'bar',
-        data: {
-            labels: @json($monthlyOrdersData['labels']),
-            datasets: [{
-                label: 'Orders',
-                data: @json($monthlyOrdersData['data']),
-                backgroundColor: '#5e0f0f',
-                borderColor: '#c8a97e',
-                borderWidth: 2,
-                borderRadius: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor: 'rgba(94, 15, 15, 0.9)',
-                    titleColor: '#f5f0e6',
-                    bodyColor: '#f5f0e6',
-                    callbacks: {
-                        label: function(context) {
-                            return context.dataset.label + ': ' + context.parsed.y + ' orders';
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: { 
-                    beginAtZero: true,
-                    grid: {
-                        color: 'rgba(200, 169, 126, 0.2)'
-                    },
-                    ticks: {
-                        color: '#5e0f0f'
-                    }
-                },
-                x: {
-                    grid: {
-                        color: 'rgba(200, 169, 126, 0.2)'
-                    },
-                    ticks: {
-                        color: '#5e0f0f'
-                    }
-                }
-            },
-            onClick: function(evt, elements) {
-                if(elements.length > 0) {
-                    const idx = elements[0].index;
-                    const label = this.data.labels[idx];
-                    const value = this.data.datasets[0].data[idx];
-                    showDetailModal(
-                        'Month: ' + label,
-                        `Orders: ${value}`
-                    );
-                }
-            }
-        }
-    });
-
-    // Inventory by Category Chart
+    // Inventory by Category Chart with gradient
     const inventoryCategoryCtx = document.getElementById('inventoryCategoryChart').getContext('2d');
-    const inventoryCategoryChart = new Chart(inventoryCategoryCtx, {
-        type: 'doughnut',
-        data: {
-            labels: @json($inventoryCategoryData['labels']),
-            datasets: [{
-                data: @json($inventoryCategoryData['data']),
-                backgroundColor: ['#5e0f0f', '#c8a97e', '#f5f0e6', '#b5651d', '#8b0000', '#e6c200', '#a0522d', '#deb887'],
-                borderColor: '#5e0f0f',
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'bottom',
-                    labels: {
-                        usePointStyle: true,
-                        padding: 20
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(94, 15, 15, 0.9)',
-                    titleColor: '#f5f0e6',
-                    bodyColor: '#f5f0e6',
-                    callbacks: {
-                        label: function(context) {
-                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const percent = ((context.parsed / total) * 100).toFixed(1);
-                            return context.label + ': ' + context.parsed + ' (' + percent + '%)';
-                        }
-                    }
-                }
+    let inventoryCategoryChart;
+    function renderInventoryCategoryChart() {
+        if (inventoryCategoryChart) inventoryCategoryChart.destroy();
+        inventoryCategoryChart = new Chart(inventoryCategoryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: @json($inventoryCategoryData['labels'] ?? []),
+                datasets: [{
+                    data: @json($inventoryCategoryData['data'] ?? []),
+                    backgroundColor: [
+                        '#7B112C', '#C8A97E', '#F5F0E6', '#3C5A14', '#E6B7A9', '#A26769', '#B5651D', '#5E0F0F', '#D4B88A', '#E8E0D0'
+                    ],
+                    borderColor: '#fff',
+                    borderWidth: 2,
+                    hoverOffset: 16,
+                    hoverBorderColor: '#C8A97E',
+                }]
             },
-            onClick: function(evt, elements) {
-                if(elements.length > 0) {
-                    const idx = elements[0].index;
-                    const label = this.data.labels[idx];
-                    const value = this.data.datasets[0].data[idx];
-                    const total = this.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                    const percent = ((value / total) * 100).toFixed(1);
-                    showDetailModal(
-                        'Category: ' + label,
-                        `Stock: ${value}<br>Percentage: ${percent}%`
-                    );
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true, position: 'bottom', labels: { color: '#7B112C', font: { size: 20 } } },
+                    tooltip: { backgroundColor: '#fff', titleColor: '#7B112C', bodyColor: '#2a2a2a' }
                 }
             }
-        }
-    });
+        });
+    }
+
+    // Orders Chart with gradient
+    const ordersCtx = document.getElementById('ordersChart').getContext('2d');
+    let ordersChart;
+    function renderOrdersChart() {
+        if (ordersChart) ordersChart.destroy();
+        ordersChart = new Chart(ordersCtx, {
+            type: 'bar',
+            data: {
+                labels: @json($ordersData['labels'] ?? []),
+                datasets: [{
+                    label: 'Orders',
+                    data: @json($ordersData['data'] ?? []),
+                    backgroundColor: function(context) {
+                        const chart = context.chart;
+                        const {ctx, chartArea} = chart;
+                        if (!chartArea) return '#C8A97E';
+                        return createWineGradient(ctx, chartArea, [
+                            '#C8A97E', '#7B112C', '#F5F0E6'
+                        ]);
+                    },
+                    borderColor: '#7B112C',
+                    borderWidth: 2,
+                    borderRadius: 12,
+                    hoverBackgroundColor: '#7B112C',
+                    hoverBorderColor: '#C8A97E',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { backgroundColor: '#fff', titleColor: '#7B112C', bodyColor: '#2a2a2a' }
+                },
+                scales: {
+                    y: { beginAtZero: true, ticks: { color: '#7B112C', font: { size: 18 } }, grid: { color: '#E8E0D0' } },
+                    x: { ticks: { color: '#7B112C', font: { size: 18 } }, grid: { color: '#E8E0D0' } }
+                }
+            }
+        });
+    }
+
+    // Procurement Chart with gradient
+    const procurementCtx = document.getElementById('procurementChart').getContext('2d');
+    let procurementChart;
+    function renderProcurementChart() {
+        if (procurementChart) procurementChart.destroy();
+        procurementChart = new Chart(procurementCtx, {
+            type: 'bar',
+            data: {
+                labels: @json($procurementData['labels'] ?? []),
+                datasets: [{
+                    label: 'Procurement',
+                    data: @json($procurementData['data'] ?? []),
+                    backgroundColor: function(context) {
+                        const chart = context.chart;
+                        const {ctx, chartArea} = chart;
+                        if (!chartArea) return '#3C5A14';
+                        return createWineGradient(ctx, chartArea, [
+                            '#3C5A14', '#C8A97E', '#7B112C'
+                        ]);
+                    },
+                    borderColor: '#C8A97E',
+                    borderWidth: 2,
+                    borderRadius: 12,
+                    hoverBackgroundColor: '#7B112C',
+                    hoverBorderColor: '#C8A97E',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { backgroundColor: '#fff', titleColor: '#7B112C', bodyColor: '#2a2a2a' }
+                },
+                scales: {
+                    y: { beginAtZero: true, ticks: { color: '#3C5A14', font: { size: 18 } }, grid: { color: '#E8E0D0' } },
+                    x: { ticks: { color: '#3C5A14', font: { size: 18 } }, grid: { color: '#E8E0D0' } }
+                }
+            }
+        });
+    }
+
+    // Render all charts on load and on resize for gradients
+    function renderAllCharts() {
+        renderInventoryStockChart();
+        renderInventoryCategoryChart();
+        renderOrdersChart();
+        renderProcurementChart();
+    }
+    window.addEventListener('resize', renderAllCharts);
+    window.addEventListener('DOMContentLoaded', renderAllCharts);
 </script>
 @endsection

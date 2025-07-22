@@ -8,6 +8,8 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use App\Models\Inventory;
+use App\Models\Procurement;
 
 class AnalyticsDashboardController extends Controller
 {
@@ -159,12 +161,70 @@ class AnalyticsDashboardController extends Controller
             'data' => $inventoryByCategory->pluck('total_quantity')->toArray(),
         ];
 
+        // Inventory by Stock
+        $inventoryStockData = [
+            'labels' => Inventory::pluck('name')->toArray(),
+            'data' => Inventory::pluck('quantity')->toArray(),
+        ];
+
+        // Inventory by Category
+        $inventoryByCategory = Inventory::select('category', DB::raw('SUM(quantity) as total'))
+            ->groupBy('category')
+            ->get();
+        $inventoryCategoryData = [
+            'labels' => $inventoryByCategory->pluck('category')->toArray(),
+            'data' => $inventoryByCategory->pluck('total')->toArray(),
+        ];
+
+        // Orders per Month
+        $orders = Order::select(
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->whereYear('created_at', $year)
+            ->groupBy(DB::raw('MONTH(created_at)'))
+            ->orderBy('month')
+            ->get();
+        $orderLabels = [];
+        $orderData = [];
+        foreach (range(1, 12) as $m) {
+            $orderLabels[] = date('F', mktime(0, 0, 0, $m, 1));
+            $orderData[] = $orders->firstWhere('month', $m)->count ?? 0;
+        }
+        $ordersData = [
+            'labels' => $orderLabels,
+            'data' => $orderData,
+        ];
+
+        // Procurement per Month
+        $procurements = Procurement::select(
+                DB::raw('MONTH(order_date) as month'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->whereYear('order_date', $year)
+            ->groupBy(DB::raw('MONTH(order_date)'))
+            ->orderBy('month')
+            ->get();
+        $procurementLabels = [];
+        $procurementData = [];
+        foreach (range(1, 12) as $m) {
+            $procurementLabels[] = date('F', mktime(0, 0, 0, $m, 1));
+            $procurementData[] = $procurements->firstWhere('month', $m)->count ?? 0;
+        }
+        $procurementChartData = [
+            'labels' => $procurementLabels,
+            'data' => $procurementData,
+        ];
+
         return [
             'salesRevenueData' => $salesRevenueData,
             'customerSegmentsData' => $customerSegmentsData,
             'topProductsData' => $topProductsData,
             'monthlyOrdersData' => $monthlyOrdersData,
             'inventoryCategoryData' => $inventoryCategoryData,
+            'inventoryStockData' => $inventoryStockData,
+            'ordersData' => $ordersData,
+            'procurementData' => $procurementChartData,
         ];
     }
 
@@ -241,8 +301,75 @@ class AnalyticsDashboardController extends Controller
         }
     }
 
-    public function segmentationDashboard()
+    /**
+     * Generate datasets for the new analytics dashboard charts.
+     *
+     * @return array
+     */
+    public function dashboard()
     {
-        return view('analytics.segmentation');
+        // Inventory by Stock
+        $inventoryStockData = [
+            'labels' => Inventory::pluck('name')->toArray(),
+            'data' => Inventory::pluck('quantity')->toArray(),
+        ];
+
+        // Inventory by Category
+        $inventoryByCategory = Inventory::select('category', DB::raw('SUM(quantity) as total'))
+            ->groupBy('category')
+            ->get();
+        $inventoryCategoryData = [
+            'labels' => $inventoryByCategory->pluck('category')->toArray(),
+            'data' => $inventoryByCategory->pluck('total')->toArray(),
+        ];
+
+        // Orders per Month (current year)
+        $orders = Order::select(
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->whereYear('created_at', now()->year)
+            ->groupBy(DB::raw('MONTH(created_at)'))
+            ->orderBy('month')
+            ->get();
+        $orderLabels = [];
+        $orderData = [];
+        foreach (range(1, 12) as $m) {
+            $orderLabels[] = date('F', mktime(0, 0, 0, $m, 1));
+            $orderData[] = $orders->firstWhere('month', $m)->count ?? 0;
+        }
+        $ordersData = [
+            'labels' => $orderLabels,
+            'data' => $orderData,
+        ];
+
+        // Procurement per Month (current year)
+        $procurements = Procurement::select(
+                DB::raw('MONTH(order_date) as month'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->whereYear('order_date', now()->year)
+            ->groupBy(DB::raw('MONTH(order_date)'))
+            ->orderBy('month')
+            ->get();
+        $procurementLabels = [];
+        $procurementData = [];
+        foreach (range(1, 12) as $m) {
+            $procurementLabels[] = date('F', mktime(0, 0, 0, $m, 1));
+            $procurementData[] = $procurements->firstWhere('month', $m)->count ?? 0;
+        }
+        $procurementChartData = [
+            'labels' => $procurementLabels,
+            'data' => $procurementData,
+        ];
+
+        // Pass to view
+        return view('analytics.dashboard', [
+            // ...other data...
+            'inventoryStockData' => $inventoryStockData,
+            'inventoryCategoryData' => $inventoryCategoryData,
+            'ordersData' => $ordersData,
+            'procurementData' => $procurementChartData,
+        ]);
     }
 } 
