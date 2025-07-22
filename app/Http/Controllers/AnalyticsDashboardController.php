@@ -372,4 +372,11 @@ class AnalyticsDashboardController extends Controller
             'procurementData' => $procurementChartData,
         ]);
     }
+
+    
+    public function segmentationDashboard()
+    {
+        return view('analytics.segmentation');
+    }
+    
 } 
