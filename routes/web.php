@@ -579,7 +579,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/cart/add', [App\Http\Controllers\CartController::class, 'add'])->name('cart.add');
     Route::post('/cart/update/{id}', [App\Http\Controllers\CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{id}', [App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
-    Route::get('/cart/checkout', [App\Http\Controllers\CartController::class, 'checkout'])->name('cart.checkout');
+    Route::get('/cart/checkout', [\App\Http\Controllers\OrderController::class, 'checkoutView'])->middleware(['auth', 'role:Customer'])->name('cart.checkout');
 });
 
 Route::get('/workforce/assignments', [App\Http\Controllers\WorkforceDashboardController::class, 'assignments'])->name('workforce.assignments');

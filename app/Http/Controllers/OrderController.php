@@ -17,8 +17,16 @@ class OrderController extends Controller
      */
     public function index(): View
     {
-        $orders = Order::with('user')->latest()->paginate(10);
-        return view('orders.index', compact('orders'));
+        $userId = auth()->id();
+        $customerOrders = Order::with('user')
+            ->where('user_id', '!=', $userId)
+            ->latest()
+            ->paginate(10, ['*'], 'customer_page');
+        $myOrders = Order::with('user')
+            ->where('user_id', $userId)
+            ->latest()
+            ->paginate(10, ['*'], 'my_page');
+        return view('orders.index', compact('customerOrders', 'myOrders'));
     }
 
     /**
@@ -56,7 +64,20 @@ class OrderController extends Controller
         }
         $categories = $wines->groupBy('category');
 
-        return view('orders.catalog', compact('wines', 'categories'));
+        // Pass retailers to the checkout view if needed
+        $retailers = \App\Models\User::where('role', 'Retailer')->get();
+
+        return view('orders.catalog', compact('wines', 'categories', 'retailers'));
+    }
+
+    /**
+     * Show the customer checkout page with retailer selection.
+     */
+    public function checkoutView()
+    {
+        $cartItems = \App\Models\CartItem::where('user_id', auth()->id())->with('inventory')->get();
+        $retailers = \App\Models\User::where('role', 'Retailer')->get();
+        return view('cart.checkout', compact('cartItems', 'retailers'));
     }
 
     /**
@@ -123,6 +144,14 @@ class OrderController extends Controller
             return redirect()->route('orders.index')->with('success', 'Order placed successfully!');
         }
         $user = auth()->user();
+        // Customer must select a retailer
+        $request->validate([
+            'retailer_id' => 'required|exists:users,id',
+        ]);
+        $retailer = \App\Models\User::where('id', $request->retailer_id)->where('role', 'Retailer')->first();
+        if (!$retailer) {
+            return redirect()->back()->with('error', 'Selected retailer is invalid.');
+        }
         $cartItems = \App\Models\CartItem::where('user_id', $user->id)->with('inventory')->get();
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
@@ -151,6 +180,7 @@ class OrderController extends Controller
             'notes' => $request->notes,
             'status' => 'pending',
             'payment_method' => $request->payment_method,
+            'vendor_id' => $retailer->id,
         ]);
         // NEW: Create order_items records for each cart item
         foreach ($cartItems as $item) {
@@ -179,6 +209,9 @@ class OrderController extends Controller
      */
     public function show(Order $order): View
     {
+        if ($order->user_id === auth()->id()) {
+            return view('orders.my-show', compact('order'));
+        }
         return view('orders.show', compact('order'));
     }
 
@@ -187,6 +220,9 @@ class OrderController extends Controller
      */
     public function edit(Order $order): View
     {
+        if ($order->user_id === auth()->id()) {
+            return view('orders.my-edit', compact('order'));
+        }
         return view('orders.edit', compact('order'));
     }
 
@@ -195,31 +231,54 @@ class OrderController extends Controller
      */
     public function update(Request $request, Order $order): RedirectResponse
     {
-        $request->validate([
-            'customer_name' => 'required|string|max:255',
-            'customer_email' => 'required|email',
-            'customer_phone' => 'required|string|max:20',
-            'items' => 'required|array',
-            'items.*.wine_name' => 'required|string|max:255',
-            'items.*.quantity' => 'required|integer|min:1',
-            'items.*.unit_price' => 'required|numeric|min:0',
-            'total_amount' => 'required|numeric|min:0',
-            'shipping_address' => 'required|string',
-            'notes' => 'nullable|string',
-            'status' => 'required|in:pending,processing,shipped,delivered,cancelled',
-        ]);
-
-        $order->update([
-            'customer_name' => $request->customer_name,
-            'customer_email' => $request->customer_email,
-            'customer_phone' => $request->customer_phone,
-            'items' => json_encode($request->items),
-            'total_amount' => $request->total_amount,
-            'shipping_address' => $request->shipping_address,
-            'notes' => $request->notes,
-            'status' => $request->status,
-        ]);
-
+        if ($order->user_id === auth()->id()) {
+            // My Orders: allow editing shipping_address, notes, items, and status
+            $request->validate([
+                'items' => 'required|array',
+                'items.*.wine_name' => 'required|string|max:255',
+                'items.*.quantity' => 'required|integer|min:1',
+                'items.*.unit_price' => 'required|numeric|min:0',
+                'shipping_address' => 'required|string',
+                'notes' => 'nullable|string',
+                'status' => 'required|in:pending,processing,shipped,delivered,cancelled',
+            ]);
+            $total = 0;
+            foreach ($request->items as $item) {
+                $total += ($item['unit_price'] ?? 0) * ($item['quantity'] ?? 1);
+            }
+            $order->update([
+                'items' => json_encode($request->items),
+                'total_amount' => $total,
+                'shipping_address' => $request->shipping_address,
+                'notes' => $request->notes,
+                'status' => $request->status,
+            ]);
+        } else {
+            // Customer Orders: allow changing status and all customer fields
+            $request->validate([
+                'customer_name' => 'required|string|max:255',
+                'customer_email' => 'required|email',
+                'customer_phone' => 'required|string|max:20',
+                'items' => 'required|array',
+                'items.*.wine_name' => 'required|string|max:255',
+                'items.*.quantity' => 'required|integer|min:1',
+                'items.*.unit_price' => 'required|numeric|min:0',
+                'total_amount' => 'required|numeric|min:0',
+                'shipping_address' => 'required|string',
+                'notes' => 'nullable|string',
+                'status' => 'required|in:pending,processing,shipped,delivered,cancelled',
+            ]);
+            $order->update([
+                'customer_name' => $request->customer_name,
+                'customer_email' => $request->customer_email,
+                'customer_phone' => $request->customer_phone,
+                'items' => json_encode($request->items),
+                'total_amount' => $request->total_amount,
+                'shipping_address' => $request->shipping_address,
+                'notes' => $request->notes,
+                'status' => $request->status,
+            ]);
+        }
         return redirect()->route('orders.show', $order)
             ->with('success', 'Order updated successfully.');
     }

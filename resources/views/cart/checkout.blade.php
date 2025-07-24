@@ -144,6 +144,15 @@
             </table>
             <div class="checkout-total mb-4">Total: ${{ number_format($total, 2) }}</div>
             <div class="mb-3">
+                <label for="retailer_id" class="form-label">Select Retailer</label>
+                <select name="retailer_id" id="retailer_id" class="form-control" required>
+                    <option value="">-- Select Retailer --</option>
+                    @foreach($retailers as $retailer)
+                        <option value="{{ $retailer->id }}">{{ $retailer->name }} ({{ $retailer->email }})</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="mb-3">
                 <label for="shipping_address" class="form-label">Shipping Address</label>
                 <textarea name="shipping_address" id="shipping_address" class="form-control" rows="2" required></textarea>
             </div>

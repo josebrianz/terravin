@@ -171,23 +171,18 @@
                 @method('PUT')
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="customer_name" class="form-label">Customer Name *</label>
-                        <input type="text" class="form-control" id="customer_name" name="customer_name" value="{{ old('customer_name', $order->customer_name ?? '') }}" required>
+                        <label class="form-label">Vendor Name</label>
+                        @php $vendor = $order->vendor; @endphp
+                        <input type="text" class="form-control" value="{{ $vendor ? $vendor->name : 'N/A' }}" readonly>
                     </div>
                     <div class="col-md-6">
-                        <label for="customer_email" class="form-label">Email *</label>
-                        <input type="email" class="form-control" id="customer_email" name="customer_email" value="{{ old('customer_email', $order->customer_email ?? '') }}" required>
+                        <label class="form-label">Vendor Email</label>
+                        <input type="text" class="form-control" value="{{ $vendor ? $vendor->email : 'N/A' }}" readonly>
                     </div>
                 </div>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="customer_phone" class="form-label">Phone *</label>
-                        <input type="text" class="form-control" id="customer_phone" name="customer_phone" value="{{ old('customer_phone', $order->customer_phone ?? '') }}" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="shipping_address" class="form-label">Shipping Address *</label>
-                        <input type="text" class="form-control" id="shipping_address" name="shipping_address" value="{{ old('shipping_address', $order->shipping_address ?? '') }}" required>
-                    </div>
+                <div class="mb-3">
+                    <label for="shipping_address" class="form-label">Shipping Address *</label>
+                    <input type="text" class="form-control" id="shipping_address" name="shipping_address" value="{{ old('shipping_address', $order->shipping_address ?? '') }}" required>
                 </div>
                 <div class="mb-3">
                     <label for="notes" class="form-label">Notes</label>
@@ -216,7 +211,7 @@
                         </thead>
                         <tbody>
                             @php
-                                $items = is_array($order->items ?? null) ? $order->items : (json_decode($order->items ?? '[]', true) ?: []);
+                                $items = $order->items ?? [];
                                 $total = 0;
                             @endphp
                             @foreach($items as $i => $item)
@@ -244,8 +239,6 @@
                             </tr>
                         </tfoot>
                     </table>
-                    <input type="hidden" name="total_amount" value="{{ $total }}">
-                    <!-- Add/Remove item functionality can be added with JS if needed -->
                 </div>
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-burgundy px-4">Save Changes</button>

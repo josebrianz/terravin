@@ -159,11 +159,11 @@
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-white border-bottom-0">
                     <h5 class="card-title mb-0 fw-bold text-burgundy">
-                        <i class="fas fa-list text-gold me-2"></i> Order List
+                        <i class="fas fa-list text-gold me-2"></i> Customer Orders
                     </h5>
                 </div>
                 <div class="card-body">
-                    @if($orders->count() > 0)
+                    @if($customerOrders->count() > 0)
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0 order-table">
                                 <thead class="table-light">
@@ -178,13 +178,132 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($orders as $order)
+                                    @foreach($customerOrders as $order)
+                                        @if($order->user && $order->user->role === 'Customer')
+                                            <tr class="wine-list-item">
+                                                <td><strong class="text-burgundy">#{{ $order->id }}</strong></td>
+                                                <td>
+                                                    <div>
+                                                        <strong class="text-burgundy">{{ $order->customer_name }}</strong><br>
+                                                        <small class="text-muted">{{ $order->customer_email }}</small>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    @if($order->orderItems && $order->orderItems->count() > 0)
+                                                        @foreach($order->orderItems as $item)
+                                                            @php
+                                                                $product = \App\Models\Inventory::find($item->inventory_id);
+                                                                $imgPath = $product && !empty($product->images) && is_array($product->images) && count($product->images) > 0
+                                                                    ? (Str::startsWith($product->images[0], 'inventory_images/') ? asset('storage/' . $product->images[0]) : asset('wine_images/' . $product->images[0]))
+                                                                    : null;
+                                                            @endphp
+                                                            <div class="small text-burgundy d-flex align-items-center mb-1">
+                                                                @if($imgPath)
+                                                                    <img src="{{ $imgPath }}" alt="{{ $item->item_name ?? 'Wine' }}" style="width: 24px; height: 24px; object-fit: cover; border-radius: 4px; margin-right: 6px;">
+                                                                @else
+                                                                    <i class="fas fa-wine-bottle me-1 text-gold"></i>
+                                                                @endif
+                                                                <span>{{ $item->item_name ?? $item->wine_name ?? 'Wine' }} ({{ $item->quantity }})</span>
+                                                            </div>
+                                                        @endforeach
+                                                    @elseif(is_iterable($order->items) && count($order->items) > 0)
+                                                        @foreach($order->items as $item)
+                                                            <div class="small text-burgundy d-flex align-items-center mb-1">
+                                                                <i class="fas fa-wine-bottle me-1 text-gold"></i>
+                                                                <span>{{ $item['wine_name'] ?? 'Wine' }} ({{ $item['quantity'] ?? 1 }})</span>
+                                                            </div>
+                                                        @endforeach
+                                                    @else
+                                                        <span class="text-muted">No items</span>
+                                                    @endif
+                                                </td>
+                                                <td><strong class="text-burgundy">${{ number_format($order->total_amount, 2) }}</strong></td>
+                                                <td>
+                                                    @php
+                                                        $statusColors = [
+                                                            'pending' => 'badge-warning',
+                                                            'processing' => 'badge-info',
+                                                            'shipped' => 'badge-info',
+                                                            'delivered' => 'badge-success',
+                                                            'completed' => 'badge-secondary',
+                                                            'cancelled' => 'badge-danger',
+                                                        ];
+                                                        $badgeClass = $statusColors[$order->status] ?? 'badge-secondary';
+                                                    @endphp
+                                                    <span class="badge {{ $badgeClass }}" style="font-size:1em; min-width: 100px; display: inline-block; text-align: center;">
+                                                        {{ ucfirst($order->status) }}
+                                                    </span>
+                                                </td>
+                                                <td><small class="text-muted">{{ $order->created_at->format('M d, Y') }}</small></td>
+                                                <td>
+                                                    <div class="btn-group btn-group-sm d-flex flex-nowrap" role="group" style="gap: 0.5rem;">
+                                                        <a href="{{ route('orders.show', $order) }}" class="btn btn-outline-burgundy d-flex align-items-center justify-content-center" title="View order details">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        <a href="{{ route('orders.edit', $order) }}" class="btn btn-outline-gold d-flex align-items-center justify-content-center" title="Edit order">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <form action="{{ route('orders.destroy', $order) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this order?')">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-outline-danger d-flex align-items-center justify-content-center" title="Delete order">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        @if($customerOrders->count() > 0)
+                        <div class="d-flex justify-content-center mt-4">
+                                {{ $customerOrders->links('pagination::bootstrap-4') }}
+                        </div>
+                        @endif
+                    @else
+                        <div class="text-center py-5">
+                            <div class="icon-circle bg-burgundy mx-auto mb-3">
+                                <i class="fas fa-shopping-cart fa-2x text-gold"></i>
+                            </div>
+                            <h5 class="text-burgundy fw-bold">No customer orders found</h5>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom-0">
+                    <h5 class="card-title mb-0 fw-bold text-burgundy">
+                        <i class="fas fa-list text-gold me-2"></i> My Orders
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if($myOrders->count() > 0)
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0 order-table">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-burgundy fw-bold">Order ID</th>
+                                        <th class="text-burgundy fw-bold">Vendor</th>
+                                        <th class="text-burgundy fw-bold">Items</th>
+                                        <th class="text-burgundy fw-bold">Total Amount</th>
+                                        <th class="text-burgundy fw-bold">Status</th>
+                                        <th class="text-burgundy fw-bold">Date</th>
+                                        <th class="text-burgundy fw-bold">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($myOrders as $order)
                                     <tr class="wine-list-item">
                                         <td><strong class="text-burgundy">#{{ $order->id }}</strong></td>
                                         <td>
+                                            @php $vendor = $order->vendor; @endphp
                                             <div>
-                                                <strong class="text-burgundy">{{ $order->customer_name }}</strong><br>
-                                                <small class="text-muted">{{ $order->customer_email }}</small>
+                                                <strong class="text-burgundy">{{ $vendor ? $vendor->name : 'N/A' }}</strong><br>
+                                                <small class="text-muted">{{ $vendor ? $vendor->email : '' }}</small>
                                             </div>
                                         </td>
                                         <td>
@@ -256,9 +375,9 @@
                                 </tbody>
                             </table>
                         </div>
-                        @if($orders->count() > 0)
+                        @if($myOrders->count() > 0)
                         <div class="d-flex justify-content-center mt-4">
-                                {{ $orders->links('pagination::bootstrap-4') }}
+                                {{ $myOrders->links('pagination::bootstrap-4') }}
                         </div>
                         @endif
                     @else
