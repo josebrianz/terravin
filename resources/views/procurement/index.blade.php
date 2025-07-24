@@ -102,7 +102,7 @@
                                 <tr>
                                     <th>PO Number</th>
                                     <th>Supply Item</th>
-                                    <th>Supplier</th>
+                                   <!-- <th>Supplier</th>-->
                                     <th>Quantity</th>
                                     <th>Unit Price ($)</th>
                                     <th>Total Amount ($)</th>
@@ -121,7 +121,7 @@
                                         </a>
                                     </td>
                                     <td>{{ $procurement->item_name }}</td>
-                                    <td>{{ $procurement->supplier_name }}</td>
+                                 <!--   <td>{{ $procurement->supplier_name }}</td>-->
                                     <td>{{ $procurement->quantity }}</td>
                                     <td>${{ number_format($procurement->unit_price, 2) }}</td>
                                     <td>${{ number_format($procurement->total_amount, 2) }}</td>

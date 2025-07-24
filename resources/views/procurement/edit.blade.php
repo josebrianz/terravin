@@ -76,10 +76,10 @@
                             
                             <!-- Wholesaler Information -->
                             <div class="col-md-6">
-                                <h6 class="text-primary mb-3">Wine Supply Wholesaler Information</h6>
+                                <h6 class="text-primary mb-3"> Raw Material Supplier Information</h6>
                                 
                                 <div class="mb-3">
-                                    <label for="wholesaler_name" class="form-label">Wholesaler Name *</label>
+                                    <label for="wholesaler_name" class="form-label">Supplier Name *</label>
                                     <input type="text" class="form-control @error('wholesaler_name') is-invalid @enderror" 
                                            id="wholesaler_name" name="wholesaler_name" value="{{ old('wholesaler_name', $procurement->wholesaler_name) }}" 
                                            placeholder="e.g., Wine Barrel Co., Premium Cork Wholesalers" required>
@@ -89,7 +89,7 @@
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <label for="wholesaler_email" class="form-label">Wholesaler Email</label>
+                                    <label for="wholesaler_email" class="form-label">Supplier Email</label>
                                     <input type="email" class="form-control @error('wholesaler_email') is-invalid @enderror" 
                                            id="wholesaler_email" name="wholesaler_email" value="{{ old('wholesaler_email', $procurement->wholesaler_email) }}" 
                                            placeholder="contact@wholesaler.com">
@@ -99,7 +99,7 @@
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <label for="wholesaler_phone" class="form-label">Wholesaler Phone</label>
+                                    <label for="wholesaler_phone" class="form-label">Supplier Phone</label>
                                     <input type="text" class="form-control @error('wholesaler_phone') is-invalid @enderror" 
                                            id="wholesaler_phone" name="wholesaler_phone" value="{{ old('wholesaler_phone', $procurement->wholesaler_phone) }}" 
                                            placeholder="+1-555-123-4567">
