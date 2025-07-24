@@ -216,10 +216,7 @@
                             <li><a href="{{ route('retailer.dashboard') }}" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
 
                             <li><a href="{{ route('orders.index') }}" class="nav-link"><i class="fas fa-shopping-bag"></i> Orders</a></li>
-                            <li><a href="{{ route('inventory.index') }}" class="nav-link"><i class="fas fa-boxes"></i> Inventory</a></li>
                             <!-- <li><a href="{{ route('reports.index') }}" class="nav-link"><i class="fas fa-chart-line"></i> Reports</a></li> -->
-                            <li><a href="{{ route('help.index') }}" class="nav-link"><i class="fas fa-question-circle"></i> Help</a></li>
-                            <li><a href="{{ route('retailer.orders') }}" class="nav-link"><i class="fas fa-shopping-bag"></i> Orders</a></li>
                             <li><a href="{{ route('retailer.inventory') }}" class="nav-link"><i class="fas fa-boxes"></i> Inventory</a></li>
                             <li><a href="{{ route('retailer.catalog') }}" class="nav-link"><i class="fas fa-store"></i> Product Catalog</a></li>
 
@@ -304,7 +301,7 @@
             <div class="d-flex flex-wrap gap-3 mb-4">
                         <a href="{{ route('orders.index') }}" class="btn btn-burgundy btn-lg shadow wine-action-btn"><i class="fas fa-shopping-bag me-2"></i> <span class="fw-bold">View Orders</span></a>
 
-                        <a href="{{ route('inventory.index') }}" class="btn btn-gold btn-lg shadow wine-action-btn"><i class="fas fa-boxes me-2"></i> <span class="fw-bold">Inventory</span></a>
+    
                         <!-- <a href="{{ route('reports.index') }}" class="btn btn-outline-gold btn-lg shadow wine-action-btn"><i class="fas fa-chart-line me-2"></i> <span class="fw-bold">Reports</span></a> -->
 
                         <a href="{{ route('retailer.inventory') }}" class="btn btn-gold btn-lg shadow wine-action-btn"><i class="fas fa-boxes me-2"></i> <span class="fw-bold">Inventory</span></a>

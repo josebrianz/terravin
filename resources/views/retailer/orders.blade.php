@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Orders | TERRAVIN</title>
+    <title>Order History | TERRAVIN</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -76,34 +77,49 @@
             background-color: var(--light-gray);
             margin-top: 90px;
         }
-        .page-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            color: var(--burgundy);
-            font-weight: 600;
-        }
-        .order-card {
+        .order-history-box {
             background: white;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-sm);
-            border: 1px solid rgba(200, 169, 126, 0.2);
-            margin-bottom: 1.5rem;
-            padding: 1.5rem;
+            padding: 2rem 2.5rem;
+            max-width: 1100px;
+            margin: 2rem auto;
         }
-        .order-table th, .order-table td {
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--burgundy);
+            font-weight: 600;
+        }
+        .table thead th {
+            color: var(--burgundy);
+            font-weight: 700;
+            background: var(--light-cream);
+            border-top: none;
+        }
+        .table tbody tr {
+            background: #fff;
+            border-bottom: 1px solid var(--gray);
+        }
+        .table td, .table th {
             vertical-align: middle;
         }
-        .order-status {
-            font-weight: 600;
+        .badge {
+            font-size: 0.95em;
             border-radius: 1rem;
-            padding: 0.3rem 1rem;
-            font-size: 0.95rem;
         }
-        .status-pending { background: #fff3cd; color: #856404; }
-        .status-processing { background: #cce5ff; color: #004085; }
-        .status-shipped { background: #d1ecf1; color: #0c5460; }
-        .status-delivered { background: #d4edda; color: #155724; }
-        .status-cancelled { background: #f8d7da; color: #721c24; }
+        .btn-outline-burgundy {
+            border: 2px solid var(--burgundy);
+            color: var(--burgundy);
+            background: transparent;
+            border-radius: 2rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .btn-outline-burgundy:hover {
+            background: var(--burgundy);
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -118,7 +134,7 @@
                     <nav class="wine-nav">
                         <ul class="nav-links d-flex align-items-center gap-3 mb-0" style="list-style:none;">
                             <li><a href="{{ route('retailer.dashboard') }}" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                            <li><a href="{{ route('retailer.orders') }}" class="nav-link active"><i class="fas fa-shopping-bag"></i> Orders</a></li>
+                            <li><a href="{{ route('orders.index') }}" class="nav-link"><i class="fas fa-shopping-bag"></i> Orders</a></li>
                             <li><a href="{{ route('retailer.inventory') }}" class="nav-link"><i class="fas fa-boxes"></i> Inventory</a></li>
                             <li><a href="{{ route('retailer.catalog') }}" class="nav-link"><i class="fas fa-store"></i> Product Catalog</a></li>
                         </ul>
@@ -130,18 +146,14 @@
                         @php
                             $cartCount = count(session()->get('retailer_cart', []));
                         @endphp
-                        @if($cartCount > 0)
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                {{ $cartCount }}
-                            </span>
-                        @endif
+                        <span class="cart-count-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="min-width: 22px;">{{ $cartCount }}</span>
                     </a>
                     <div class="dropdown">
                         <a class="dropdown-toggle d-flex align-items-center text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
                             <div class="profile-photo-placeholder-large rounded-circle d-flex align-items-center justify-content-center me-2" style="border: 6px solid var(--gold); background: linear-gradient(135deg, var(--burgundy) 0%, #8b1a1a 100%); width: 72px; height: 72px; color: #fff; font-size: 2rem;">
                                 <span class="fw-bold">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
                             </div>
-                            <span class="user-name" style="color: #fff;">{{ Auth::user()->name }} <span class="text-gold" style="font-weight: 500; color: var(--gold);">(Retailer)</span></span>
+                            <span class="user-name" style="font-family: 'Montserrat', sans-serif; font-size: 1.15rem; font-weight: 700; letter-spacing: 0.5px; color: #fff;">{{ Auth::user()->name }} <span class="text-gold" style="font-weight: 500;">(Retailer)</span></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="fas fa-user-edit me-2"></i> Profile</a></li>
@@ -155,108 +167,50 @@
         </div>
     </div>
     <div class="main-content">
-        <div class="container-fluid">
-            <h1 class="page-title mb-4">My Orders</h1>
-            <!-- Orders Placed by Retailer (to Vendors) -->
-            <div class="order-card mb-5">
-                <h4 class="mb-3"><i class="fas fa-arrow-up me-2"></i>Orders Placed by You (to Vendors)</h4>
+        <div class="order-history-box">
+            <h2 class="section-title mb-4">Order History</h2>
+            @if($orders->isEmpty())
+                <div class="alert alert-info">You have not placed any orders yet.</div>
+            @else
                 <div class="table-responsive">
-                    <table class="table order-table align-middle">
+                    <table class="table align-middle">
                         <thead>
                             <tr>
                                 <th>Order #</th>
                                 <th>Date</th>
+                                <th>Status</th>
+                                <th>Total</th>
                                 <th>Vendor</th>
-                                <th>Status</th>
-                                <th>Total</th>
                                 <th>Items</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($ordersPlaced as $order)
+                            @foreach($orders as $order)
                                 <tr>
-                                    <td>{{ $order->id }}</td>
+                                    <td>#{{ $order->id }}</td>
                                     <td>{{ $order->created_at->format('M d, Y') }}</td>
-                                    <td>{{ $order->vendor->name ?? 'Vendor' }}</td>
-                                    <td><span class="order-status status-{{ $order->status }}">{{ ucfirst($order->status) }}</span></td>
+                                    <td><span class="badge bg-info text-dark">{{ ucfirst($order->status) }}</span></td>
                                     <td>${{ number_format($order->total_amount, 2) }}</td>
+                                    <td>{{ $order->vendor ? $order->vendor->name : 'N/A' }}</td>
                                     <td>
-                                        @php
-                                            $items = $order->items;
-                                            if (is_string($items)) {
-                                                $decoded = json_decode($items, true);
-                                                // If still a string after first decode, decode again
-                                                if (is_string($decoded)) {
-                                                    $decoded = json_decode($decoded, true);
-                                                }
-                                                $items = is_array($decoded) ? $decoded : [];
-                                            }
-                                            $itemList = collect($items)->map(function($item) {
-                                                $name = $item['wine_name'] ?? $item['item_name'] ?? 'Unnamed Item';
-                                                $qty = isset($item['quantity']) ? $item['quantity'] : 1;
-                                                return $name . ' x' . $qty;
-                                            })->implode(', ');
-                                        @endphp
-                                        {{ $itemList ?: 'No items' }}
+                                        @if($order->orderItems && count($order->orderItems))
+                                            <ul class="list-unstyled mb-0">
+                                                @foreach($order->orderItems as $item)
+                                                    <li><strong>{{ $item->item_name ?? ($item->inventory->name ?? 'Item') }}</strong> x{{ $item->quantity }}</li>
+                                                @endforeach
+                                            </ul>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
                                     </td>
                                 </tr>
-                            @empty
-                                <tr><td colspan="6" class="text-center text-muted">No orders placed yet.</td></tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
-            </div>
-            <!-- Orders Received by Retailer (from Customers) -->
-            <div class="order-card">
-                <h4 class="mb-3"><i class="fas fa-arrow-down me-2"></i>Orders Received from Customers</h4>
-                <div class="table-responsive">
-                    <table class="table order-table align-middle">
-                        <thead>
-                            <tr>
-                                <th>Order #</th>
-                                <th>Date</th>
-                                <th>Customer</th>
-                                <th>Status</th>
-                                <th>Total</th>
-                                <th>Items</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($ordersReceived as $order)
-                                <tr>
-                                    <td>{{ $order->id }}</td>
-                                    <td>{{ $order->created_at->format('M d, Y') }}</td>
-                                    <td>{{ $order->user->name ?? 'Customer' }}</td>
-                                    <td><span class="order-status status-{{ $order->status }}">{{ ucfirst($order->status) }}</span></td>
-                                    <td>${{ number_format($order->total_amount, 2) }}</td>
-                                    <td>
-                                        @php
-                                            $items = $order->items;
-                                            if (is_string($items)) {
-                                                $decoded = json_decode($items, true);
-                                                // If still a string after first decode, decode again
-                                                if (is_string($decoded)) {
-                                                    $decoded = json_decode($decoded, true);
-                                                }
-                                                $items = is_array($decoded) ? $decoded : [];
-                                            }
-                                            $itemList = collect($items)->map(function($item) {
-                                                $name = $item['wine_name'] ?? $item['item_name'] ?? 'Unnamed Item';
-                                                $qty = isset($item['quantity']) ? $item['quantity'] : 1;
-                                                return $name . ' x' . $qty;
-                                            })->implode(', ');
-                                        @endphp
-                                        {{ $itemList ?: 'No items' }}
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr><td colspan="6" class="text-center text-muted">No orders received from customers yet.</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                {{ $orders->links() }}
+            @endif
+            <a href="{{ route('retailer.dashboard') }}" class="btn btn-outline-burgundy mt-4">Back to Dashboard</a>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

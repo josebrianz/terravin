@@ -128,9 +128,9 @@
                                     <img src="{{ $item->inventory->images && count($item->inventory->images) > 0 ? asset('storage/' . $item->inventory->images[0]) : 'https://via.placeholder.com/50x50?text=Wine' }}" class="checkout-image" alt="{{ $item->inventory->name }}">
                                 </td>
                                 <td>{{ $item->inventory->name }}</td>
-                                <td>{{ number_format($item->inventory->unit_price, 0) }} UGX</td>
+                                <td>${{ number_format($item->inventory->unit_price, 2) }}</td>
                                 <td>{{ $item->quantity }}</td>
-                                <td>{{ number_format($subtotal, 0) }} UGX</td>
+                                <td>${{ number_format($subtotal, 2) }}</td>
                             </tr>
                         @else
                             <tr class="table-danger">
@@ -142,7 +142,7 @@
                     @endforeach
                 </tbody>
             </table>
-            <div class="checkout-total mb-4">Total: {{ number_format($total, 0) }} UGX</div>
+            <div class="checkout-total mb-4">Total: ${{ number_format($total, 2) }}</div>
             <div class="mb-3">
                 <label for="shipping_address" class="form-label">Shipping Address</label>
                 <textarea name="shipping_address" id="shipping_address" class="form-control" rows="2" required></textarea>

@@ -65,7 +65,7 @@
                         <th>Procurement #</th>
                         <th>Status</th>
                         <th>Requested By</th>
-                        <th>Total Cost</th>
+                        <th>Total Amount</th>
                         <th>Date</th>
                     </tr>
                 </thead>
@@ -75,15 +75,12 @@
                         <td>{{ $proc->id }}</td>
                         <td>{{ $proc->status ?? 'N/A' }}</td>
                         <td>{{ $proc->requested_by ?? ($proc->user->name ?? 'N/A') }}</td>
-                        <td>{{ $proc->total_cost ?? 'N/A' }}</td>
+                        <td>{{ $proc->total_amount ?? 'N/A' }}</td>
                         <td>{{ $proc->created_at ? $proc->created_at->format('Y-m-d') : 'N/A' }}</td>
                     </tr>
                 @endforeach
                 </tbody>
             </table>
-        @endif
-        @if(empty($reportData['inventory']) && empty($reportData['orders']))
-            <p>No inventory or order data available for this stakeholder's report preferences.</p>
         @endif
     @endif
 </body>

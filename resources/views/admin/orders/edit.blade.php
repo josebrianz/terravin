@@ -216,7 +216,7 @@
                     
                     <div class="mb-3">
                         <span class="text-muted small">Order Date:</span>
-                        <div class="fw-bold">{{ $order->created_at->format('M d, Y H:i') }}</div>
+                        <div class="fw-bold">{{ $order->created_at->format('M d, Y') }}</div>
                     </div>
                     
                     <div class="mb-3">

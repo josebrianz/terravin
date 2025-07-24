@@ -102,7 +102,12 @@ def spending_aggregate():
     agg = spending_segments.groupby('spending_segment_label').agg({
         'total_spent': 'sum',
         'total_quantity': 'sum'
-    }).reset_index().rename(columns={'spending_segment_label': 'segment'})
+    }).reset_index()
+    agg = agg.rename(columns={
+        'spending_segment_label': 'spending_segment_label',
+        'total_spent': 'total_spend',
+        'total_quantity': 'QUANTITY'
+    })
     result = agg.to_dict(orient='records')
     return JSONResponse(content=result)
 

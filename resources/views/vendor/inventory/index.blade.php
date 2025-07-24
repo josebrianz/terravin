@@ -192,7 +192,7 @@
                             </a>
                             <span class="wine-date-badge">
                                 <i class="fas fa-wine-glass-alt"></i>
-                                <span>{{ now()->format('M d, Y H:i') }}</span>
+                                <span>{{ now()->format('M d, Y') }}</span>
                             </span>
                         </div>
                     </div>

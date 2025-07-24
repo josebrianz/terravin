@@ -775,7 +775,6 @@
                         <ul class="nav-links d-flex align-items-center gap-3 mb-0" style="list-style:none;">
                             <li><a href="{{ route('customer.dashboard') }}" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                             <li><a href="{{ route('customer.products') }}" class="nav-link"><i class="fas fa-shopping-bag"></i> Wine Shop</a></li>
-                            <li><a href="{{ route('customer.favorites') }}" class="nav-link"><i class="fas fa-heart"></i> Favorites</a></li>
                             <li><a href="{{ route('customer.orders') }}" class="nav-link"><i class="fas fa-history"></i> Orders</a></li>
                             <li><a href="{{ route('help.index') }}" class="nav-link"><i class="fas fa-question-circle"></i> Help</a></li>
                         </ul>
@@ -828,6 +827,9 @@
                         <h1 class="page-title">Welcome back, {{ Auth::user()->name }}</h1>
                         <p class="page-subtitle">Here's what's happening with your account today</p>
                     </div>
+                </div>
+                <div class="date-badge" style="align-self: flex-start; margin-left: auto;">
+                    <span class="badge bg-gold text-burgundy px-3 py-2"><i class="fas fa-calendar-alt me-1"></i> {{ now()->format('M d, Y') }}</span>
                 </div>
                 <div class="search-cart">
                     <form class="search-bar" method="GET" action="{{ route('customer.dashboard') }}" style="margin-bottom:0; position:relative;">
@@ -882,7 +884,7 @@
                             {{ $wine->description ?? 'A premium selection with rich flavors and elegant finish. Perfect for special occasions.' }}
                         </p>
                         <div class="wine-footer">
-                            <span class="wine-price">{{ 'UGX ' . number_format($wine->unit_price, 0) }}</span>
+                            <span class="wine-price">{{ str_replace('UGX', 'USD', 'UGX ' . number_format($wine->unit_price, 0)) }}</span>
                             <!-- Inside the wine card or wine actions section for each wine -->
                             <div class="wine-actions">
                                 <button class="btn btn-wine btn-wine-primary btn-add-to-cart" data-inventory-id="{{ $wine->id }}">

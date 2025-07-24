@@ -196,6 +196,49 @@
             </div>
         </div>
     </div>
+    <div class="container mt-5">
+        <h2>Orders Received (as Retailer)</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Items</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    $retailerId = Auth::id();
+                    $ordersReceived = \App\Models\Order::where('vendor_id', $retailerId)->latest()->take(10)->get();
+                @endphp
+                @foreach($ordersReceived as $order)
+                    <tr>
+                        <td>#{{ $order->id }}</td>
+                        <td>{{ $order->customer_name }}<br><small>{{ $order->customer_email }}</small></td>
+                        <td>
+                            @foreach($order->items as $item)
+                                <div>{{ $item['wine_name'] ?? $item['item_name'] ?? 'Item' }} ({{ $item['quantity'] ?? 1 }})</div>
+                            @endforeach
+                        </td>
+                        <td>{{ ucfirst($order->status) }}</td>
+                        <td>
+                            @if($order->status !== 'shipped')
+                                <form action="{{ route('retailer.orders.updateStatus', $order->id) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    <input type="hidden" name="status" value="shipped">
+                                    <button type="submit" class="btn btn-primary btn-sm">Mark as Shipped</button>
+                                </form>
+                            @else
+                                <span class="badge bg-primary">Shipped</span>
+                            @endif
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html> 

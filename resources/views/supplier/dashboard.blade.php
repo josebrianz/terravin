@@ -178,7 +178,6 @@
                 <div class="section-title"><i class="fas fa-chart-bar me-2"></i>Reports & Analytics</div>
                 <p>Analyze supply trends, order history, and performance metrics to optimize your supply operations.</p>
                 <a href="{{ url('/supplier/reports') }}" class="btn btn-burgundy">View Reports</a>
-                <a href="{{ route('stakeholders.reports', Auth::user()->stakeholder->id ?? 0) }}?download=1" class="btn btn-success ms-2"><i class="fas fa-file-download me-1"></i>Download My Report</a>
             </div>
         </div>
     </div>

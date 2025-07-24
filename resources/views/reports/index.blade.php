@@ -173,7 +173,7 @@
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <span>Total Revenue</span>
-                                <span class="fw-bold text-burgundy">UGX {{ number_format($totalRevenue ?? 0, 0) }}</span>
+                                <span class="fw-bold text-burgundy">${{ number_format($totalRevenue ?? 0, 2) }}</span>
                             </li>
                         </ul>
                     </div>

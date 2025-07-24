@@ -48,7 +48,7 @@
                 </div>
                             <div class="mb-3">
                                 <label class="form-label fw-bold text-muted">Order Date</label>
-                                <div>{{ $order->created_at->format('M d, Y H:i') }}</div>
+                                <div>{{ $order->created_at->format('M d, Y') }}</div>
             </div>
                             <div class="mb-3">
                                 <label class="form-label fw-bold text-muted">Status</label>
@@ -86,7 +86,7 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label fw-bold text-muted">Last Updated</label>
-                                <div>{{ $order->updated_at->format('M d, Y H:i') }}</div>
+                                <div>{{ $order->updated_at->format('M d, Y') }}</div>
         </div>
                             @if($order->admin_notes)
                             <div class="mb-3">
@@ -238,7 +238,7 @@
                             <div class="timeline-marker bg-success"></div>
                             <div class="timeline-content">
                                 <div class="fw-bold">Order Created</div>
-                                <small class="text-muted">{{ $order->created_at->format('M d, Y H:i') }}</small>
+                                <small class="text-muted">{{ $order->created_at->format('M d, Y') }}</small>
                             </div>
                         </div>
                         @if($order->status !== 'pending')

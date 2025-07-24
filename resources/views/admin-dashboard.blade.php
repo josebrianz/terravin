@@ -30,7 +30,7 @@
                     @endif
                     <span class="badge bg-gold text-burgundy px-3 py-2">
                         <i class="fas fa-clock me-1"></i>
-                        {{ now()->format('M d, Y H:i') }}
+                        {{ now()->format('M d, Y') }}
                     </span>
                 </div>
             </div>

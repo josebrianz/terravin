@@ -270,7 +270,7 @@
                                             @foreach($orders as $order)
                                                 <tr>
                                                     <td>{{ $order->id }}</td>
-                                                    <td>{{ $order->created_at->format('Y-m-d H:i') }}</td>
+                                                    <td>{{ $order->created_at->format('Y-m-d') }}</td>
                                                     <td>${{ number_format($order->total_amount, 0) }}</td>
                                                     <td>{{ ucfirst($order->status) }}</td>
                                                     <td><a href="{{ route('orders.show', $order->id) }}" class="btn btn-sm btn-outline-primary">View</a></td>

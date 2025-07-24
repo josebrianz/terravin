@@ -341,7 +341,6 @@
                     <ul class="nav-links d-flex align-items-center gap-3 mb-0" style="list-style:none;">
                         <li><a href="{{ route('customer.dashboard') }}" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                         <li><a href="{{ route('customer.products') }}" class="nav-link"><i class="fas fa-shopping-bag"></i> Wine Shop</a></li>
-                        <li><a href="{{ route('customer.favorites') }}" class="nav-link"><i class="fas fa-heart"></i> Favorites</a></li>
                         <li><a href="{{ route('customer.orders') }}" class="nav-link"><i class="fas fa-history"></i> Orders</a></li>
                         <li><a href="{{ route('help.index') }}" class="nav-link"><i class="fas fa-question-circle"></i> Help</a></li>
                     </ul>
@@ -452,11 +451,8 @@
                         </div>
                     </div>
                     <div class="wine-actions">
-                        <button class="btn btn-wine btn-wine-outline btn-quick-view">
-                            <i class="fas fa-eye"></i> View
-                        </button>
-                        <button class="btn btn-wine btn-wine-primary btn-add-to-cart" data-wine-id="{{ $rec['ID'] ?? '' }}" style="color: #fff;">
-                            <i class="fas fa-cart-plus"></i> Add to Cart
+                        <button class="btn btn-order w-100" data-wine-id="{{ $rec['ID'] ?? '' }}" data-wine-name="{{ $rec['WINE NAME'] ?? 'Wine' }}">
+                            <i class="fas fa-cart-plus me-2"></i>Add to Order
                         </button>
                     </div>
                 </div>
@@ -468,39 +464,33 @@
 
 @push('scripts')
 <script>
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas fa-check-circle"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    document.body.appendChild(notification);
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 10);
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
 document.addEventListener('DOMContentLoaded', function() {
-    // Add to Cart functionality (already present)
-    const addToCartButtons = document.querySelectorAll('.btn-add-to-cart');
-    addToCartButtons.forEach(button => {
-        button.addEventListener('click', function() {
+    // Add to Cart functionality for .btn-order
+    document.querySelectorAll('.btn-order').forEach(function(btn) {
+        btn.addEventListener('click', function() {
             const wineId = this.getAttribute('data-wine-id');
-            fetch('/cart/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({ wine_id: wineId, quantity: 1 })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.success) {
-                    this.innerHTML = '<i class="fas fa-check me-1"></i> Added';
-                    this.classList.add('btn-success');
-                    setTimeout(() => {
-                        this.innerHTML = '<i class="fas fa-cart-plus me-1"></i> Add to Cart';
-                        this.classList.remove('btn-success');
-                        this.classList.add('btn-wine-primary');
-                    }, 2000);
-                    let cartCount = document.querySelector('.cart-count-badge');
-                    if(cartCount) cartCount.textContent = parseInt(cartCount.textContent||'0') + 1;
-                } else {
-                    alert('Error: ' + (data.message || 'Could not add to cart'));
-                }
-            })
-            .catch(err => {
-                alert('Error: Could not add to cart');
-            });
+            const wineName = this.getAttribute('data-wine-name');
+            addToOrder(wineId, wineName, this);
         });
     });
 
@@ -513,28 +503,42 @@ document.addEventListener('DOMContentLoaded', function() {
             showNotification(`Showing details for ${wineName}`);
         });
     });
-
-    function showNotification(message) {
-        const notification = document.createElement('div');
-        notification.className = 'notification';
-        notification.innerHTML = `
-            <div class="notification-content">
-                <i class="fas fa-check-circle"></i>
-                <span>${message}</span>
-            </div>
-        `;
-        document.body.appendChild(notification);
-        setTimeout(() => {
-            notification.classList.add('show');
-        }, 10);
-        setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => {
-                document.body.removeChild(notification);
-            }, 300);
-        }, 3000);
-    }
 });
+
+// Update addToOrder to accept the button element
+function addToOrder(wineId, wineName, btn) {
+    fetch('/cart/add', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ inventory_id: wineId, quantity: 1 })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            showNotification('Added to order!');
+            // Visual feedback
+            if(btn) {
+                btn.innerHTML = '<i class="fas fa-check me-2"></i>Added';
+                btn.classList.add('btn-success');
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fas fa-cart-plus me-2"></i>Add to Order';
+                    btn.classList.remove('btn-success');
+                }, 2000);
+            }
+            // Update cart counter
+            let cartCount = document.querySelectorAll('.cart-count-badge');
+            cartCount.forEach(function(el) {
+                el.textContent = parseInt(el.textContent||'0') + 1;
+            });
+        } else {
+            showNotification('Error: Could not add to order');
+        }
+    })
+    .catch(() => showNotification('Error: Could not add to order'));
+}
 </script>
 <style>
 .notification {
@@ -563,6 +567,27 @@ document.addEventListener('DOMContentLoaded', function() {
 .notification i {
     font-size: 1.2rem;
     color: var(--secondary);
+}
+/* Ensure Add to Cart button matches main catalog */
+.btn-order {
+    background: #5e0f0f; /* var(--burgundy) */
+    color: white;
+    border: none;
+    border-radius: 2rem;
+    padding: 0.5rem 1.5rem;
+    font-weight: 600;
+    width: 100%;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+.btn-order:hover, .btn-order:focus {
+    background: #8b1a1a; /* var(--light-burgundy) */
+    color: white;
+    transform: translateY(-2px);
+    text-decoration: none;
 }
 </style>
 @endpush 

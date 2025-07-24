@@ -188,7 +188,7 @@
                 <div class="col-lg-8">
                     <div class="cart-card p-4 mb-4">
                         <h4 class="mb-4"><i class="fas fa-truck me-2"></i>Shipping & Payment Details</h4>
-                        <form method="POST" action="{{ url('/retailer/checkout') }}">
+                        <form method="POST" action="/retailer/checkout">
                             @csrf
                             <div class="mb-3">
                                 <label for="shipping_address" class="form-label">Shipping Address</label>
@@ -205,6 +205,15 @@
                             <div class="mb-3">
                                 <label for="notes" class="form-label">Order Notes (optional)</label>
                                 <textarea class="form-control" id="notes" name="notes" rows="2"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="vendor_id" class="form-label">Select Vendor</label>
+                                <select name="vendor_id" id="vendor_id" class="form-control" required>
+                                    <option value="">-- Select Vendor --</option>
+                                    @foreach($vendors as $vendor)
+                                        <option value="{{ $vendor->id }}">{{ $vendor->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <button type="submit" class="btn btn-burgundy w-100">
                                 <i class="fas fa-credit-card me-2"></i>Place Order

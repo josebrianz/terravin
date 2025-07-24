@@ -394,15 +394,15 @@
 
     <hr class="my-5" style="border-color: var(--gold);">
 
-    <!-- Analytics Charts Grid -->
-    <div class="row row-cols-1 row-cols-lg-2 g-4">
-        <div class="col">
+    <!-- Inventory by Stock Line Graph (separate row) -->
+    <div class="row mb-4">
+        <div class="col-12">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white border-bottom-0">
                     <h5 class="card-title mb-0 fw-bold">
-                        <i class="fas fa-boxes me-2"></i> Inventory by Stock
+                        <i class="fas fa-chart-line me-2"></i> Inventory by Stock (Line Graph)
                     </h5>
-                    <p class="text-muted mb-0 mt-1">Stock levels for each product</p>
+                    <p class="text-muted mb-0 mt-1">Stock levels for each product (line graph)</p>
                 </div>
                 <div class="card-body d-flex align-items-center justify-content-center position-relative">
                     <div class="chart-container w-100">
@@ -411,6 +411,9 @@
                 </div>
             </div>
         </div>
+    </div>
+    <!-- Analytics Charts Grid (Pie, Bar, etc.) -->
+    <div class="row row-cols-1 row-cols-lg-2 g-4">
         <div class="col">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white border-bottom-0">
@@ -502,7 +505,7 @@
     Chart.defaults.elements.point.borderWidth = 4;
     Chart.defaults.layout.padding = 32;
 
-    // Inventory by Stock Chart with gradient (now as a line chart)
+    // Inventory by Stock Chart with improved style
     const inventoryStockCtx = document.getElementById('inventoryStockChart').getContext('2d');
     let inventoryStockChart;
     function renderInventoryStockChart() {
@@ -521,18 +524,19 @@
                         if (!chartArea) return '#C8A97E';
                         // Gradient fill for area under the line
                         return createWineGradient(ctx, chartArea, [
-                            'rgba(123, 17, 44, 0.18)', // Burgundy (transparent)
-                            'rgba(200, 169, 126, 0.12)', // Gold (transparent)
-                            'rgba(245, 240, 230, 0.10)' // Cream (transparent)
+                            'rgba(123, 17, 44, 0.10)', // Burgundy (transparent)
+                            'rgba(200, 169, 126, 0.08)', // Gold (transparent)
+                            'rgba(245, 240, 230, 0.06)' // Cream (transparent)
                         ]);
                     },
                     borderColor: '#7B112C',
-                    borderWidth: 4,
+                    borderWidth: 5,
                     pointBackgroundColor: '#C8A97E',
                     pointBorderColor: '#7B112C',
-                    pointRadius: 9,
-                    pointHoverRadius: 13,
-                    tension: 0.35,
+                    pointRadius: 0,
+                    pointHoverRadius: 0,
+                    pointStyle: 'circle',
+                    tension: 0.3,
                     shadowOffsetX: 2,
                     shadowOffsetY: 4,
                     shadowBlur: 12,
@@ -569,9 +573,7 @@
                 labels: @json($inventoryCategoryData['labels'] ?? []),
                 datasets: [{
                     data: @json($inventoryCategoryData['data'] ?? []),
-                    backgroundColor: [
-                        '#7B112C', '#C8A97E', '#F5F0E6', '#3C5A14', '#E6B7A9', '#A26769', '#B5651D', '#5E0F0F', '#D4B88A', '#E8E0D0'
-                    ],
+                    backgroundColor: @json($inventoryCategoryData['colors'] ?? []),
                     borderColor: '#fff',
                     borderWidth: 2,
                     hoverOffset: 16,
@@ -611,7 +613,7 @@
                     },
                     borderColor: '#7B112C',
                     borderWidth: 2,
-                    borderRadius: 12,
+                    borderRadius: 0,
                     hoverBackgroundColor: '#7B112C',
                     hoverBorderColor: '#C8A97E',
                 }]
@@ -653,7 +655,7 @@
                     },
                     borderColor: '#C8A97E',
                     borderWidth: 2,
-                    borderRadius: 12,
+                    borderRadius: 0,
                     hoverBackgroundColor: '#7B112C',
                     hoverBorderColor: '#C8A97E',
                 }]

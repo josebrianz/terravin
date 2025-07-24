@@ -161,19 +161,56 @@ class AnalyticsDashboardController extends Controller
             'data' => $inventoryByCategory->pluck('total_quantity')->toArray(),
         ];
 
-        // Inventory by Stock
+        // Inventory by Stock (current month only)
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
+        $inventoryStockQuery = Inventory::query()
+            ->whereMonth('updated_at', $currentMonth)
+            ->whereYear('updated_at', $currentYear);
+        // If no updates this month, fallback to created_at
+        if ($inventoryStockQuery->count() === 0) {
+            $inventoryStockQuery = Inventory::query()
+                ->whereMonth('created_at', $currentMonth)
+                ->whereYear('created_at', $currentYear);
+        }
+        $inventoryStock = $inventoryStockQuery->get();
         $inventoryStockData = [
-            'labels' => Inventory::pluck('name')->toArray(),
-            'data' => Inventory::pluck('quantity')->toArray(),
+            'labels' => $inventoryStock->pluck('name')->toArray(),
+            'data' => $inventoryStock->pluck('quantity')->toArray(),
         ];
 
-        // Inventory by Category
+        // Inventory by Category (filter out null/empty categories)
         $inventoryByCategory = Inventory::select('category', DB::raw('SUM(quantity) as total'))
+            ->whereNotNull('category')
+            ->where('category', '!=', '')
             ->groupBy('category')
             ->get();
+        // Assign a unique color for 'White Wine' category
+        $categoryLabels = $inventoryByCategory->pluck('category')->toArray();
+        $defaultColors = [
+            '#7B112C', // Burgundy
+            '#C8A97E', // Gold
+            '#F5F0E6', // Cream
+            '#3C5A14', // Deep Green
+            '#E6B7A9', // Blush
+            '#A26769', // Rose
+            '#B5651D', // Tawny
+            '#5E0F0F', // Dark Burgundy
+            '#D4B88A', // Light Gold
+            '#E8E0D0', // Champagne
+        ];
+        $categoryColors = [];
+        foreach ($categoryLabels as $i => $cat) {
+            if (strtolower(trim($cat)) === 'white wine') {
+                $categoryColors[] = '#ffe066'; // Distinct gold/yellow for White Wine
+            } else {
+                $categoryColors[] = $defaultColors[$i % count($defaultColors)];
+            }
+        }
         $inventoryCategoryData = [
-            'labels' => $inventoryByCategory->pluck('category')->toArray(),
+            'labels' => $categoryLabels,
             'data' => $inventoryByCategory->pluck('total')->toArray(),
+            'colors' => $categoryColors,
         ];
 
         // Orders per Month

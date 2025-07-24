@@ -685,7 +685,6 @@ body {
                         <ul class="nav-links d-flex align-items-center gap-3 mb-0" style="list-style:none;">
                             <li><a href="{{ route('customer.dashboard') }}" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                             <li><a href="{{ route('customer.products') }}" class="nav-link active"><i class="fas fa-shopping-bag"></i> Wine Shop</a></li>
-                            <li><a href="{{ route('customer.favorites') }}" class="nav-link"><i class="fas fa-heart"></i> Favorites</a></li>
                             <li><a href="{{ route('customer.orders') }}" class="nav-link"><i class="fas fa-history"></i> Orders</a></li>
                             <li><a href="{{ route('help.index') }}" class="nav-link"><i class="fas fa-question-circle"></i> Help</a></li>
                         </ul>
@@ -744,10 +743,7 @@ body {
                             <i class="fas fa-clock me-1 text-muted"></i>
                             <span class="text-dark">{{ now()->format('M d, Y') }}</span>
                         </div>
-                        <a href="{{ route('orders.create') }}" class="btn btn-primary px-4">
-                            <i class="fas fa-shopping-cart me-2"></i>New Order
-                        </a>
-
+                        <!-- Removed New Order button -->
                     </div>
                 </div>
             </header>
@@ -821,9 +817,6 @@ body {
                             <div class="wine-details">
                                 <div style="display:flex;justify-content:space-between;align-items:center;">
                                     <h3 class="wine-name">{{ $wine->name }}</h3>
-                                    <button class="favorite-btn" data-wine-id="{{ $wine->id }}" aria-label="Add to favorites" style="background:none;border:none;outline:none;cursor:pointer;padding:0;margin-left:0.5rem;">
-                                        <i class="fa-heart {{ in_array($wine->id, $favoriteIds) ? 'fas' : 'far' }}" style="color:#c8a97e;font-size:1.4rem;"></i>
-                                    </button>
                                 </div>
                                 <p class="wine-description">{{ Str::limit($wine->description, 120) }}</p>
                                 

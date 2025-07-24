@@ -21,7 +21,7 @@
                     </a>
                     <span class="badge bg-burgundy text-gold px-4 py-3 fs-6 fw-bold shadow-sm">
                         <i class="fas fa-clock me-2"></i>
-                        {{ now()->format('M d, Y H:i') }}
+                        {{ now()->format('M d, Y') }}
                     </span>
                 </div>
             </div>

@@ -138,7 +138,7 @@
                         </div>
                         <div class="header-actions">
                             <span class="badge" style="background: var(--burgundy); color: var(--gold); border-radius: 1.5rem; padding: 0.8em 1.5em; font-size: 1.1em; box-shadow: 0 2px 8px rgba(94,15,15,0.10);">
-                                <i class="fas fa-calendar-alt me-2"></i>{{ now()->format('M d, Y H:i') }}
+                                <i class="fas fa-calendar-alt me-2"></i>{{ now()->format('M d, Y') }}
                             </span>
                         </div>
                     </div>
@@ -275,11 +275,7 @@
                                             <td>{{ $order->customer_name }}</td>
                                             <td><small class="text-muted">{{ $order->customer_email }}</small></td>
                                             <td>
-                                                @php
-                                                    $items = is_array($order->items) ? $order->items : json_decode($order->items, true);
-                                                    $itemCount = is_array($items) ? count($items) : 0;
-                                                @endphp
-                                                <span class="badge bg-light text-dark">{{ $itemCount }} items</span>
+                                                <span class="badge bg-light text-dark">{{ $order->orderItems->count() }} items</span>
                                             </td>
                                             <td><span class="fw-bold text-success">${{ number_format($order->total_amount, 2) }}</span></td>
                                             <td>

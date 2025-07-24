@@ -23,7 +23,7 @@
                     @foreach($orders as $order)
                         <tr>
                             <td>{{ $order->id }}</td>
-                            <td>{{ $order->created_at->format('M d, Y H:i') }}</td>
+                            <td>{{ $order->created_at->format('M d, Y') }}</td>
                             <td><span class="badge bg-info text-dark">{{ ucfirst($order->status) }}</span></td>
                             <td>UGX {{ number_format($order->total, 0) }}</td>
                             <td>

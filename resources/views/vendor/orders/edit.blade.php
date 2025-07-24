@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vendor Dashboard | TERRAVIN</title>
+    <title>Edit Order | TERRAVIN</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -71,37 +71,24 @@
             color: var(--gold);
             background: rgba(255,255,255,0.08);
         }
-        .user-name {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.15rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            color: #fff;
-        }
         .main-content {
             padding: 2rem 2.5rem;
             background-color: var(--light-gray);
             margin-top: 90px;
         }
-        .page-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            color: var(--burgundy);
-            font-weight: 600;
-        }
-        .dashboard-section {
+        .edit-order-box {
             background: white;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-sm);
-            padding: 1.5rem 2rem;
-            margin-bottom: 2rem;
+            padding: 2rem 2.5rem;
+            max-width: 700px;
+            margin: 2rem auto;
         }
         .section-title {
             font-family: 'Playfair Display', serif;
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             color: var(--burgundy);
             font-weight: 600;
-            margin-bottom: 1rem;
         }
         .btn-burgundy {
             background: var(--burgundy);
@@ -115,6 +102,16 @@
         .btn-burgundy:hover {
             background: var(--light-burgundy);
             color: white;
+        }
+        .order-items-table th, .order-items-table td {
+            vertical-align: middle;
+        }
+        .order-items-table th {
+            color: var(--burgundy);
+            font-weight: 700;
+        }
+        .order-items-table td {
+            color: var(--dark-text);
         }
     </style>
 </head>
@@ -130,12 +127,10 @@
                     <nav class="wine-nav">
                         <ul class="nav-links d-flex align-items-center gap-3 mb-0" style="list-style:none;">
                             <li><a href="{{ url('/vendor/dashboard') }}" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                            <li><a href="{{ url('/vendor/orders') }}" class="nav-link"><i class="fas fa-shopping-bag"></i> Orders</a></li>
+                            <li><a href="{{ url('/vendor/orders') }}" class="nav-link active"><i class="fas fa-shopping-bag"></i> Orders</a></li>
                             <li><a href="{{ url('/vendor/inventory') }}" class="nav-link"><i class="fas fa-boxes"></i> Inventory</a></li>
                             <li><a href="{{ url('/reports') }}" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a></li>
                             <li><a href="{{ url('/vendor/bulk-order') }}" class="nav-link"><i class="fas fa-wine-bottle"></i> Bulk Order</a></li>
-                            <li><a href="{{ route('my.report') }}" class="nav-link btn btn-outline-warning text-gold px-2 py-1 ms-2" style="font-size:0.85em; border-color: #c8a97e; color: #c8a97e !important;"><i class="fas fa-eye me-1"></i>View Report</a></li>
-                            <li><a href="{{ route('my.report', ['download' => 1]) }}" class="nav-link btn text-white px-2 py-1 ms-1" style="background: #5e0f0f; font-size:0.85em;"><i class="fas fa-file-download me-1"></i>Download Report</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -159,55 +154,69 @@
         </div>
     </div>
     <div class="main-content">
-        <div class="container-fluid">
-            <h1 class="page-title mb-4">Vendor Dashboard</h1>
-            <div class="dashboard-section">
-                <div class="section-title"><i class="fas fa-shopping-bag me-2"></i>Orders</div>
-                <p>View, confirm, update, and track orders assigned to you as a vendor.</p>
-                <a href="{{ url('/vendor/orders') }}" class="btn btn-burgundy">Manage Orders</a>
-            </div>
-            <div class="dashboard-section">
-                <div class="section-title"><i class="fas fa-boxes me-2"></i>Inventory</div>
-                <p>View and manage your inventory, update stock levels, and add new products.</p>
-                <a href="{{ url('/vendor/inventory') }}" class="btn btn-burgundy">View Inventory</a>
-            </div>
-            <div class="dashboard-section">
-                <div class="section-title"><i class="fas fa-chart-line me-2"></i>Analytics</div>
-                <p>View sales analytics, performance reports, and demand forecasts to optimize your operations.</p>
-                <a href="{{ url('/reports') }}" class="btn btn-burgundy">View Analytics</a>
-            </div>
-            <div class="dashboard-section" style="background: linear-gradient(135deg, #f5f0e6 60%, #c8a97e 100%); box-shadow: 0 4px 20px rgba(94, 15, 15, 0.10); border: 2px solid #c8a97e;">
-                <div class="section-title" style="font-size: 1.5rem; color: #5e0f0f;">
-                    <i class="fas fa-truck-loading me-2 text-gold"></i>Bulk Order from Company
+        <div class="container-fluid px-0">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-8 col-xl-7">
+                    <div class="edit-order-box" style="max-width:100%; width:100%;">
+                        <h2 class="section-title mb-4">Edit Order #{{ $order->id }}</h2>
+                        <form method="POST" action="{{ route('vendor.orders.update', $order->id) }}">
+                            @csrf
+                            @method('PUT')
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Order Status</label>
+                                <select class="form-select" id="status" name="status" required>
+                                    <option value="pending" @if($order->status=='pending') selected @endif>Pending</option>
+                                    <option value="processing" @if($order->status=='processing') selected @endif>Processing</option>
+                                    <option value="shipped" @if($order->status=='shipped') selected @endif>Shipped</option>
+                                    <option value="delivered" @if($order->status=='delivered') selected @endif>Delivered</option>
+                                    <option value="cancelled" @if($order->status=='cancelled') selected @endif>Cancelled</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="notes" class="form-label">Notes</label>
+                                <textarea class="form-control" id="notes" name="notes" rows="2">{{ old('notes', $order->notes) }}</textarea>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Order Items</label>
+                                <table class="table order-items-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Quantity</th>
+                                            <th>Unit Price</th>
+                                            <th>Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @php $total = 0; @endphp
+                                        @foreach($order->orderItems as $item)
+                                            <tr>
+                                                <td>{{ $item->item_name ?? $item->wine_name ?? '-' }}</td>
+                                                <td>{{ $item->quantity }}</td>
+                                                <td>${{ number_format($item->unit_price, 2) }}</td>
+                                                <td>${{ number_format($item->unit_price * $item->quantity, 2) }}</td>
+                                            </tr>
+                                            @php $total += $item->unit_price * $item->quantity; @endphp
+                                        @endforeach
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="3" class="text-end">Total:</th>
+                                            <th class="text-burgundy">${{ number_format($total, 2) }}</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{{ route('vendor.orders.show', $order) }}" class="btn btn-outline-burgundy"><i class="fas fa-arrow-left me-1"></i> Cancel</a>
+                                <button type="submit" class="btn btn-burgundy px-4">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <p style="font-size: 1.1rem; color: #5e0f0f;">
-                    Need to restock in large quantities? Place a creative bulk order directly from the company and enjoy special rates, priority processing, and seamless delivery for your business needs.
-                </p>
-                <a href="{{ url('/vendor/bulk-order') }}" class="btn btn-burgundy" style="font-size: 1.1rem; font-weight: 600; box-shadow: 0 2px 8px #c8a97e; transition: transform 0.2s;">
-                    <i class="fas fa-wine-bottle me-2"></i>Place Bulk Order
-                </a>
             </div>
-            <div class="dashboard-section text-center" style="background: none; box-shadow: none; border: none; margin-top: -1rem;">
-                <a href="{{ route('vendor.bulk-order.history') }}" class="btn btn-burgundy btn-lg mt-2 wine-track-btn" style="font-size: 1.25rem; font-weight: 700; border: 2px solid #c8a97e; color: #fff; box-shadow: 0 4px 16px rgba(94,15,15,0.12); letter-spacing: 1px;">
-                    <i class="fas fa-history me-2"></i>Track Bulk Orders
-                </a>
-            </div>
-            <style>
-                .wine-track-btn {
-                    background: linear-gradient(135deg, #5e0f0f 60%, #8b1a1a 100%);
-                    border-radius: 2rem;
-                    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-                }
-                .wine-track-btn:hover, .wine-track-btn:focus {
-                    background: linear-gradient(135deg, #8b1a1a 60%, #5e0f0f 100%);
-                    color: #c8a97e;
-                    box-shadow: 0 8px 24px rgba(94,15,15,0.18);
-                    text-decoration: none;
-                }
-            </style>
         </div>
     </div>
-    @include('components.chat-widget')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html> 

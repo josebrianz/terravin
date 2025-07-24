@@ -22,7 +22,7 @@
                     </a>
                     <span class="badge bg-gold text-burgundy px-3 py-2 ms-3">
                         <i class="fas fa-clock me-1"></i>
-                        {{ now()->format('M d, Y H:i') }}
+                        {{ now()->format('M d, Y') }}
                     </span>
                 </div>
             </div>
@@ -277,7 +277,7 @@
                             <h6 class="mb-0 fw-bold text-burgundy">{{ $supplier->wholesaler_name }}</h6>
                             <small class="text-muted">{{ $supplier->count }} orders</small>
                         </div>
-                        <span class="badge bg-gold text-burgundy">UGX {{ number_format($supplier->total_value, 0) }}</span>
+                        <span class="badge bg-gold text-burgundy">${{ number_format($supplier->total_value, 2) }}</span>
                     </div>
                     @empty
                     <div class="text-center text-muted py-3">

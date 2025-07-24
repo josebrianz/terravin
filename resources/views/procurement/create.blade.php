@@ -11,8 +11,18 @@
                     <h3 class="mb-0"><i class="fas fa-wine-bottle me-2"></i> Create New Supply Request</h3>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('procurement.store') }}" method="POST">
+                    <form method="POST" action="{{ route('procurement.store') }}" enctype="multipart/form-data">
                         @csrf
+
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul class="mb-0">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                         
                         <!-- Main Card with Sections -->
                         <div class="card mb-4 border-0 shadow-sm">

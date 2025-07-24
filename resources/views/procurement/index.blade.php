@@ -121,10 +121,10 @@
                                         </a>
                                     </td>
                                     <td>{{ $procurement->item_name }}</td>
-                                    <td>{{ $procurement->wholesaler_name }}</td>
+                                    <td>{{ $procurement->supplier_name }}</td>
                                     <td>{{ $procurement->quantity }}</td>
-                                    <td>{{ 'UGX ' . number_format($procurement->unit_price, 0) }}</td>
-                                    <td>{{ 'UGX ' . number_format($procurement->total_amount, 0) }}</td>
+                                    <td>${{ number_format($procurement->unit_price, 2) }}</td>
+                                    <td>${{ number_format($procurement->total_amount, 2) }}</td>
                                     <td>
                                         <span class="badge {{ $procurement->status_badge_class }}">
                                             {{ ucfirst($procurement->status) }}

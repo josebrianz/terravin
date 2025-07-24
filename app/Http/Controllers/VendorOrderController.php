@@ -43,7 +43,12 @@ class VendorOrderController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $vendorId = Auth::id();
+        $order = Order::where('id', $id)
+            ->where('vendor_id', $vendorId)
+            ->with(['user', 'orderItems'])
+            ->firstOrFail();
+        return view('vendor.orders.show', compact('order'));
     }
 
     /**
@@ -51,7 +56,12 @@ class VendorOrderController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $vendorId = Auth::id();
+        $order = Order::where('id', $id)
+            ->where('vendor_id', $vendorId)
+            ->with(['user', 'orderItems'])
+            ->firstOrFail();
+        return view('vendor.orders.edit', compact('order'));
     }
 
     /**
@@ -59,7 +69,22 @@ class VendorOrderController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $vendorId = Auth::id();
+        $order = Order::where('id', $id)
+            ->where('vendor_id', $vendorId)
+            ->firstOrFail();
+
+        $validated = $request->validate([
+            'status' => 'required|in:pending,processing,shipped,delivered,cancelled',
+            'notes' => 'nullable|string',
+        ]);
+
+        $order->status = $validated['status'];
+        $order->notes = $validated['notes'];
+        $order->save();
+
+        return redirect()->route('vendor.orders.show', $order->id)
+            ->with('success', 'Order updated successfully.');
     }
 
     /**

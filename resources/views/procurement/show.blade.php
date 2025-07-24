@@ -61,11 +61,11 @@
                                         </tr>
                                         <tr>
                                             <td class="fw-bold">Unit Price:</td>
-                                            <td>{{ 'UGX ' . number_format($procurement->unit_price, 0) }}</td>
+                                            <td>${{ number_format($procurement->unit_price, 2) }}</td>
                                         </tr>
                                         <tr>
                                             <td class="fw-bold">Total Amount:</td>
-                                            <td class="h5 text-primary">{{ 'UGX ' . number_format($procurement->total_amount, 0) }}</td>
+                                            <td class="h5 text-primary">${{ number_format($procurement->total_amount, 2) }}</td>
                                         </tr>
                                     </table>
                                 </div>
@@ -81,7 +81,7 @@
                                         </tr>
                                         <tr>
                                             <td class="fw-bold">Created Date:</td>
-                                            <td>{{ $procurement->created_at->format('M d, Y H:i') }}</td>
+                                            <td>{{ $procurement->created_at->format('M d, Y') }}</td>
                                         </tr>
                                         <tr>
                                             <td class="fw-bold">Requested By:</td>
@@ -226,7 +226,7 @@
                                     <div class="timeline-content">
                                         <h6 class="timeline-title">Pending</h6>
                                         <p class="timeline-text">Supply request submitted</p>
-                                        <small class="text-muted">{{ $procurement->created_at->format('M d, Y H:i') }}</small>
+                                        <small class="text-muted">{{ $procurement->created_at->format('M d, Y') }}</small>
                                     </div>
                                 </div>
 

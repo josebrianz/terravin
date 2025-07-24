@@ -70,6 +70,59 @@ class OrderController extends Controller
             'payment_method' => 'required|in:Cash on Delivery,Mobile Money,Card',
         ]);
         $user = auth()->user();
+        if ($user->role === 'Retailer') {
+            // Use session cart for retailers
+            $cart = session()->get('retailer_cart', []);
+            if (empty($cart)) {
+                return redirect()->route('retailer.cart')->with('error', 'Your cart is empty.');
+            }
+            $items = [];
+            $total = 0;
+            foreach ($cart as $productId => $quantity) {
+                $product = \App\Models\Inventory::find($productId);
+                if (!$product) continue;
+                $items[] = [
+                    'inventory_id' => $product->id,
+                    'wine_name' => $product->name,
+                    'wine_category' => $product->category ?? '',
+                    'quantity' => $quantity,
+                    'unit_price' => $product->unit_price,
+                ];
+                $total += $product->unit_price * $quantity;
+            }
+            if (empty($items)) {
+                return redirect()->route('retailer.cart')->with('error', 'Your cart is empty.');
+            }
+            $order = \App\Models\Order::create([
+                'user_id' => $user->id,
+                'customer_name' => $user->name,
+                'customer_email' => $user->email,
+                'customer_phone' => $user->phone ?? '',
+                'items' => json_encode($items),
+                'total_amount' => $total,
+                'shipping_address' => $request->shipping_address,
+                'notes' => $request->notes,
+                'status' => 'pending',
+                'payment_method' => $request->payment_method,
+                'vendor_id' => 14, // Assign Owen as the vendor
+            ]);
+            // Optionally, create order_items records if needed
+            foreach ($items as $item) {
+                \App\Models\OrderItem::create([
+                    'order_id'     => $order->id,
+                    'inventory_id' => $item['inventory_id'],
+                    'item_name'    => $item['wine_name'],
+                    'unit_price'   => $item['unit_price'],
+                    'quantity'     => $item['quantity'],
+                    'subtotal'     => $item['unit_price'] * $item['quantity'],
+                    'category'     => $item['wine_category'],
+                ]);
+            }
+            // Clear session cart
+            session()->forget('retailer_cart');
+            return redirect()->route('orders.index')->with('success', 'Order placed successfully!');
+        }
+        $user = auth()->user();
         $cartItems = \App\Models\CartItem::where('user_id', $user->id)->with('inventory')->get();
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
@@ -115,7 +168,7 @@ class OrderController extends Controller
         // Clear cart
         \App\Models\CartItem::where('user_id', $user->id)->delete();
         if ($user->role === 'Retailer') {
-            return redirect()->route('retailer.orders.confirmation', $order->id)->with('success', 'Order placed successfully!');
+            return redirect()->route('orders.index')->with('success', 'Order placed successfully!');
         } else {
             return redirect()->route('orders.confirmation', $order->id)->with('success', 'Order placed successfully!');
         }

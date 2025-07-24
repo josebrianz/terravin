@@ -218,8 +218,8 @@
                         <h5 class="fw-bold text-burgundy mb-3"><i class="fas fa-info-circle me-2"></i> Order Details</h5>
                         <div class="mb-2"><span class="fw-bold">Status:</span> {{ ucfirst($order->status ?? '-') }}</div>
                         <div class="mb-2"><span class="fw-bold">Total Amount:</span> {{ format_usd($order->total_amount) }}</div>
-                        <div class="mb-2"><span class="fw-bold">Created At:</span> {{ $order->created_at->format('M d, Y H:i') }}</div>
-                        <div class="mb-2"><span class="fw-bold">Updated At:</span> {{ $order->updated_at->format('M d, Y H:i') }}</div>
+                        <div class="mb-2"><span class="fw-bold">Created At:</span> {{ $order->created_at->format('M d, Y') }}</div>
+                        <div class="mb-2"><span class="fw-bold">Updated At:</span> {{ $order->updated_at->format('M d, Y') }}</div>
                     </div>
                 </div>
             </div>

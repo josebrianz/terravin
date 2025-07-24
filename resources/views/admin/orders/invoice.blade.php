@@ -7,7 +7,7 @@
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h2 class="fw-bold text-burgundy mb-1">Order Invoice</h2>
-            <div class="text-muted">Order #{{ $order->id }} &mdash; {{ $order->created_at->format('M d, Y H:i') }}</div>
+            <div class="text-muted">Order #{{ $order->id }} &mdash; {{ $order->created_at->format('M d, Y') }}</div>
         </div>
     </div>
     <div class="row mb-3">
@@ -21,7 +21,7 @@
         <div class="col-md-6 text-end">
             <h5 class="fw-bold text-burgundy">Order Info</h5>
             <div><span class="fw-bold">Status:</span> {{ ucfirst($order->status) }}</div>
-            <div><span class="fw-bold">Order Date:</span> {{ $order->created_at->format('M d, Y H:i') }}</div>
+            <div><span class="fw-bold">Order Date:</span> {{ $order->created_at->format('M d, Y') }}</div>
         </div>
     </div>
     <div class="row mb-4">

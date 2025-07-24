@@ -262,6 +262,10 @@ Route::post('/retailer/cart/clear', function () {
 })->middleware(['auth', 'role:Retailer']);
 
 Route::post('/retailer/checkout', function (\Illuminate\Http\Request $request) {
+    $request->validate([
+        'vendor_id' => 'required|exists:users,id',
+        // ... other validation rules as needed ...
+    ]);
     $cart = session()->get('retailer_cart', []);
     if (empty($cart)) {
         return redirect()->back()->with('error', 'Cart is empty');
@@ -271,7 +275,7 @@ Route::post('/retailer/checkout', function (\Illuminate\Http\Request $request) {
         // Create the order
         $order = \App\Models\Order::create([
             'user_id' => auth()->id(),
-            'vendor_id' => null, // Company as seller
+            'vendor_id' => $request->vendor_id, // Set from form
             'customer_name' => auth()->user()->name,
             'customer_email' => auth()->user()->email,
             'customer_phone' => '',
@@ -313,8 +317,8 @@ Route::post('/retailer/checkout', function (\Illuminate\Http\Request $request) {
 })->middleware(['auth', 'role:Retailer']);
 
 Route::get('/retailer/checkout', function () {
-    // You can customize this view as needed
-    return view('retailer.checkout');
+    $vendors = \App\Models\User::where('role', 'Vendor')->get();
+    return view('retailer.checkout', compact('vendors'));
 })->middleware(['auth', 'role:Retailer'])->name('retailer.checkout');
 
 // Retailer Wine Catalog Route
@@ -467,7 +471,7 @@ Route::middleware(['auth', 'role:Vendor,Supplier,Admin'])->group(function () {
 });
 
 // Stakeholder Reports Route
-Route::get('/stakeholders/reports', [\App\Http\Controllers\StakeholderController::class, 'showReports'])->name('stakeholders.reports');
+Route::get('/stakeholders/reports/{id}', [\App\Http\Controllers\StakeholderController::class, 'showReportsForStakeholder'])->name('stakeholders.reports');
 
 
 require __DIR__.'/auth.php';
@@ -681,7 +685,8 @@ Route::middleware(['auth', 'role:Vendor'])->group(function () {
 });
 
 Route::get('/retailer/orders', [\App\Http\Controllers\RetailerOrderController::class, 'index'])->name('retailer.orders');
-
+// Add this route for updating order status
+Route::post('/retailer/orders/{order}/status', [\App\Http\Controllers\RetailerOrderController::class, 'updateStatus'])->name('retailer.orders.updateStatus');
 // Retailer order confirmation page
 Route::get('/retailer/orders/confirmation/{order}', [App\Http\Controllers\OrderController::class, 'retailerConfirmation'])->name('retailer.orders.confirmation');
 Route::get('/vendor', [VendorController::class, 'index']);

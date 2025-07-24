@@ -122,6 +122,15 @@ class ProcurementController extends Controller
         // Get supplier information
         $supplier = User::findOrFail($request->supplier_id);
 
+        // Check supplier's available stock for the selected raw material
+        $rawMaterial = \App\Models\SupplierRawMaterial::where('user_id', $supplier->id)
+            ->whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($request->item_name))])
+            ->first();
+        $availableStock = $rawMaterial ? (is_numeric($rawMaterial->stock_level) ? (float)$rawMaterial->stock_level : (float)preg_replace('/[^\d.]/', '', $rawMaterial->stock_level)) : 0;
+        if ($rawMaterial && $request->quantity > $availableStock) {
+            return back()->withErrors(['quantity' => 'Requested quantity ('.$request->quantity.') exceeds supplier\'s available stock ('.$rawMaterial->stock_level.').'])->withInput();
+        }
+
         // Debug logging
         \Log::info('Procurement creation:', [
             'supplier' => $supplier->name,
@@ -226,6 +235,44 @@ class ProcurementController extends Controller
             'actual_delivery' => now(),
         ]);
 
-        return redirect()->back()->with('success', 'Procurement marked as received.');
+        \Log::info('Procurement markAsReceived', [
+            'supplier_name' => $procurement->supplier_name,
+            'item_name' => $procurement->item_name,
+        ]);
+
+        // Case-insensitive, trimmed supplier lookup
+        $supplier = \App\Models\User::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($procurement->supplier_name))])->first();
+        \Log::info('Supplier lookup', [
+            'supplier_found' => $supplier ? true : false,
+            'supplier_id' => $supplier->id ?? null,
+        ]);
+        if ($supplier) {
+            // Case-insensitive, trimmed raw material lookup
+            $rawMaterial = \App\Models\SupplierRawMaterial::where('user_id', $supplier->id)
+                ->whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($procurement->item_name))])
+                ->first();
+            \Log::info('Raw material lookup', [
+                'raw_material_found' => $rawMaterial ? true : false,
+                'raw_material_id' => $rawMaterial->id ?? null,
+                'current_stock_level' => $rawMaterial->stock_level ?? null,
+            ]);
+            if ($rawMaterial) {
+                $currentStock = is_numeric($rawMaterial->stock_level) ? (float)$rawMaterial->stock_level : (float)preg_replace('/[^\d.]/', '', $rawMaterial->stock_level);
+                $newStock = max(0, $currentStock - $procurement->quantity);
+                \Log::info('Stock update', [
+                    'currentStock' => $currentStock,
+                    'quantity' => $procurement->quantity,
+                    'newStock' => $newStock,
+                ]);
+                if (preg_match('/[a-zA-Z]+$/', $rawMaterial->stock_level, $matches)) {
+                    $rawMaterial->stock_level = $newStock . ' ' . $matches[0];
+                } else {
+                    $rawMaterial->stock_level = $newStock;
+                }
+                $rawMaterial->save();
+            }
+        }
+
+        return redirect()->back()->with('success', 'Procurement marked as received. Supplier inventory updated.');
     }
 }
